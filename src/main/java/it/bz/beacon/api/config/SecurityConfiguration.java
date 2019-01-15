@@ -1,6 +1,8 @@
 package it.bz.beacon.api.config;
 
 import it.bz.beacon.api.security.JwtConfigurer;
+import it.bz.beacon.api.security.JwtExceptionFilter;
+import it.bz.beacon.api.security.JwtTokenFilter;
 import it.bz.beacon.api.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,12 +13,17 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    JwtTokenProvider jwtTokenProvider;
+    private JwtConfigurer jwtConfigurer;
+
+    @Autowired
+    private JwtExceptionFilter jwtExceptionFilter;
 
     @Value("${security.jwt.token.expire-length}")
     private long tokenExpireLength;
@@ -36,7 +43,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/v1/admin/**").authenticated()
                 .and()
-                .apply(new JwtConfigurer(jwtTokenProvider));
+                .addFilterBefore(jwtExceptionFilter, UsernamePasswordAuthenticationFilter.class)
+                .apply(jwtConfigurer);
     }
 
     @Bean
