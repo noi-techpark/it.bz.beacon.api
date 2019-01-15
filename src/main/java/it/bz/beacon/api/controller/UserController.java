@@ -2,6 +2,7 @@ package it.bz.beacon.api.controller;
 
 import io.swagger.annotations.ApiOperation;
 import it.bz.beacon.api.db.model.User;
+import it.bz.beacon.api.model.UserUpdate;
 import it.bz.beacon.api.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,6 @@ public class UserController {
 
     @Autowired
     private IUserService service;
-
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @ApiOperation(value = "View a list of available users")
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
@@ -35,14 +33,13 @@ public class UserController {
     @ApiOperation(value = "Create a user")
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
     public User create(@RequestBody User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return service.create(user);
     }
 
     @ApiOperation(value = "Update a user")
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}", produces = "application/json")
-    public User update(@PathVariable long id, @RequestBody User user) {
-        return service.update(id, user);
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}", produces = "application/json")
+    public User update(@PathVariable long id, @RequestBody UserUpdate userUpdate) {
+        return service.update(id, userUpdate);
     }
 
     @ApiOperation(value = "Delete a user")

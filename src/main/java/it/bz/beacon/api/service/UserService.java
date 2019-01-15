@@ -3,8 +3,10 @@ package it.bz.beacon.api.service;
 import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.UserRepository;
 import it.bz.beacon.api.exception.UserNotFoundException;
+import it.bz.beacon.api.model.UserUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,6 +16,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public List<User> findAll() {
@@ -27,13 +32,17 @@ public class UserService implements IUserService {
 
     @Override
     public User create(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
 
     @Override
-    public User update(long id, User userRequest) throws UserNotFoundException {
+    public User update(long id, UserUpdate userUpdate) throws UserNotFoundException {
         return repository.findById(id).map(user -> {
-            user.setRoles(userRequest.getRoles());
+            if (userUpdate.getPassword() != null) {
+                userUpdate.setPassword(bCryptPasswordEncoder.encode(userUpdate.getPassword()));
+            }
+            user.applyUpdate(userUpdate);
 
             return repository.save(user);
         }).orElseThrow(UserNotFoundException::new);

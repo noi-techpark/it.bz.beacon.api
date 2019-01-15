@@ -2,6 +2,7 @@ package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
+import it.bz.beacon.api.model.UserUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -128,5 +129,21 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @JsonIgnore
+    public void applyUpdate(UserUpdate userUpdate) {
+        if (userUpdate.getName() != null) {
+            name = userUpdate.getName();
+        }
+        if (userUpdate.getSurname() != null) {
+            surname = userUpdate.getSurname();
+        }
+        if (userUpdate.getEmail() != null) {
+            email = userUpdate.getEmail();
+        }
+        if (userUpdate.getPassword() != null) {
+            password = userUpdate.getPassword();
+        }
     }
 }
