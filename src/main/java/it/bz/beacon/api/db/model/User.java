@@ -1,15 +1,15 @@
 package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
+import it.bz.beacon.api.model.UserCreation;
 import it.bz.beacon.api.model.UserUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,34 +22,36 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotEmpty
+    @Column(unique = true)
     private String username;
 
-    @NotEmpty
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @JsonIgnore
-    private List<String> roles = Lists.newArrayList();
-
-    @NotEmpty
     private String name;
 
-    @NotEmpty
     private String surname;
 
-    @Email
-    @NotEmpty
     private String email;
 
-    @Override
-    @JsonIgnore
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    public static User create(UserCreation userCreation) {
+        User user = new User();
+        user.setUsername(userCreation.getUsername());
+        user.setPassword(userCreation.getPassword());
+        user.setName(userCreation.getName());
+        user.setSurname(userCreation.getSurname());
+        user.setEmail(userCreation.getEmail());
+
+        return user;
     }
 
     @Override
     @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+
+    @Override
     public String getPassword() {
         return this.password;
     }
@@ -99,14 +101,6 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
-
     public String getName() {
         return name;
     }
@@ -129,6 +123,11 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @JsonIgnore
+    public List<String> getRoles() {
+        return Lists.newArrayList("ADMIN");
     }
 
     @JsonIgnore

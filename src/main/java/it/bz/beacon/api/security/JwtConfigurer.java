@@ -1,5 +1,7 @@
 package it.bz.beacon.api.security;
 
+import it.bz.beacon.api.security.filter.JwtExceptionFilter;
+import it.bz.beacon.api.security.filter.JwtTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

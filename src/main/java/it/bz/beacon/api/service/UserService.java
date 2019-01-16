@@ -2,10 +2,13 @@ package it.bz.beacon.api.service;
 
 import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.UserRepository;
+import it.bz.beacon.api.exception.DuplicateEntryException;
 import it.bz.beacon.api.exception.UserNotFoundException;
+import it.bz.beacon.api.model.BaseMessage;
+import it.bz.beacon.api.model.UserCreation;
 import it.bz.beacon.api.model.UserUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -31,9 +34,13 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User create(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return repository.save(user);
+    public User create(UserCreation userCreation) {
+        try {
+            userCreation.setPassword(bCryptPasswordEncoder.encode(userCreation.getPassword()));
+            return repository.save(User.create(userCreation));
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateEntryException();
+        }
     }
 
     @Override
@@ -49,12 +56,12 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public ResponseEntity<?> delete(long id) throws UserNotFoundException {
+    public BaseMessage delete(long id) throws UserNotFoundException {
         return repository.findById(id).map(
                 user -> {
                     repository.delete(user);
 
-                    return ResponseEntity.ok().build();
+                    return new BaseMessage("User deleted");
                 }
         ).orElseThrow(UserNotFoundException::new);
     }

@@ -1,5 +1,6 @@
-package it.bz.beacon.api.security;
+package it.bz.beacon.api.security.filter;
 
+import it.bz.beacon.api.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

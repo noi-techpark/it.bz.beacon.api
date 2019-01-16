@@ -1,9 +1,7 @@
 package it.bz.beacon.api.config;
 
 import it.bz.beacon.api.security.JwtConfigurer;
-import it.bz.beacon.api.security.JwtExceptionFilter;
-import it.bz.beacon.api.security.JwtTokenFilter;
-import it.bz.beacon.api.security.JwtTokenProvider;
+import it.bz.beacon.api.security.filter.JwtExceptionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -27,6 +24,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Value("${security.jwt.token.expire-length}")
     private long tokenExpireLength;
+
+    @Value("${security.jwt.token.secret}")
+    private String jwtSecret;
 
     @Bean
     @Override
@@ -41,9 +41,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/v1/admin/**").authenticated()
+                .antMatchers("/v1/admin/beacons/**").authenticated()
                 .and()
-                .addFilterBefore(jwtExceptionFilter, UsernamePasswordAuthenticationFilter.class)
                 .apply(jwtConfigurer);
     }
 
@@ -54,5 +53,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public long getTokenExpireLength() {
         return tokenExpireLength;
+    }
+
+    public byte[] getJwtSecret() {
+        return jwtSecret.getBytes();
     }
 }

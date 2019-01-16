@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -30,8 +31,10 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        secretKey = Keys.hmacShaKeyFor(securityConfiguration.getJwtSecret());
     }
+
+
 
     public String createToken(String username, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(username);
@@ -48,8 +51,12 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        try {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
+            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        } catch (UsernameNotFoundException e) {
+            throw new InvalidJwtAuthenticationException("Expired or invalid JWT token");
+        }
     }
 
     public String getUsername(String token) {
