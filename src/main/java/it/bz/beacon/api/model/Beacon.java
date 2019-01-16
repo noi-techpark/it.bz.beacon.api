@@ -1,5 +1,6 @@
 package it.bz.beacon.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.model.enumeration.LocationType;
@@ -26,7 +27,7 @@ public class Beacon {
     private boolean iBeacon;
     private boolean eddystone;
     private boolean eddystoneUrl;
-    //etc
+    private boolean eddystoneTlm;
 
     private UUID uuid;
     private int major;
@@ -43,13 +44,7 @@ public class Beacon {
 
     public static Beacon fromRemoteBeacon(BeaconData beaconData, RemoteBeacon remoteBeacon) {
         Beacon beacon = new Beacon();
-        beacon.setId(beaconData.getId());
-        beacon.setManufacturer(beaconData.getManufacturer());
-        beacon.setManufacturerId(beaconData.getManufacturerId());
-        beacon.setLat(beaconData.getLat());
-        beacon.setLng(beaconData.getLng());
-        beacon.setName(beaconData.getName());
-        beacon.setDescription(beaconData.getDescription());
+        beacon.applyBeaconData(beaconData);
 
         if (remoteBeacon != null) {
             beacon.setUuid(remoteBeacon.getUuid());
@@ -61,9 +56,22 @@ public class Beacon {
             beacon.setInterval(remoteBeacon.getInterval());
             beacon.setTxPower(remoteBeacon.getTxPower());
             beacon.setBatteryLevel(remoteBeacon.getBatteryLevel());
+
+            //TODO set remote data for ibeacon/eddystone/telemetry/...
         }
 
         return beacon;
+    }
+
+    @JsonIgnore
+    public void applyBeaconData(BeaconData beaconData) {
+        setId(beaconData.getId());
+        setManufacturer(beaconData.getManufacturer());
+        setManufacturerId(beaconData.getManufacturerId());
+        setLat(beaconData.getLat());
+        setLng(beaconData.getLng());
+        setName(beaconData.getName());
+        setDescription(beaconData.getDescription());
     }
 
     public long getId() {
@@ -192,5 +200,77 @@ public class Beacon {
 
     public void setManufacturerId(String manufacturerId) {
         this.manufacturerId = manufacturerId;
+    }
+
+    public LocationType getLocationType() {
+        return locationType;
+    }
+
+    public void setLocationType(LocationType locationType) {
+        this.locationType = locationType;
+    }
+
+    public String getLocationDescription() {
+        return locationDescription;
+    }
+
+    public void setLocationDescription(String locationDescription) {
+        this.locationDescription = locationDescription;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public long getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(long lastSeen) {
+        this.lastSeen = lastSeen;
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public boolean isiBeacon() {
+        return iBeacon;
+    }
+
+    public void setiBeacon(boolean iBeacon) {
+        this.iBeacon = iBeacon;
+    }
+
+    public boolean isEddystone() {
+        return eddystone;
+    }
+
+    public void setEddystone(boolean eddystone) {
+        this.eddystone = eddystone;
+    }
+
+    public boolean isEddystoneUrl() {
+        return eddystoneUrl;
+    }
+
+    public void setEddystoneUrl(boolean eddystoneUrl) {
+        this.eddystoneUrl = eddystoneUrl;
+    }
+
+    public boolean isEddystoneTlm() {
+        return eddystoneTlm;
+    }
+
+    public void setEddystoneTlm(boolean eddystoneTlm) {
+        this.eddystoneTlm = eddystoneTlm;
     }
 }

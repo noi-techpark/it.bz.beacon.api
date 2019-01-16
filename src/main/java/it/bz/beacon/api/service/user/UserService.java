@@ -1,9 +1,9 @@
-package it.bz.beacon.api.service;
+package it.bz.beacon.api.service.user;
 
 import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.UserRepository;
-import it.bz.beacon.api.exception.DuplicateEntryException;
-import it.bz.beacon.api.exception.UserNotFoundException;
+import it.bz.beacon.api.exception.db.DuplicateEntryException;
+import it.bz.beacon.api.exception.db.UserNotFoundException;
 import it.bz.beacon.api.model.BaseMessage;
 import it.bz.beacon.api.model.UserCreation;
 import it.bz.beacon.api.model.UserUpdate;

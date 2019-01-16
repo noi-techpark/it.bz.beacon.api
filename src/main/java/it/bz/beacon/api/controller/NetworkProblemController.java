@@ -1,13 +1,14 @@
 package it.bz.beacon.api.controller;
 
 import it.bz.beacon.api.db.model.NetworkProblem;
-import it.bz.beacon.api.service.IBeaconService;
-import it.bz.beacon.api.service.INetworkProblemService;
+import it.bz.beacon.api.service.beacon.IBeaconService;
+import it.bz.beacon.api.service.issue.INetworkProblemService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -34,13 +35,13 @@ public class NetworkProblemController {
 
     @ApiOperation(value = "Create a network problem")
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public NetworkProblem create(@PathVariable long beaconId, @RequestBody NetworkProblem networkProblem) {
+    public NetworkProblem create(@PathVariable long beaconId, @Valid @RequestBody NetworkProblem networkProblem) {
         return service.createForBeacon(beaconService.find(beaconId), networkProblem);
     }
 
     @ApiOperation(value = "Update a network problem")
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}", produces = "application/json")
-    public NetworkProblem update(@PathVariable long beaconId, @PathVariable long id, @RequestBody NetworkProblem networkProblem) {
+    public NetworkProblem update(@PathVariable long beaconId, @PathVariable long id, @Valid @RequestBody NetworkProblem networkProblem) {
         return service.updateForBeacon(beaconService.find(beaconId), id, networkProblem);
     }
 

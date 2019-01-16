@@ -1,11 +1,11 @@
 package it.bz.beacon.api.controller;
 
 import io.swagger.annotations.ApiOperation;
-import it.bz.beacon.api.db.model.User;
+import it.bz.beacon.api.db.model.IssueSolution;
 import it.bz.beacon.api.model.BaseMessage;
-import it.bz.beacon.api.model.UserCreation;
-import it.bz.beacon.api.model.UserUpdate;
-import it.bz.beacon.api.service.user.IUserService;
+import it.bz.beacon.api.model.BeaconIssue;
+import it.bz.beacon.api.model.IssueCreation;
+import it.bz.beacon.api.service.issue.IIssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,34 +13,34 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/admin/users")
-public class UserController {
+@RequestMapping("/v1/admin/issues")
+public class IssueController {
 
     @Autowired
-    private IUserService service;
+    private IIssueService service;
 
     @ApiOperation(value = "View a list of available users")
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    public List<User> getList() {
-        return service.findAll();
+    public List<BeaconIssue> getList(@RequestParam(defaultValue = "false", required = false) boolean onlyResolved) {
+        return service.findAll(onlyResolved);
     }
 
     @ApiOperation(value = "Search a user with an ID")
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = "application/json")
-    public User get(@PathVariable long id) {
+    public BeaconIssue get(@PathVariable long id) {
         return service.find(id);
     }
 
     @ApiOperation(value = "Create a user")
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public User create(@Valid @RequestBody UserCreation userCreation) {
-        return service.create(userCreation);
+    public BeaconIssue create(@Valid @RequestBody IssueCreation issueCreation) {
+        return service.create(issueCreation);
     }
 
     @ApiOperation(value = "Update a user")
-    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}", produces = "application/json")
-    public User update(@PathVariable long id, @Valid @RequestBody UserUpdate userUpdate) {
-        return service.update(id, userUpdate);
+    @RequestMapping(method = RequestMethod.POST, value = "/{id}/resolve", produces = "application/json")
+    public BeaconIssue update(@PathVariable long id, @Valid @RequestBody IssueSolution issueSolution) {
+        return service.resolve(id, issueSolution);
     }
 
     @ApiOperation(value = "Delete a user")

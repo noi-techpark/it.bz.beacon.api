@@ -3,7 +3,7 @@ package it.bz.beacon.api.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import it.bz.beacon.api.config.SecurityConfiguration;
-import it.bz.beacon.api.exception.InvalidJwtAuthenticationException;
+import it.bz.beacon.api.exception.auth.InvalidJwtAuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

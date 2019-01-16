@@ -1,4 +1,4 @@
-package it.bz.beacon.api.exception;
+package it.bz.beacon.api.exception.auth;
 
 import io.jsonwebtoken.io.IOException;
 

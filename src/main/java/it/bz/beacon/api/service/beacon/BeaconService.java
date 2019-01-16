@@ -1,20 +1,17 @@
-package it.bz.beacon.api.service;
+package it.bz.beacon.api.service.beacon;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.bz.beacon.api.db.model.BeaconData;
-import it.bz.beacon.api.exception.BeaconConfigurationNotCreatedException;
-import it.bz.beacon.api.exception.BeaconNotFoundException;
+import it.bz.beacon.api.exception.db.BeaconConfigurationNotCreatedException;
+import it.bz.beacon.api.exception.db.BeaconNotFoundException;
 import it.bz.beacon.api.kontakt.io.ApiService;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
 import it.bz.beacon.api.kontakt.io.response.DefaultResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
-import it.bz.beacon.api.model.Beacon;
-import it.bz.beacon.api.model.Manufacturer;
-import it.bz.beacon.api.model.PendingConfiguration;
-import it.bz.beacon.api.model.RemoteBeacon;
+import it.bz.beacon.api.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -96,10 +93,10 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public Beacon update(long id, Beacon beacon) throws BeaconNotFoundException {
+    public Beacon update(long id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException {
         BeaconData beaconData = beaconDataService.find(id);
 
-        CompletableFuture<ResponseEntity<DefaultResponse>> configResponse = createConfig(beaconData.getManufacturerId(), beacon);
+        CompletableFuture<ResponseEntity<DefaultResponse>> configResponse = createConfig(beaconData.getManufacturerId(), beaconUpdate);
 
         CompletableFuture.allOf(configResponse).join();
 
@@ -108,7 +105,8 @@ public class BeaconService implements IBeaconService {
                 throw new BeaconConfigurationNotCreatedException();
             }
 
-            beaconDataService.update(id, beacon);
+            Beacon beacon = find(id);
+            beacon.applyBeaconData(beaconData);
 
             return beacon;
         } catch (InterruptedException | ExecutionException e) {
@@ -117,12 +115,14 @@ public class BeaconService implements IBeaconService {
     }
 
     @Async
-    private CompletableFuture<ResponseEntity<DefaultResponse>> createConfig(String uniqueId, Beacon beacon) {
+    private CompletableFuture<ResponseEntity<DefaultResponse>> createConfig(String uniqueId, BeaconUpdate beaconUpdate) {
         TagBeaconConfig config = new TagBeaconConfig();
         config.setUniqueId(uniqueId);
-        config.setProximity(beacon.getUuid());
-        config.setMajor(beacon.getMajor());
-        config.setMinor(beacon.getMinor());
+        config.setProximity(beaconUpdate.getUuid());
+        config.setMajor(beaconUpdate.getMajor());
+        config.setMinor(beaconUpdate.getMinor());
+
+        //TODO set other values for config
 
         return CompletableFuture.completedFuture(apiService.createConfig(Lists.newArrayList(config)));
     }

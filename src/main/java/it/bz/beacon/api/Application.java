@@ -57,8 +57,8 @@ public class Application {
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
-                "BeaconDevice Südtirol API",
-                "An API to manage beacons of the BeaconDevice Südtirol project.",
+                "Beacon Südtirol API",
+                "An API to manage beacons of the Beacon Südtirol project.",
                 "1.0-beta",
                 "API TOS",
                 new Contact("Raiffeisen Online GmbH", "https://www.raiffeisen.net", "web@raiffeisen.net"),

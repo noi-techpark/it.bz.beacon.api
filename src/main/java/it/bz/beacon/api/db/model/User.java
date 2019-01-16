@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "\"User\"")
-public class User implements UserDetails {
+public class User extends AuditModel implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

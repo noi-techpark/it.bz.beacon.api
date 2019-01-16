@@ -1,6 +1,6 @@
-package it.bz.beacon.api.service;
+package it.bz.beacon.api.service.issue;
 
-import it.bz.beacon.api.exception.NetworkProblemNotFoundException;
+import it.bz.beacon.api.exception.db.NetworkProblemNotFoundException;
 import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.db.model.NetworkProblem;
 import org.springframework.http.ResponseEntity;

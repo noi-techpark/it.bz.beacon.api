@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/v1")
 public class AuthController {
@@ -28,7 +30,7 @@ public class AuthController {
     private UserRepository users;
 
     @PostMapping("/signin")
-    public AuthenticationToken signin(@RequestBody AuthenticationRequest data) {
+    public AuthenticationToken signin(@Valid @RequestBody AuthenticationRequest data) {
 
         try {
             String username = data.getUsername();

@@ -1,7 +1,8 @@
-package it.bz.beacon.api.service;
+package it.bz.beacon.api.service.issue;
 
+import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.db.repository.NetworkProblemRepository;
-import it.bz.beacon.api.exception.NetworkProblemNotFoundException;
+import it.bz.beacon.api.exception.db.NetworkProblemNotFoundException;
 import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.db.model.NetworkProblem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class NetworkProblemDbService implements INetworkProblemService {
 
     @Autowired
     private NetworkProblemRepository repository;
+
+    @Autowired
+    private BeaconDataRepository beaconDataRepository;
 
     @Override
     public List<NetworkProblem> findAll() {
@@ -40,7 +44,7 @@ public class NetworkProblemDbService implements INetworkProblemService {
     public NetworkProblem updateForBeacon(Beacon beacon, long id, NetworkProblem networkProblemRequest) throws NetworkProblemNotFoundException {
         return repository.findById(id).map(
                 networkProblem -> {
-                    networkProblem.setBeaconId(networkProblemRequest.getBeaconId());
+//                    networkProblem.setBeaconData(networkProblemRequest.be());
                     networkProblem.setDescription(networkProblemRequest.getDescription());
 
                     return repository.save(networkProblem);
