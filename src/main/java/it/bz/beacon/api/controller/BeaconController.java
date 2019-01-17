@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiOperation;
 import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.BeaconUpdate;
 import it.bz.beacon.api.service.beacon.IBeaconService;
-import it.bz.beacon.api.service.issue.INetworkProblemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,9 +16,6 @@ public class BeaconController {
 
     @Autowired
     private IBeaconService service;
-
-    @Autowired
-    private INetworkProblemService networkProblemService;
 
     @ApiOperation(value = "View a list of available beacons")
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")

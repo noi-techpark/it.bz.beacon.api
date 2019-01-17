@@ -12,6 +12,7 @@ public class BeaconImage extends AuditModel {
     private long id;
 
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private long beaconId;
 
     @Column(nullable = false)

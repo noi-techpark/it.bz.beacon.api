@@ -31,11 +31,11 @@ public class BeaconData extends AuditModel {
     @Lob
     private String description;
 
-    public static BeaconData fromBeacon(Beacon beacon, Manufacturer manufacturer, String manufacturerId) {
+    public static BeaconData fromBeacon(Beacon beacon) {
         BeaconData beaconData = new BeaconData();
 
-        beaconData.setManufacturer(manufacturer);
-        beaconData.setManufacturerId(manufacturerId);
+        beaconData.setManufacturer(beacon.getManufacturer());
+        beaconData.setManufacturerId(beacon.getManufacturerId());
 
         beaconData.setName(beacon.getName());
         beaconData.setDescription(beacon.getDescription());

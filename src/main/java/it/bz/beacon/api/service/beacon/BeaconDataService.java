@@ -34,8 +34,8 @@ public class BeaconDataService implements IBeaconDataService {
     }
 
     @Override
-    public BeaconData create(Beacon beacon, Manufacturer manufacturer, String manufacturerId) {
-        return repository.save(BeaconData.fromBeacon(beacon, manufacturer, manufacturerId));
+    public BeaconData create(Beacon beacon) {
+        return repository.save(BeaconData.fromBeacon(beacon));
     }
 
     @Override

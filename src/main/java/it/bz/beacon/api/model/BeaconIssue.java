@@ -1,7 +1,6 @@
 package it.bz.beacon.api.model;
 
 import it.bz.beacon.api.db.model.Issue;
-import it.bz.beacon.api.db.model.IssueSolution;
 
 import java.util.Date;
 
@@ -15,7 +14,10 @@ public class BeaconIssue {
     private String reporter;
     private Date reportDate;
 
-    private IssueSolution solution;
+    private boolean resolved = false;
+    private String solution;
+    private String solutionDescription;
+    private Date resolveDate;
 
     public static BeaconIssue fromIssue(Issue issue, Beacon beacon) {
         BeaconIssue beaconIssue = new BeaconIssue();
@@ -24,7 +26,12 @@ public class BeaconIssue {
         beaconIssue.setProblem(issue.getProblem());
         beaconIssue.setProblemDescription(issue.getProblemDescription());
         beaconIssue.setReportDate(issue.getReportDate());
-        beaconIssue.setSolution(issue.getSolution());
+        if (issue.getSolution() != null) {
+            beaconIssue.setResolved(true);
+            beaconIssue.setSolution(issue.getSolution().getSolution());
+            beaconIssue.setSolutionDescription(issue.getSolution().getSolution());
+            beaconIssue.setResolveDate(issue.getSolution().getCreatedAt());
+        }
 
         return beaconIssue;
     }
@@ -77,11 +84,35 @@ public class BeaconIssue {
         this.reportDate = reportDate;
     }
 
-    public IssueSolution getSolution() {
+    public boolean isResolved() {
+        return resolved;
+    }
+
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
+    }
+
+    public String getSolution() {
         return solution;
     }
 
-    public void setSolution(IssueSolution solution) {
+    public void setSolution(String solution) {
         this.solution = solution;
+    }
+
+    public String getSolutionDescription() {
+        return solutionDescription;
+    }
+
+    public void setSolutionDescription(String solutionDescription) {
+        this.solutionDescription = solutionDescription;
+    }
+
+    public Date getResolveDate() {
+        return resolveDate;
+    }
+
+    public void setResolveDate(Date resolveDate) {
+        this.resolveDate = resolveDate;
     }
 }

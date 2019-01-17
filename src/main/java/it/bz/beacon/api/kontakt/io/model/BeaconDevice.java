@@ -26,6 +26,8 @@ abstract public class BeaconDevice extends Device {
     private Set<Integer> rss1m;
     private Set<Integer> rss0m;
     private Object customConfiguration;
+    //TODO ask kontakt.IO about api docs
+    private long lastSeen;
 
     public String getName() {
         return name;
@@ -169,6 +171,14 @@ abstract public class BeaconDevice extends Device {
 
     public void setCustomConfiguration(Object customConfiguration) {
         this.customConfiguration = customConfiguration;
+    }
+
+    public long getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(long lastSeen) {
+        this.lastSeen = lastSeen;
     }
 
     private static class FutureId {

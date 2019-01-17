@@ -2,8 +2,12 @@ package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
-import java.util.Date;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class IssueSolution extends AuditModel {
@@ -16,6 +20,8 @@ public class IssueSolution extends AuditModel {
     @JsonIgnore
     private Issue issue;
 
+    @NotEmpty
+    @NotNull
     private String solution;
 
     private String solutionDescription;
@@ -50,9 +56,5 @@ public class IssueSolution extends AuditModel {
 
     public void setSolutionDescription(String solutionDescription) {
         this.solutionDescription = solutionDescription;
-    }
-
-    public Date getResolveDate() {
-        return getCreatedAt();
     }
 }

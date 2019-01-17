@@ -22,7 +22,6 @@ public class Beacon {
     private String locationDescription;
     private Status status;
     private long lastSeen;
-    private long lastUpdated;
 
     private boolean iBeacon;
     private boolean eddystone;
@@ -57,7 +56,11 @@ public class Beacon {
             beacon.setTxPower(remoteBeacon.getTxPower());
             beacon.setBatteryLevel(remoteBeacon.getBatteryLevel());
 
-            //TODO set remote data for ibeacon/eddystone/telemetry/...
+            beacon.setLastSeen(remoteBeacon.getLastSeen());
+            beacon.setiBeacon(remoteBeacon.isiBeacon());
+            beacon.setEddystone(remoteBeacon.isEddystone());
+            beacon.setEddystoneTlm(remoteBeacon.isEddystoneTlm());
+            beacon.setEddystoneUrl(remoteBeacon.isEddystoneUrl());
         }
 
         return beacon;
@@ -232,14 +235,6 @@ public class Beacon {
 
     public void setLastSeen(long lastSeen) {
         this.lastSeen = lastSeen;
-    }
-
-    public long getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(long lastUpdated) {
-        this.lastUpdated = lastUpdated;
     }
 
     public boolean isiBeacon() {

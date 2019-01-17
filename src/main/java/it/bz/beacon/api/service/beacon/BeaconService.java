@@ -85,7 +85,10 @@ public class BeaconService implements IBeaconService {
 
         for(String uniqueId : uniqueIds) {
             Beacon beacon = new Beacon();
-            beaconDataService.create(beacon, Manufacturer.KONTAKT_IO, uniqueId);
+            beacon.setName(uniqueId);
+            beacon.setManufacturer(Manufacturer.KONTAKT_IO);
+            beacon.setManufacturerId(uniqueId);
+            beaconDataService.create(beacon);
             beacons.add(beacon);
         }
 

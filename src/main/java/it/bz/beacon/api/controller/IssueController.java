@@ -2,7 +2,6 @@ package it.bz.beacon.api.controller;
 
 import io.swagger.annotations.ApiOperation;
 import it.bz.beacon.api.db.model.IssueSolution;
-import it.bz.beacon.api.model.BaseMessage;
 import it.bz.beacon.api.model.BeaconIssue;
 import it.bz.beacon.api.model.IssueCreation;
 import it.bz.beacon.api.service.issue.IIssueService;
@@ -21,8 +20,8 @@ public class IssueController {
 
     @ApiOperation(value = "View a list of available users")
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    public List<BeaconIssue> getList(@RequestParam(defaultValue = "false", required = false) boolean onlyResolved) {
-        return service.findAll(onlyResolved);
+    public List<BeaconIssue> getList(@RequestParam(defaultValue = "false", required = false) boolean onlyUnresolved) {
+        return service.findAll(onlyUnresolved);
     }
 
     @ApiOperation(value = "Search a user with an ID")
@@ -41,11 +40,5 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/resolve", produces = "application/json")
     public BeaconIssue update(@PathVariable long id, @Valid @RequestBody IssueSolution issueSolution) {
         return service.resolve(id, issueSolution);
-    }
-
-    @ApiOperation(value = "Delete a user")
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}", produces = "application/json")
-    public BaseMessage delete(@PathVariable long id) {
-        return service.delete(id);
     }
 }

@@ -1,7 +1,16 @@
 package it.bz.beacon.api.model;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class AuthenticationRequest {
+
+    @NotEmpty
+    @NotNull
     private String username;
+
+    @NotEmpty
+    @NotNull
     private String password;
 
     public String getUsername() {

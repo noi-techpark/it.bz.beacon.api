@@ -5,7 +5,6 @@ import it.bz.beacon.api.db.model.Issue;
 import it.bz.beacon.api.db.model.IssueSolution;
 import it.bz.beacon.api.db.repository.IssueRepository;
 import it.bz.beacon.api.exception.db.IssueNotFoundException;
-import it.bz.beacon.api.model.BaseMessage;
 import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.BeaconIssue;
 import it.bz.beacon.api.model.IssueCreation;
@@ -32,8 +31,21 @@ public class IssueService implements IIssueService {
     private IBeaconDataService beaconDataService;
 
     @Override
-    public List<BeaconIssue> findAll(boolean onlyResolved) {
-        List<Issue> issues = repository.findAll();
+    public List<BeaconIssue> findAll(boolean onlyUnresolved) {
+        List<Issue> issues = onlyUnresolved ? repository.findAllBySolution(null) : repository.findAll();
+
+        Map<Long, Beacon> beacons = beaconService.findAllWithIds(issues.stream()
+                .map(issue -> issue.getBeaconData().getId()).collect(Collectors.toList()))
+                .stream().collect(Collectors.toMap(Beacon::getId, Function.identity()));
+
+        return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId())))
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<BeaconIssue> findAllByBeacon(BeaconData beaconData, boolean onlyUnresolved) {
+        List<Issue> issues = onlyUnresolved ? repository.findAllByBeaconDataAndSolution(beaconData, null) : repository.findAllByBeaconData(beaconData);
 
         Map<Long, Beacon> beacons = beaconService.findAllWithIds(issues.stream()
                 .map(issue -> issue.getBeaconData().getId()).collect(Collectors.toList()))
@@ -64,11 +76,12 @@ public class IssueService implements IIssueService {
 
     @Override
     public BeaconIssue resolve(long id, IssueSolution issueSolution) {
-        return null;
-    }
+        Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
+        issue.setSolution(issueSolution);
+        issue = repository.save(issue);
 
-    @Override
-    public BaseMessage delete(long id) {
-        return null;
+        Beacon beacon = beaconService.find(issue.getBeaconData().getId());
+
+        return BeaconIssue.fromIssue(issue, beacon);
     }
 }
