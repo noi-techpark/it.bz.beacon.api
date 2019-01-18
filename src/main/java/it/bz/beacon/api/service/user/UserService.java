@@ -3,13 +3,14 @@ package it.bz.beacon.api.service.user;
 import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.UserRepository;
 import it.bz.beacon.api.exception.db.DuplicateEntryException;
-import it.bz.beacon.api.exception.db.LastUserNotDeletableException;
+import it.bz.beacon.api.exception.db.AuthenticatedUserNotDeletableException;
 import it.bz.beacon.api.exception.db.UserNotFoundException;
 import it.bz.beacon.api.model.BaseMessage;
 import it.bz.beacon.api.model.UserCreation;
 import it.bz.beacon.api.model.UserUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -57,13 +58,14 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public BaseMessage delete(long id) throws UserNotFoundException, LastUserNotDeletableException {
-        if (repository.findAll().size() == 1) {
-            throw new LastUserNotDeletableException();
-        }
+    public BaseMessage delete(long id) throws UserNotFoundException, AuthenticatedUserNotDeletableException {
+        User authUser = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return repository.findById(id).map(
                 user -> {
+                    if (user.getId().longValue() == authUser.getId().longValue()) {
+                        throw new AuthenticatedUserNotDeletableException();
+                    }
                     repository.delete(user);
 
                     return new BaseMessage("User deleted");

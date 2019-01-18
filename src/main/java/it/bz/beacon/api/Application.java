@@ -7,12 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
@@ -25,6 +29,7 @@ import springfox.documentation.swagger.web.*;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Collections;
+import java.util.Map;
 
 @SpringBootApplication
 @EnableSwagger2
@@ -126,6 +131,20 @@ public class Application {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/v1/beacons").allowedOrigins(beaconSuedtirolConfiguration.getAllowedOrigins());
             }
+        };
+    }
+
+    @Bean
+    public ErrorAttributes errorAttributes() {
+        return new DefaultErrorAttributes() {
+
+            @Override
+            public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+                Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, includeStackTrace);
+                errorAttributes.remove("trace");
+                return errorAttributes;
+            }
+
         };
     }
 }
