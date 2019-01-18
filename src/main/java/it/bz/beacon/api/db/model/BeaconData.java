@@ -2,6 +2,7 @@ package it.bz.beacon.api.db.model;
 
 import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.Manufacturer;
+import it.bz.beacon.api.model.RemoteBeacon;
 
 import javax.persistence.*;
 
@@ -31,16 +32,15 @@ public class BeaconData extends AuditModel {
     @Lob
     private String description;
 
-    public static BeaconData fromBeacon(Beacon beacon) {
+    public static BeaconData fromRemoteBeacon(RemoteBeacon remoteBeacon) {
+
         BeaconData beaconData = new BeaconData();
 
-        beaconData.setManufacturer(beacon.getManufacturer());
-        beaconData.setManufacturerId(beacon.getManufacturerId());
-
-        beaconData.setName(beacon.getName());
-        beaconData.setDescription(beacon.getDescription());
-        beaconData.setLat(beacon.getLat());
-        beaconData.setLng(beacon.getLng());
+        beaconData.setManufacturer(remoteBeacon.getManufacturer());
+        beaconData.setManufacturerId(remoteBeacon.getManufacturerId());
+        if (remoteBeacon.getName() != null && !remoteBeacon.getName().isEmpty() && !remoteBeacon.getName().equals("Kontakt")) {
+            beaconData.setName(remoteBeacon.getName());
+        }
 
         return beaconData;
     }

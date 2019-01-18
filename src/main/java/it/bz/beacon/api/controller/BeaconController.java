@@ -2,6 +2,7 @@ package it.bz.beacon.api.controller;
 
 import io.swagger.annotations.ApiOperation;
 import it.bz.beacon.api.model.Beacon;
+import it.bz.beacon.api.model.Order;
 import it.bz.beacon.api.model.BeaconUpdate;
 import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ public class BeaconController {
 
     @ApiOperation(value = "Create a beacon")
     @RequestMapping(method = RequestMethod.POST, value = "/createByOrder", produces = "application/json")
-    public List<Beacon> create(@Valid @RequestBody String orderId) {
-        return service.createByOrder(orderId);
+    public List<Beacon> create(@Valid @RequestBody Order order) {
+        return service.createByOrder(order);
     }
 
     @ApiOperation(value = "Update a beacon")

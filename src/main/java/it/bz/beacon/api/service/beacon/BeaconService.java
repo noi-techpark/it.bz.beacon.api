@@ -5,6 +5,8 @@ import com.google.common.collect.Maps;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.exception.db.BeaconConfigurationNotCreatedException;
 import it.bz.beacon.api.exception.db.BeaconNotFoundException;
+import it.bz.beacon.api.exception.kontakt.io.InvalidOrderIdException;
+import it.bz.beacon.api.exception.kontakt.io.NoDeviceAddedException;
 import it.bz.beacon.api.kontakt.io.ApiService;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
@@ -64,35 +66,25 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public Beacon create(Beacon beacon) {
-        return null;
-    }
-
-    @Override
-    public List<Beacon> createByOrder(String orderId) {
-        List<String> uniqueIds = apiService.checkOrder(orderId).getUniqueIds();
+    public List<Beacon> createByOrder(Order order) {
+        List<String> uniqueIds = apiService.checkOrder(order.getId());
         if (uniqueIds.size() <= 0) {
-            //TODO handle used order Id
+            throw new InvalidOrderIdException();
         }
 
-        long addedDevices = apiService.assignOrder(orderId).getAddedDevices();
+        long addedDevices = apiService.assignOrder(order.getId()).getAddedDevices();
 
-        if (uniqueIds.size() != addedDevices) {
-            //TODO handle ambiguous amount of devices added
+        if (addedDevices <= 0) {
+            throw new NoDeviceAddedException();
         }
 
-        List<Beacon> beacons = Lists.newArrayList();
+        return apiService.getBeacons(uniqueIds).getDevices().stream().map(tagBeaconDevice -> {
 
-        for(String uniqueId : uniqueIds) {
-            Beacon beacon = new Beacon();
-            beacon.setName(uniqueId);
-            beacon.setManufacturer(Manufacturer.KONTAKT_IO);
-            beacon.setManufacturerId(uniqueId);
-            beaconDataService.create(beacon);
-            beacons.add(beacon);
-        }
+            RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
+            BeaconData beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
 
-        return beacons;
+            return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -158,6 +150,7 @@ public class BeaconService implements IBeaconService {
                 RemoteBeacon remoteBeacon = remoteBeacons.get(status.getUniqueId());
                 if (remoteBeacon != null) {
                     remoteBeacon.setBatteryLevel(status.getBatteryLevel());
+                    remoteBeacon.setLastSeen(status.getLastEventTimestamp());
                 }
             });
         }

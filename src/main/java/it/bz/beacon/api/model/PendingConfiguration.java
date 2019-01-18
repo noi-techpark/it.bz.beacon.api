@@ -6,13 +6,13 @@ import java.util.UUID;
 
 public class PendingConfiguration {
     private UUID uuid;
-    private int major;
-    private int minor;
+    private Integer major;
+    private Integer minor;
     private String namespace;
     private String url;
     private String instanceId;
-    //private int txPower;
-    //private int interval;
+    //private Integer txPower;
+    //private Integer interval;
 
     public static PendingConfiguration fromBeaconConfiguration(BeaconConfiguration configuration) {
         PendingConfiguration pendingConfiguration = new PendingConfiguration();
@@ -34,19 +34,19 @@ public class PendingConfiguration {
         this.uuid = uuid;
     }
 
-    public int getMajor() {
+    public Integer getMajor() {
         return major;
     }
 
-    public void setMajor(int major) {
+    public void setMajor(Integer major) {
         this.major = major;
     }
 
-    public int getMinor() {
+    public Integer getMinor() {
         return minor;
     }
 
-    public void setMinor(int minor) {
+    public void setMinor(Integer minor) {
         this.minor = minor;
     }
 

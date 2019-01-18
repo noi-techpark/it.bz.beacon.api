@@ -10,6 +10,7 @@ public class RemoteBeacon {
 
     private Manufacturer manufacturer;
     private String manufacturerId;
+    private String name;
 
     private UUID uuid;
     private int major;
@@ -19,12 +20,15 @@ public class RemoteBeacon {
     private String instanceId;
     private int interval;
     private int txPower;
-    private int batteryLevel;
+    private Integer batteryLevel;
     private long lastSeen;
     private boolean iBeacon;
-    private boolean eddystone;
+    private boolean telemetry;
+    private boolean eddystoneUid;
     private boolean eddystoneUrl;
     private boolean eddystoneTlm;
+    private boolean eddystoneEid;
+    private boolean eddystoneEtlm;
     private PendingConfiguration pendingConfiguration;
 
     public static RemoteBeacon fromTagBeaconDevice(TagBeaconDevice tagBeaconDevice) {
@@ -35,18 +39,22 @@ public class RemoteBeacon {
         remoteBeacon.setUuid(tagBeaconDevice.getProximity());
         remoteBeacon.setMajor(tagBeaconDevice.getMajor());
         remoteBeacon.setMinor(tagBeaconDevice.getMinor());
-        //TODO decode eddystone url hash
+        //TODO decode eddystoneUid url hash
         remoteBeacon.setUrl(tagBeaconDevice.getUrl());
         remoteBeacon.setNamespace(tagBeaconDevice.getNamespace());
         remoteBeacon.setInstanceId(tagBeaconDevice.getInstanceId());
         remoteBeacon.setInterval(tagBeaconDevice.getInterval());
         remoteBeacon.setTxPower(tagBeaconDevice.getTxPower());
+        remoteBeacon.setName(tagBeaconDevice.getName());
 
         remoteBeacon.setLastSeen(tagBeaconDevice.getLastSeen());
         remoteBeacon.setiBeacon(tagBeaconDevice.getProfiles().contains(Profile.IBEACON));
-        remoteBeacon.setEddystone(tagBeaconDevice.getProfiles().contains(Profile.EDDYSTONE));
+        remoteBeacon.setEddystoneUid(tagBeaconDevice.getProfiles().contains(Profile.EDDYSTONE));
+        remoteBeacon.setTelemetry(tagBeaconDevice.getPackets().contains(Packet.KONTAKT_TLM));
         remoteBeacon.setEddystoneTlm(tagBeaconDevice.getPackets().contains(Packet.EDDYSTONE_TLM));
         remoteBeacon.setEddystoneUrl(tagBeaconDevice.getPackets().contains(Packet.EDDYSTONE_URL));
+        remoteBeacon.setEddystoneEid(tagBeaconDevice.getPackets().contains(Packet.EDDYSTONE_EID));
+        remoteBeacon.setEddystoneEtlm(tagBeaconDevice.getPackets().contains(Packet.EDDYSTONE_ETLM));
 
         return remoteBeacon;
     }
@@ -65,6 +73,14 @@ public class RemoteBeacon {
 
     public void setManufacturerId(String manufacturerId) {
         this.manufacturerId = manufacturerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public UUID getUuid() {
@@ -131,11 +147,11 @@ public class RemoteBeacon {
         this.txPower = txPower;
     }
 
-    public int getBatteryLevel() {
+    public Integer getBatteryLevel() {
         return batteryLevel;
     }
 
-    public void setBatteryLevel(int batteryLevel) {
+    public void setBatteryLevel(Integer batteryLevel) {
         this.batteryLevel = batteryLevel;
     }
 
@@ -163,12 +179,12 @@ public class RemoteBeacon {
         this.iBeacon = iBeacon;
     }
 
-    public boolean isEddystone() {
-        return eddystone;
+    public boolean isEddystoneUid() {
+        return eddystoneUid;
     }
 
-    public void setEddystone(boolean eddystone) {
-        this.eddystone = eddystone;
+    public void setEddystoneUid(boolean eddystoneUid) {
+        this.eddystoneUid = eddystoneUid;
     }
 
     public boolean isEddystoneUrl() {
@@ -185,5 +201,29 @@ public class RemoteBeacon {
 
     public void setEddystoneTlm(boolean eddystoneTlm) {
         this.eddystoneTlm = eddystoneTlm;
+    }
+
+    public boolean isTelemetry() {
+        return telemetry;
+    }
+
+    public void setTelemetry(boolean telemetry) {
+        this.telemetry = telemetry;
+    }
+
+    public boolean isEddystoneEid() {
+        return eddystoneEid;
+    }
+
+    public void setEddystoneEid(boolean eddystoneEid) {
+        this.eddystoneEid = eddystoneEid;
+    }
+
+    public boolean isEddystoneEtlm() {
+        return eddystoneEtlm;
+    }
+
+    public void setEddystoneEtlm(boolean eddystoneEtlm) {
+        this.eddystoneEtlm = eddystoneEtlm;
     }
 }

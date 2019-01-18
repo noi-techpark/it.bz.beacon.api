@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.model.enumeration.LocationType;
 import it.bz.beacon.api.model.enumeration.Status;
+import org.springframework.lang.NonNull;
 
 import java.util.UUID;
 
@@ -24,9 +25,12 @@ public class Beacon {
     private long lastSeen;
 
     private boolean iBeacon;
-    private boolean eddystone;
+    private boolean telemetry;
+    private boolean eddystoneUid;
     private boolean eddystoneUrl;
     private boolean eddystoneTlm;
+    private boolean eddystoneEid;
+    private boolean eddystoneEtlm;
 
     private UUID uuid;
     private int major;
@@ -39,35 +43,19 @@ public class Beacon {
     private int interval;
     private int txPower;
 
-    private int batteryLevel;
+    private Integer batteryLevel;
+    private Integer temperature;
 
     public static Beacon fromRemoteBeacon(BeaconData beaconData, RemoteBeacon remoteBeacon) {
         Beacon beacon = new Beacon();
         beacon.applyBeaconData(beaconData);
-
-        if (remoteBeacon != null) {
-            beacon.setUuid(remoteBeacon.getUuid());
-            beacon.setMajor(remoteBeacon.getMajor());
-            beacon.setMinor(remoteBeacon.getMinor());
-            beacon.setUrl(remoteBeacon.getUrl());
-            beacon.setNamespace(remoteBeacon.getNamespace());
-            beacon.setInstanceId(remoteBeacon.getInstanceId());
-            beacon.setInterval(remoteBeacon.getInterval());
-            beacon.setTxPower(remoteBeacon.getTxPower());
-            beacon.setBatteryLevel(remoteBeacon.getBatteryLevel());
-
-            beacon.setLastSeen(remoteBeacon.getLastSeen());
-            beacon.setiBeacon(remoteBeacon.isiBeacon());
-            beacon.setEddystone(remoteBeacon.isEddystone());
-            beacon.setEddystoneTlm(remoteBeacon.isEddystoneTlm());
-            beacon.setEddystoneUrl(remoteBeacon.isEddystoneUrl());
-        }
+        beacon.applyRemoteBeacon(remoteBeacon);
 
         return beacon;
     }
 
     @JsonIgnore
-    public void applyBeaconData(BeaconData beaconData) {
+    public void applyBeaconData(@NonNull BeaconData beaconData) {
         setId(beaconData.getId());
         setManufacturer(beaconData.getManufacturer());
         setManufacturerId(beaconData.getManufacturerId());
@@ -75,6 +63,30 @@ public class Beacon {
         setLng(beaconData.getLng());
         setName(beaconData.getName());
         setDescription(beaconData.getDescription());
+    }
+
+    @JsonIgnore
+    public void applyRemoteBeacon(RemoteBeacon remoteBeacon) {
+        if (remoteBeacon != null) {
+            setUuid(remoteBeacon.getUuid());
+            setMajor(remoteBeacon.getMajor());
+            setMinor(remoteBeacon.getMinor());
+            setUrl(remoteBeacon.getUrl());
+            setNamespace(remoteBeacon.getNamespace());
+            setInstanceId(remoteBeacon.getInstanceId());
+            setInterval(remoteBeacon.getInterval());
+            setTxPower(remoteBeacon.getTxPower());
+            setBatteryLevel(remoteBeacon.getBatteryLevel());
+
+            setLastSeen(remoteBeacon.getLastSeen());
+            setiBeacon(remoteBeacon.isiBeacon());
+            setTelemetry(remoteBeacon.isTelemetry());
+            setEddystoneUid(remoteBeacon.isEddystoneUid());
+            setEddystoneTlm(remoteBeacon.isEddystoneTlm());
+            setEddystoneUrl(remoteBeacon.isEddystoneUrl());
+            setEddystoneEid(remoteBeacon.isEddystoneEid());
+            setEddystoneEtlm(remoteBeacon.isEddystoneEtlm());
+        }
     }
 
     public long getId() {
@@ -181,11 +193,11 @@ public class Beacon {
         this.txPower = txPower;
     }
 
-    public int getBatteryLevel() {
+    public Integer getBatteryLevel() {
         return batteryLevel;
     }
 
-    public void setBatteryLevel(int batteryLevel) {
+    public void setBatteryLevel(Integer batteryLevel) {
         this.batteryLevel = batteryLevel;
     }
 
@@ -245,12 +257,12 @@ public class Beacon {
         this.iBeacon = iBeacon;
     }
 
-    public boolean isEddystone() {
-        return eddystone;
+    public boolean isEddystoneUid() {
+        return eddystoneUid;
     }
 
-    public void setEddystone(boolean eddystone) {
-        this.eddystone = eddystone;
+    public void setEddystoneUid(boolean eddystoneUid) {
+        this.eddystoneUid = eddystoneUid;
     }
 
     public boolean isEddystoneUrl() {
@@ -267,5 +279,37 @@ public class Beacon {
 
     public void setEddystoneTlm(boolean eddystoneTlm) {
         this.eddystoneTlm = eddystoneTlm;
+    }
+
+    public Integer getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(Integer temperature) {
+        this.temperature = temperature;
+    }
+
+    public boolean isTelemetry() {
+        return telemetry;
+    }
+
+    public void setTelemetry(boolean telemetry) {
+        this.telemetry = telemetry;
+    }
+
+    public boolean isEddystoneEid() {
+        return eddystoneEid;
+    }
+
+    public void setEddystoneEid(boolean eddystoneEid) {
+        this.eddystoneEid = eddystoneEid;
+    }
+
+    public boolean isEddystoneEtlm() {
+        return eddystoneEtlm;
+    }
+
+    public void setEddystoneEtlm(boolean eddystoneEtlm) {
+        this.eddystoneEtlm = eddystoneEtlm;
     }
 }

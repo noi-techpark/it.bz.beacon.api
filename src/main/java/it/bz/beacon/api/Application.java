@@ -1,8 +1,10 @@
 package it.bz.beacon.api;
 
 import com.fasterxml.classmate.TypeResolver;
+import com.google.common.collect.Lists;
 import it.bz.beacon.api.config.KontaktIOConfiguration;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
+import it.bz.beacon.api.debug.LoggingRequestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -109,7 +111,7 @@ public class Application {
     @Bean
     public RestTemplate getRestClient(RestTemplateBuilder builder) {
         return builder
-//                .interceptors(Lists.newArrayList(new LoggingRequestInterceptor()))
+//                .additionalInterceptors(Lists.newArrayList(new LoggingRequestInterceptor()))
                 .rootUri(kontaktIOConfiguration.getApiUrl())
                 .build();
     }

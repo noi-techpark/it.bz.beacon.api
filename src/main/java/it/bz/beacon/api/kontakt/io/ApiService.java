@@ -6,11 +6,10 @@ import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
 import it.bz.beacon.api.kontakt.io.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -79,22 +78,27 @@ public class ApiService {
         );
     }
 
-    public OrderCheckResponse checkOrder(String orderId) {
-        ResponseEntity<OrderCheckResponse> responseEntity = restTemplate.exchange(
+    public List<String> checkOrder(String orderId) {
+        ResponseEntity<List<String>> responseEntity = restTemplate.exchange(
                 "/order?orderId=" + orderId,
                 HttpMethod.GET,
                 new HttpEntity<>(null, httpHeaders),
-                new ParameterizedTypeReference<OrderCheckResponse>() {
+                new ParameterizedTypeReference<List<String>>() {
                 }
                 );
         return responseEntity.getBody();
     }
 
     public AssignOrderResponse assignOrder(String orderId) {
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("orderId", orderId);
+
         ResponseEntity<AssignOrderResponse> responseEntity = restTemplate.exchange(
-                "/order?orderId=" + orderId,
+                "/order/assign",
                 HttpMethod.POST,
-                new HttpEntity<>(Lists.newArrayList(orderId), httpHeaders),
+                new HttpEntity<>(requestBody, httpHeaders),
                 new ParameterizedTypeReference<AssignOrderResponse>() {
                 }
         );

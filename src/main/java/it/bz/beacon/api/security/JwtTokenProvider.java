@@ -34,8 +34,6 @@ public class JwtTokenProvider {
         secretKey = Keys.hmacShaKeyFor(securityConfiguration.getJwtSecret());
     }
 
-
-
     public String createToken(String username, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", roles);
@@ -53,7 +51,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token) {
         try {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
-            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
         } catch (UsernameNotFoundException e) {
             throw new InvalidJwtAuthenticationException("Expired or invalid JWT token");
         }

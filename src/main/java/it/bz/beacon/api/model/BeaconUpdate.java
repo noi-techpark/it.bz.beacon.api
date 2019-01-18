@@ -10,23 +10,26 @@ public class BeaconUpdate {
 
     private String name;
     private String description;
-    private float lat;
-    private float lng;
+    private Float lat;
+    private Float lng;
     private LocationType locationType;
     private String locationDescription;
 
-    private boolean iBeacon;
-    private boolean eddystone;
-    private boolean eddystoneUrl;
-    private boolean eddystoneTlm;
+    private Boolean iBeacon;
+    private Boolean telemetry;
+    private Boolean eddystoneUid;
+    private Boolean eddystoneUrl;
+    private Boolean eddystoneTlm;
+    private Boolean eddystoneEid;
+    private Boolean eddystoneEtlm;
 
     private UUID uuid;
     @Min(0)
     @Max(65535)
-    private int major;
+    private Integer major;
     @Min(0)
     @Max(65535)
-    private int minor;
+    private Integer minor;
 
     private String url;
     private String namespace;
@@ -34,10 +37,10 @@ public class BeaconUpdate {
 
     @Min(100)
     @Max(10240)
-    private int interval;
+    private Integer interval;
     @Min(1)
     @Max(7)
-    private int txPower;
+    private Integer txPower;
 
     public String getName() {
         return name;
@@ -55,19 +58,19 @@ public class BeaconUpdate {
         this.description = description;
     }
 
-    public float getLat() {
+    public Float getLat() {
         return lat;
     }
 
-    public void setLat(float lat) {
+    public void setLat(Float lat) {
         this.lat = lat;
     }
 
-    public float getLng() {
+    public Float getLng() {
         return lng;
     }
 
-    public void setLng(float lng) {
+    public void setLng(Float lng) {
         this.lng = lng;
     }
 
@@ -87,7 +90,7 @@ public class BeaconUpdate {
         this.locationDescription = locationDescription;
     }
 
-    public boolean isiBeacon() {
+    public Boolean isiBeacon() {
         return iBeacon;
     }
 
@@ -95,15 +98,15 @@ public class BeaconUpdate {
         this.iBeacon = iBeacon;
     }
 
-    public boolean isEddystone() {
-        return eddystone;
+    public Boolean isEddystoneUid() {
+        return eddystoneUid;
     }
 
-    public void setEddystone(boolean eddystone) {
-        this.eddystone = eddystone;
+    public void setEddystoneUid(boolean eddystoneUid) {
+        this.eddystoneUid = eddystoneUid;
     }
 
-    public boolean isEddystoneUrl() {
+    public Boolean isEddystoneUrl() {
         return eddystoneUrl;
     }
 
@@ -111,7 +114,7 @@ public class BeaconUpdate {
         this.eddystoneUrl = eddystoneUrl;
     }
 
-    public boolean isEddystoneTlm() {
+    public Boolean isEddystoneTlm() {
         return eddystoneTlm;
     }
 
@@ -127,19 +130,19 @@ public class BeaconUpdate {
         this.uuid = uuid;
     }
 
-    public int getMajor() {
+    public Integer getMajor() {
         return major;
     }
 
-    public void setMajor(int major) {
+    public void setMajor(Integer major) {
         this.major = major;
     }
 
-    public int getMinor() {
+    public Integer getMinor() {
         return minor;
     }
 
-    public void setMinor(int minor) {
+    public void setMinor(Integer minor) {
         this.minor = minor;
     }
 
@@ -167,19 +170,43 @@ public class BeaconUpdate {
         this.instanceId = instanceId;
     }
 
-    public int getInterval() {
+    public Integer getInterval() {
         return interval;
     }
 
-    public void setInterval(int interval) {
+    public void setInterval(Integer interval) {
         this.interval = interval;
     }
 
-    public int getTxPower() {
+    public Integer getTxPower() {
         return txPower;
     }
 
-    public void setTxPower(int txPower) {
+    public void setTxPower(Integer txPower) {
         this.txPower = txPower;
+    }
+
+    public Boolean isTelemetry() {
+        return telemetry;
+    }
+
+    public void setTelemetry(boolean telemetry) {
+        this.telemetry = telemetry;
+    }
+
+    public Boolean isEddystoneEid() {
+        return eddystoneEid;
+    }
+
+    public void setEddystoneEid(boolean eddystoneEid) {
+        this.eddystoneEid = eddystoneEid;
+    }
+
+    public Boolean isEddystoneEtlm() {
+        return eddystoneEtlm;
+    }
+
+    public void setEddystoneEtlm(boolean eddystoneEtlm) {
+        this.eddystoneEtlm = eddystoneEtlm;
     }
 }
