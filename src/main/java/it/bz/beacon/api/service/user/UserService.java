@@ -3,6 +3,7 @@ package it.bz.beacon.api.service.user;
 import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.UserRepository;
 import it.bz.beacon.api.exception.db.DuplicateEntryException;
+import it.bz.beacon.api.exception.db.LastUserNotDeletableException;
 import it.bz.beacon.api.exception.db.UserNotFoundException;
 import it.bz.beacon.api.model.BaseMessage;
 import it.bz.beacon.api.model.UserCreation;
@@ -56,7 +57,11 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public BaseMessage delete(long id) throws UserNotFoundException {
+    public BaseMessage delete(long id) throws UserNotFoundException, LastUserNotDeletableException {
+        if (repository.findAll().size() == 1) {
+            throw new LastUserNotDeletableException();
+        }
+
         return repository.findById(id).map(
                 user -> {
                     repository.delete(user);

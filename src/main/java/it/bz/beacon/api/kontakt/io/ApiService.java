@@ -36,6 +36,7 @@ public class ApiService {
     }
 
     public BeaconListResponse getBeacons(List<String> ids) {
+        //TODO set maxResults
         ResponseEntity<BeaconListResponse> responseEntity = restTemplate.exchange(
                 "/device?maxResults=7000&deviceType=" + Device.DeviceType.BEACON + "&uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,
@@ -47,6 +48,7 @@ public class ApiService {
     }
 
     public DeviceStatusListResponse getDeviceStatuses(List<String> ids) {
+        //TODO set maxResults
         ResponseEntity<DeviceStatusListResponse> responseEntity = restTemplate.exchange(
                 "/device/status?uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,
@@ -58,6 +60,7 @@ public class ApiService {
     }
 
     public ConfigurationListResponse getConfigurations(List<String> ids) {
+        //TODO set maxResults
         ResponseEntity<ConfigurationListResponse> responseEntity = restTemplate.exchange(
                 "/config?uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,

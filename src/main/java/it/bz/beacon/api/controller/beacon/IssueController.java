@@ -20,7 +20,7 @@ public class IssueController {
     @Autowired
     private IIssueService service;
 
-    @ApiOperation(value = "View a list of available users")
+    @ApiOperation(value = "View a list of available issues for the specified beacon ID")
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public List<BeaconIssue> getList(@PathVariable long beaconId, @RequestParam(defaultValue = "false", required = false) boolean onlyUnresolved) {
         BeaconData beaconData = beaconDataService.find(beaconId);

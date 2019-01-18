@@ -18,25 +18,25 @@ public class IssueController {
     @Autowired
     private IIssueService service;
 
-    @ApiOperation(value = "View a list of available users")
+    @ApiOperation(value = "View a list of available issues")
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public List<BeaconIssue> getList(@RequestParam(defaultValue = "false", required = false) boolean onlyUnresolved) {
         return service.findAll(onlyUnresolved);
     }
 
-    @ApiOperation(value = "Search a user with an ID")
+    @ApiOperation(value = "Search a issue with an ID")
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = "application/json")
     public BeaconIssue get(@PathVariable long id) {
         return service.find(id);
     }
 
-    @ApiOperation(value = "Create a user")
+    @ApiOperation(value = "Create a issue")
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
     public BeaconIssue create(@Valid @RequestBody IssueCreation issueCreation) {
         return service.create(issueCreation);
     }
 
-    @ApiOperation(value = "Update a user")
+    @ApiOperation(value = "Update a issue")
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/resolve", produces = "application/json")
     public BeaconIssue update(@PathVariable long id, @Valid @RequestBody IssueSolution issueSolution) {
         return service.resolve(id, issueSolution);

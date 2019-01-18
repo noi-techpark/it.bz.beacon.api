@@ -36,7 +36,7 @@ public class BeaconController {
     }
 
     @ApiOperation(value = "Update a beacon")
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}", produces = "application/json")
     public Beacon update(@PathVariable long id, @Valid @RequestBody BeaconUpdate beaconUpdate) {
         return service.update(id, beaconUpdate);
     }
