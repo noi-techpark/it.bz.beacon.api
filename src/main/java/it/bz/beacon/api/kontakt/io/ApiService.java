@@ -3,6 +3,7 @@ package it.bz.beacon.api.kontakt.io;
 import com.google.common.collect.Lists;
 import it.bz.beacon.api.kontakt.io.model.Device;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
+import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
 import it.bz.beacon.api.kontakt.io.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,11 +14,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ApiService {
-
-    //TODO call all with x-www-formurlencoded instead of json
 
     @Autowired
     private RestTemplate restTemplate;
@@ -69,11 +69,27 @@ public class ApiService {
         return responseEntity.getBody();
     }
 
-    public ResponseEntity<DefaultResponse> createConfig(List<TagBeaconConfig> config) {
+    public ResponseEntity<DefaultResponse> createConfig(TagBeaconConfig config) {
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("uniqueId", config.getUniqueId());
+        requestBody.add("deviceType", Device.DeviceType.BEACON.toString());
+        requestBody.add("profiles", String.join(",", config.getProfiles().stream().map(profile -> profile.toString()).collect(Collectors.joining())));
+        requestBody.add("packets", String.join(",", config.getPackets().stream().map(packet -> packet.toString()).collect(Collectors.joining())));
+        requestBody.add("proximity", config.getProximity().toString());
+        requestBody.add("major", config.getMajor().toString());
+        requestBody.add("minor", config.getMinor().toString());
+        requestBody.add("namespace", config.getNamespace());
+        requestBody.add("instanceId", config.getInstanceId());
+        requestBody.add("url", config.getUrl());
+        requestBody.add("interval", config.getInterval().toString());
+        requestBody.add("txPower", config.getTxPower().toString());
+
         return restTemplate.exchange(
                 "/config/create",
                 HttpMethod.POST,
-                new HttpEntity<>(config, httpHeaders),
+                new HttpEntity<>(requestBody, httpHeaders),
                 new ParameterizedTypeReference<DefaultResponse>() {}
         );
     }

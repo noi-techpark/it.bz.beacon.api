@@ -3,9 +3,7 @@ package it.bz.beacon.api.service.beacon;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.exception.db.BeaconDataNotFoundException;
-import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.BeaconUpdate;
-import it.bz.beacon.api.model.Manufacturer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -41,21 +39,10 @@ public class BeaconDataService implements IBeaconDataService {
     @Override
     public BeaconData update(long id, BeaconUpdate beaconUpdate) throws BeaconDataNotFoundException {
         return repository.findById(id).map(beaconData -> {
-            if (beaconUpdate.getName() != null) {
-                beaconData.setName(beaconUpdate.getName());
-            }
-
-            if (beaconUpdate.getDescription() != null) {
-                beaconData.setDescription(beaconUpdate.getDescription());
-            }
-
-            if (beaconUpdate.getLat() != null) {
-                beaconData.setLat(beaconUpdate.getLat());
-            }
-
-            if (beaconUpdate.getLng() != null) {
-                beaconData.setLng(beaconUpdate.getLng());
-            }
+            beaconData.setName(beaconUpdate.getName());
+            beaconData.setDescription(beaconUpdate.getDescription());
+            beaconData.setLat(beaconUpdate.getLat());
+            beaconData.setLng(beaconUpdate.getLng());
 
             return repository.save(beaconData);
         }).orElseThrow(BeaconDataNotFoundException::new);

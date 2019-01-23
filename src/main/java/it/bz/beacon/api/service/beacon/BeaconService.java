@@ -110,7 +110,7 @@ public class BeaconService implements IBeaconService {
 
     @Async
     private CompletableFuture<ResponseEntity<DefaultResponse>> createConfig(Beacon beacon, BeaconUpdate beaconUpdate) {
-        return CompletableFuture.completedFuture(apiService.createConfig(Lists.newArrayList(TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon))));
+        return CompletableFuture.completedFuture(apiService.createConfig(TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon)));
     }
 
     @Override

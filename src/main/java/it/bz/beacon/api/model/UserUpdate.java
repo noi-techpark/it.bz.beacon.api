@@ -1,16 +1,26 @@
 package it.bz.beacon.api.model;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class UserUpdate {
 
+    @NotNull
+    @NotEmpty
     private String name;
 
+    @NotNull
+    @NotEmpty
     private String surname;
 
+    @NotNull
+    @NotEmpty
     @Email
     private String email;
 
+    @NotNull
+    @NotEmpty
     private String password;
 
     public String getName() {

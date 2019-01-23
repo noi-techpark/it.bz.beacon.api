@@ -4,40 +4,98 @@ import it.bz.beacon.api.model.enumeration.LocationType;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 public class BeaconUpdate {
 
+    @NotNull
+    @NotEmpty
     private String name;
+
+    @NotNull
+    @NotEmpty
     private String description;
-    private Float lat;
-    private Float lng;
+
+    @NotNull
+    @Min(-90)
+    @Max(90)
+    private float lat;
+
+    @NotNull
+    @Min(-180)
+    @Max(180)
+    private float lng;
+
+    @NotNull
+    @NotEmpty
     private LocationType locationType;
+
+    @NotNull
+    @NotEmpty
     private String locationDescription;
 
-    private Boolean iBeacon;
-    private Boolean telemetry;
-    private Boolean eddystoneUid;
-    private Boolean eddystoneUrl;
-    private Boolean eddystoneTlm;
-    private Boolean eddystoneEid;
-    private Boolean eddystoneEtlm;
+    @NotNull
+    @NotEmpty
+    private boolean iBeacon;
 
+    @NotNull
+    @NotEmpty
+    private boolean telemetry;
+
+    @NotNull
+    @NotEmpty
+    private boolean eddystoneUid;
+
+    @NotNull
+    @NotEmpty
+    private boolean eddystoneUrl;
+
+    @NotNull
+    @NotEmpty
+    private boolean eddystoneTlm;
+
+    @NotNull
+    @NotEmpty
+    private boolean eddystoneEid;
+
+    @NotNull
+    @NotEmpty
+    private boolean eddystoneEtlm;
+
+    @NotNull
+    @NotEmpty
     private UUID uuid;
+
+    @NotNull
     @Min(0)
     @Max(65535)
     private Integer major;
+
+    @NotNull
     @Min(0)
     @Max(65535)
     private Integer minor;
 
+    @NotNull
+    @NotEmpty
     private String url;
+
+    @NotNull
+    @NotEmpty
     private String namespace;
+
+    @NotNull
+    @NotEmpty
     private String instanceId;
 
+    @NotNull
     @Min(100)
     @Max(10240)
     private Integer interval;
+
+    @NotNull
     @Min(1)
     @Max(7)
     private Integer txPower;
@@ -58,19 +116,19 @@ public class BeaconUpdate {
         this.description = description;
     }
 
-    public Float getLat() {
+    public float getLat() {
         return lat;
     }
 
-    public void setLat(Float lat) {
+    public void setLat(float lat) {
         this.lat = lat;
     }
 
-    public Float getLng() {
+    public float getLng() {
         return lng;
     }
 
-    public void setLng(Float lng) {
+    public void setLng(float lng) {
         this.lng = lng;
     }
 
@@ -90,7 +148,7 @@ public class BeaconUpdate {
         this.locationDescription = locationDescription;
     }
 
-    public Boolean isiBeacon() {
+    public boolean isiBeacon() {
         return iBeacon;
     }
 
@@ -98,7 +156,7 @@ public class BeaconUpdate {
         this.iBeacon = iBeacon;
     }
 
-    public Boolean isEddystoneUid() {
+    public boolean isEddystoneUid() {
         return eddystoneUid;
     }
 
@@ -106,7 +164,7 @@ public class BeaconUpdate {
         this.eddystoneUid = eddystoneUid;
     }
 
-    public Boolean isEddystoneUrl() {
+    public boolean isEddystoneUrl() {
         return eddystoneUrl;
     }
 
@@ -114,7 +172,7 @@ public class BeaconUpdate {
         this.eddystoneUrl = eddystoneUrl;
     }
 
-    public Boolean isEddystoneTlm() {
+    public boolean isEddystoneTlm() {
         return eddystoneTlm;
     }
 
@@ -186,7 +244,7 @@ public class BeaconUpdate {
         this.txPower = txPower;
     }
 
-    public Boolean isTelemetry() {
+    public boolean isTelemetry() {
         return telemetry;
     }
 
@@ -194,7 +252,7 @@ public class BeaconUpdate {
         this.telemetry = telemetry;
     }
 
-    public Boolean isEddystoneEid() {
+    public boolean isEddystoneEid() {
         return eddystoneEid;
     }
 
@@ -202,7 +260,7 @@ public class BeaconUpdate {
         this.eddystoneEid = eddystoneEid;
     }
 
-    public Boolean isEddystoneEtlm() {
+    public boolean isEddystoneEtlm() {
         return eddystoneEtlm;
     }
 
