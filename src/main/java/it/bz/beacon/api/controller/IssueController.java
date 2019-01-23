@@ -1,6 +1,7 @@
 package it.bz.beacon.api.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.db.model.IssueSolution;
 import it.bz.beacon.api.model.BeaconIssue;
 import it.bz.beacon.api.model.IssueCreation;
@@ -18,25 +19,25 @@ public class IssueController {
     @Autowired
     private IIssueService service;
 
-    @ApiOperation(value = "View a list of available issues")
+    @ApiOperation(value = "View a list of available issues", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public List<BeaconIssue> getList(@RequestParam(defaultValue = "false", required = false) boolean onlyUnresolved) {
         return service.findAll(onlyUnresolved);
     }
 
-    @ApiOperation(value = "Search a issue with an ID")
+    @ApiOperation(value = "Search a issue with an ID", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = "application/json")
     public BeaconIssue get(@PathVariable long id) {
         return service.find(id);
     }
 
-    @ApiOperation(value = "Create a issue")
+    @ApiOperation(value = "Create a issue", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
     public BeaconIssue create(@Valid @RequestBody IssueCreation issueCreation) {
         return service.create(issueCreation);
     }
 
-    @ApiOperation(value = "Update a issue")
+    @ApiOperation(value = "Update a issue", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/resolve", produces = "application/json")
     public BeaconIssue update(@PathVariable long id, @Valid @RequestBody IssueSolution issueSolution) {
         return service.resolve(id, issueSolution);

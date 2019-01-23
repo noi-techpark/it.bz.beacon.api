@@ -2,9 +2,8 @@ package it.bz.beacon.api;
 
 import com.fasterxml.classmate.TypeResolver;
 import com.google.common.collect.Lists;
-import it.bz.beacon.api.config.KontaktIOConfiguration;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
-import it.bz.beacon.api.debug.LoggingRequestInterceptor;
+import it.bz.beacon.api.config.KontaktIOConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,20 +16,20 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
+import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger.web.*;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
@@ -59,7 +58,9 @@ public class Application {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("it.bz.beacon.api.controller"))
                 .build()
-                .apiInfo(apiInfo());
+                .apiInfo(apiInfo())
+                .securityContexts(Lists.newArrayList(securityContext()))
+                .securitySchemes(Lists.newArrayList(apiKey()));
     }
 
     private ApiInfo apiInfo() {
@@ -75,37 +76,22 @@ public class Application {
         );
     }
 
-    @Bean
-    SecurityConfiguration security() {
-        return SecurityConfigurationBuilder.builder()
-                .clientId("test-app-client-id")
-                .clientSecret("test-app-client-secret")
-                .realm("test-app-realm")
-                .appName("test-app")
-                .scopeSeparator(",")
-                .additionalQueryStringParams(null)
-                .useBasicAuthenticationWithAccessCodeGrant(false)
+    private ApiKey apiKey() {
+        return new ApiKey("JWT", "Authorization", "header");
+    }
+
+    private SecurityContext securityContext() {
+        return SecurityContext.builder()
+                .securityReferences(defaultAuth())
+                .forPaths(PathSelectors.regex("/v1/admin/*"))
                 .build();
     }
 
-    @Bean
-    UiConfiguration uiConfig() {
-        return UiConfigurationBuilder.builder()
-                .deepLinking(true)
-                .displayOperationId(false)
-                .defaultModelsExpandDepth(1)
-                .defaultModelExpandDepth(1)
-                .defaultModelRendering(ModelRendering.EXAMPLE)
-                .displayRequestDuration(false)
-                .docExpansion(DocExpansion.NONE)
-                .filter(false)
-                .maxDisplayedTags(null)
-                .operationsSorter(OperationsSorter.ALPHA)
-                .showExtensions(false)
-                .tagsSorter(TagsSorter.ALPHA)
-                .supportedSubmitMethods(UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS)
-                .validatorUrl(null)
-                .build();
+    private List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+        authorizationScopes[0] = authorizationScope;
+        return Lists.newArrayList(new SecurityReference("JWT", authorizationScopes));
     }
 
     @Bean
@@ -131,7 +117,8 @@ public class Application {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/v1/beacons").allowedOrigins(beaconSuedtirolConfiguration.getAllowedOrigins());
+                registry.addMapping("/v1/**")
+                        .allowedOrigins(beaconSuedtirolConfiguration.getAllowedOrigins());
             }
         };
     }

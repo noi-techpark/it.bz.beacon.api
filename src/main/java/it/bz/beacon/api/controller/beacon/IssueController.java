@@ -1,6 +1,7 @@
 package it.bz.beacon.api.controller.beacon;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.model.BeaconIssue;
 import it.bz.beacon.api.service.beacon.IBeaconDataService;
@@ -20,7 +21,7 @@ public class IssueController {
     @Autowired
     private IIssueService service;
 
-    @ApiOperation(value = "View a list of available issues for the specified beacon ID")
+    @ApiOperation(value = "View a list of available issues for the specified beacon ID", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public List<BeaconIssue> getList(@PathVariable long beaconId, @RequestParam(defaultValue = "false", required = false) boolean onlyUnresolved) {
         BeaconData beaconData = beaconDataService.find(beaconId);

@@ -21,7 +21,6 @@ public class Beacon {
     private float lng;
     private LocationType locationType;
     private String locationDescription;
-    private Status status;
     private long lastSeen;
 
     private boolean iBeacon;
@@ -44,7 +43,9 @@ public class Beacon {
     private int txPower;
 
     private Integer batteryLevel;
-    private Integer temperature;
+
+    @JsonIgnore
+    private PendingConfiguration pendingConfiguration;
 
     public static Beacon fromRemoteBeacon(BeaconData beaconData, RemoteBeacon remoteBeacon) {
         Beacon beacon = new Beacon();
@@ -86,6 +87,8 @@ public class Beacon {
             setEddystoneUrl(remoteBeacon.isEddystoneUrl());
             setEddystoneEid(remoteBeacon.isEddystoneEid());
             setEddystoneEtlm(remoteBeacon.isEddystoneEtlm());
+
+            setPendingConfiguration(remoteBeacon.getPendingConfiguration());
         }
     }
 
@@ -234,11 +237,15 @@ public class Beacon {
     }
 
     public Status getStatus() {
-        return status;
-    }
+        if (getPendingConfiguration() != null) {
+            return Status.CONFIGURATION_PENDING;
+        }
 
-    public void setStatus(Status status) {
-        this.status = status;
+        if (getBatteryLevel() != null && getBatteryLevel() < 5) {
+            return Status.BATTERY_LOW;
+        }
+
+        return Status.OK;
     }
 
     public long getLastSeen() {
@@ -281,14 +288,6 @@ public class Beacon {
         this.eddystoneTlm = eddystoneTlm;
     }
 
-    public Integer getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(Integer temperature) {
-        this.temperature = temperature;
-    }
-
     public boolean isTelemetry() {
         return telemetry;
     }
@@ -311,5 +310,13 @@ public class Beacon {
 
     public void setEddystoneEtlm(boolean eddystoneEtlm) {
         this.eddystoneEtlm = eddystoneEtlm;
+    }
+
+    public PendingConfiguration getPendingConfiguration() {
+        return pendingConfiguration;
+    }
+
+    public void setPendingConfiguration(PendingConfiguration pendingConfiguration) {
+        this.pendingConfiguration = pendingConfiguration;
     }
 }

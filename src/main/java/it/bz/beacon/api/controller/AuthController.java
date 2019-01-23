@@ -1,8 +1,12 @@
 package it.bz.beacon.api.controller;
 
+import io.swagger.annotations.ApiOperation;
 import it.bz.beacon.api.db.repository.UserRepository;
+import it.bz.beacon.api.exception.auth.InvalidJwtAuthenticationException;
 import it.bz.beacon.api.model.AuthenticationRequest;
 import it.bz.beacon.api.model.AuthenticationToken;
+import it.bz.beacon.api.model.AuthenticationTokenCheck;
+import it.bz.beacon.api.model.AuthenticationTokenCheckRequest;
 import it.bz.beacon.api.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,10 +14,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -40,5 +41,17 @@ public class AuthController {
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Invalid username/password supplied");
         }
+    }
+
+    @ApiOperation(value = "Check whether a token is valid or not")
+    @RequestMapping(method = RequestMethod.POST, value = "/checkToken", produces = "application/json")
+    public AuthenticationTokenCheck checkToken(@Valid @RequestBody AuthenticationTokenCheckRequest request) {
+        boolean valid;
+        try {
+            valid = jwtTokenProvider.validateToken(request.getToken());
+        } catch (InvalidJwtAuthenticationException e) {
+            valid = false;
+        }
+        return new AuthenticationTokenCheck(request.getToken(), valid);
     }
 }
