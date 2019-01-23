@@ -41,12 +41,21 @@ public class BeaconDataService implements IBeaconDataService {
     @Override
     public BeaconData update(long id, BeaconUpdate beaconUpdate) throws BeaconDataNotFoundException {
         return repository.findById(id).map(beaconData -> {
-            beaconData.setName(beaconUpdate.getName());
-            beaconData.setDescription(beaconUpdate.getDescription());
-            beaconData.setLat(beaconUpdate.getLat());
-            beaconData.setLng(beaconUpdate.getLng());
+            if (beaconUpdate.getName() != null) {
+                beaconData.setName(beaconUpdate.getName());
+            }
 
-            //TODO set other values
+            if (beaconUpdate.getDescription() != null) {
+                beaconData.setDescription(beaconUpdate.getDescription());
+            }
+
+            if (beaconUpdate.getLat() != null) {
+                beaconData.setLat(beaconUpdate.getLat());
+            }
+
+            if (beaconUpdate.getLng() != null) {
+                beaconData.setLng(beaconUpdate.getLng());
+            }
 
             return repository.save(beaconData);
         }).orElseThrow(BeaconDataNotFoundException::new);

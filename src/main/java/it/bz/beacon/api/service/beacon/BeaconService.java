@@ -89,9 +89,9 @@ public class BeaconService implements IBeaconService {
 
     @Override
     public Beacon update(long id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException {
-        BeaconData beaconData = beaconDataService.find(id);
+        Beacon beacon = find(id);
 
-        CompletableFuture<ResponseEntity<DefaultResponse>> configResponse = createConfig(beaconData.getManufacturerId(), beaconUpdate);
+        CompletableFuture<ResponseEntity<DefaultResponse>> configResponse = createConfig(beacon, beaconUpdate);
 
         CompletableFuture.allOf(configResponse).join();
 
@@ -100,8 +100,7 @@ public class BeaconService implements IBeaconService {
                 throw new BeaconConfigurationNotCreatedException();
             }
 
-            Beacon beacon = find(id);
-            beacon.applyBeaconData(beaconData);
+            beacon.applyBeaconData(beaconDataService.update(id, beaconUpdate));
 
             return beacon;
         } catch (InterruptedException | ExecutionException e) {
@@ -110,16 +109,8 @@ public class BeaconService implements IBeaconService {
     }
 
     @Async
-    private CompletableFuture<ResponseEntity<DefaultResponse>> createConfig(String uniqueId, BeaconUpdate beaconUpdate) {
-        TagBeaconConfig config = new TagBeaconConfig();
-        config.setUniqueId(uniqueId);
-        config.setProximity(beaconUpdate.getUuid());
-        config.setMajor(beaconUpdate.getMajor());
-        config.setMinor(beaconUpdate.getMinor());
-
-        //TODO set other values for config
-
-        return CompletableFuture.completedFuture(apiService.createConfig(Lists.newArrayList(config)));
+    private CompletableFuture<ResponseEntity<DefaultResponse>> createConfig(Beacon beacon, BeaconUpdate beaconUpdate) {
+        return CompletableFuture.completedFuture(apiService.createConfig(Lists.newArrayList(TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon))));
     }
 
     @Override
