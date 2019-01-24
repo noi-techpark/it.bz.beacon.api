@@ -15,6 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -118,7 +119,17 @@ public class Application {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/v1/**")
-                        .allowedOrigins(beaconSuedtirolConfiguration.getAllowedOrigins());
+                        .allowedOrigins(beaconSuedtirolConfiguration.getAllowedOrigins())
+                        .allowedMethods(
+                                HttpMethod.GET.toString(),
+                                HttpMethod.POST.toString(),
+                                HttpMethod.PATCH.toString(),
+                                HttpMethod.DELETE.toString(),
+                                HttpMethod.PUT.toString(),
+                                HttpMethod.OPTIONS.toString(),
+                                HttpMethod.TRACE.toString(),
+                                HttpMethod.HEAD.toString()
+                        );
             }
         };
     }
