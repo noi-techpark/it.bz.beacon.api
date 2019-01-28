@@ -19,8 +19,6 @@ public class UserUpdate {
     @Email
     private String email;
 
-    @NotNull
-    @NotEmpty
     private String password;
 
     public String getName() {

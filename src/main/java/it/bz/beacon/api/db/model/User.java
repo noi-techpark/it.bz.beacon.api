@@ -132,15 +132,9 @@ public class User extends AuditModel implements UserDetails {
 
     @JsonIgnore
     public void applyUpdate(UserUpdate userUpdate) {
-        if (userUpdate.getName() != null) {
-            name = userUpdate.getName();
-        }
-        if (userUpdate.getSurname() != null) {
-            surname = userUpdate.getSurname();
-        }
-        if (userUpdate.getEmail() != null) {
-            email = userUpdate.getEmail();
-        }
+        name = userUpdate.getName();
+        surname = userUpdate.getSurname();
+        email = userUpdate.getEmail();
         if (userUpdate.getPassword() != null) {
             password = userUpdate.getPassword();
         }
