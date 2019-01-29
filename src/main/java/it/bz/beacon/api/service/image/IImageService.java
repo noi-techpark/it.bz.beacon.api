@@ -1,0 +1,14 @@
+package it.bz.beacon.api.service.image;
+
+import it.bz.beacon.api.db.model.BeaconData;
+import it.bz.beacon.api.db.model.BeaconImage;
+import it.bz.beacon.api.exception.db.ImageNotFoundException;
+import it.bz.beacon.api.model.BaseMessage;
+
+import java.util.List;
+
+public interface IImageService {
+    List<BeaconImage> findAll();
+    BeaconImage create(BeaconData beaconData, String fileName);
+    BaseMessage delete(long id) throws ImageNotFoundException;
+}

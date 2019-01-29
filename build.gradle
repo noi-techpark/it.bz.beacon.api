@@ -1,0 +1,62 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.5.RELEASE")
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.1.1.RELEASE'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+bootJar {
+    baseName = 'api-beacon-suedtirol-rest-service'
+    version =  '1.0.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    runtimeOnly('org.postgresql:postgresql')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    compile "io.springfox:springfox-swagger2:2.9.2"
+    compile 'io.springfox:springfox-swagger-ui:2.9.2'
+    compile "io.springfox:springfox-bean-validators:2.9.2"
+
+    compile("com.fasterxml.jackson.core:jackson-databind")
+
+    compile 'io.jsonwebtoken:jjwt-api:0.10.5'
+    runtime 'io.jsonwebtoken:jjwt-impl:0.10.5',
+            // Uncomment the next line if you want to use RSASSA-PSS (PS256, PS384, PS512) algorithms:
+            //'org.bouncycastle:bcprov-jdk15on:1.60',
+            'io.jsonwebtoken:jjwt-jackson:0.10.5'
+
+    testCompile("junit:junit")
+}
