@@ -7,7 +7,7 @@ Fill in the required values
 * spring.datasource.username
 * spring.datasource.password
 * spring.jpa.properties.hibernate.dialect
-* security.jqt.token.secret
+* security.jwt.token.secret
 * it.bz.beacon.allowedOrigins
 * kontakt.io.apiKey
 
