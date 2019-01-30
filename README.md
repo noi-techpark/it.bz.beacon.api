@@ -14,20 +14,20 @@ Fill in the required values
 ### Run a local server for development
 Run
 ```
-./gradlew clean run
+mvn spring-boot:run
 ```
 to let the application run locally.
 
 ### Create a production release
 Run
 ```
-./gradlew clean build
+mvn package
 ```
-to create a release ready for production. You'll find the output .jar file in the ./build/libs/ folder
+to create a release ready for production. You'll find the output .war file in the ./target/ folder
 
 ### Test the application
 Run
 ```
-./gradlew clean test
+mvn test
 ```
 to run the unit tests.
