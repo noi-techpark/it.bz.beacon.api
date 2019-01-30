@@ -1,5 +1,8 @@
 # Beacon Südtirol API
 
+## Prerequisits
+* Maven
+
 ## Configure application.properties file
 Make a copy of the application.properties.dist file and name it "application.properties".
 Fill in the required values
@@ -14,20 +17,20 @@ Fill in the required values
 ### Run a local server for development
 Run
 ```
-mvn spring-boot:run
+mvn clean spring-boot:run
 ```
 to let the application run locally.
 
 ### Create a production release
 Run
 ```
-mvn package
+mvn clean package
 ```
 to create a release ready for production. You'll find the output .war file in the ./target/ folder
 
 ### Test the application
 Run
 ```
-mvn test
+mvn clean test
 ```
 to run the unit tests.
