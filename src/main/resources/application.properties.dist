@@ -4,19 +4,19 @@ spring.datasource.username=
 spring.datasource.password=
 
 # The SQL dialect makes Hibernate generate better SQL for the chosen database
-spring.jpa.properties.hibernate.dialect =
+spring.jpa.properties.hibernate.dialect=
 
 # Hibernate ddl auto (create, create-drop, validate, update)
-spring.jpa.hibernate.ddl-auto = update
+spring.jpa.hibernate.ddl-auto=update
 
 # Hibernate disable createClob() as it is not implemented yet in the driver
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 
 # JWT token expiration time in milliseconds
-security.jwt.token.expire-length = 31536000000 //1 year
+security.jwt.token.expire-length=31536000000 //1 year
 
 # The secret the JWT tokens are signed with
-security.jwt.token.secret =
+security.jwt.token.secret=
 
 # Enable multipart uploads
 spring.servlet.multipart.enabled=true
@@ -34,9 +34,9 @@ spring.servlet.multipart.max-request-size=215MB
 file.upload-dir=./uploads
 
 # CORS
-it.bz.beacon.allowedOrigins =
+it.bz.beacon.allowedOrigins=
 
 # Kontakt.IO properties
-kontakt.io.apiUrl = https://api.kontakt.io
-kontakt.io.acceptHeader = application/vnd.com.kontakt+json;version=10
-kontakt.io.apiKey =
+kontakt.io.apiUrl=https://api.kontakt.io
+kontakt.io.acceptHeader=application/vnd.com.kontakt+json;version=10
+kontakt.io.apiKey=

@@ -1,0 +1,48 @@
+pipeline {
+    agent {
+        dockerfile {
+            filename 'docker/dockerfile-java'
+            additionalBuildArgs '--build-arg JENKINS_USER_ID=`id -u jenkins` --build-arg JENKINS_GROUP_ID=`id -g jenkins`'
+        }
+    }
+
+    environment {
+        DB_URL = "jdbc:postgresql://postgres-prod.co90ybcr8iim.eu-west-1.rds.amazonaws.com:5432/beacon"
+        DB_USERNAME = credentials('beacon-api-db-username')
+        DB_PASSWORD = credentials('beacon-api-db-password')
+        DB_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
+        JWT_SECRET = credentials('beacon-api-jwt-secret')
+        CORS_ORIGINS = "admin.beacon.bz.it"
+        KONTACT_IO_API_KEY = credentials('beacon-api-kontact-io-api-key')
+    }
+
+    stages { 
+        stage('Configure') {
+            steps {
+                sh 'cp src/main/resources/application.properties.dist src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(spring.datasource.url=\\).*\\$%\\1${DB_URL}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(spring.datasource.username=\\).*\\$%\\1${DB_USERNAME}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(spring.datasource.password=\\).*\\$%\\1${DB_PASSWORD}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(spring.jpa.properties.hibernate.dialect=\\).*\\$%\\1${DB_DIALECT}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(security.jwt.token.secret=\\).*\\$%\\1${JWT_SECRET}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(it.bz.beacon.allowedOrigins=\\).*\\$%\\1${CORS_ORIGINS}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(kontakt.io.apiKey=\\).*\\$%\\1${KONTACT_IO_API_KEY}%" src/main/resources/application.properties'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'mvn -B -U clean test verify'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn -B -U clean package'
+            }
+        }
+        stage('Archive') {
+            steps {
+                archiveArtifacts artifacts: 'target/beacon-api.war', onlyIfSuccessful: true
+            }
+        }
+    }
+}
