@@ -12,7 +12,7 @@ pipeline {
         DB_PASSWORD = credentials('beacon-api-db-password')
         DB_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
         JWT_SECRET = credentials('beacon-api-jwt-secret')
-        CORS_ORIGINS = "admin.beacon.bz.it"
+        CORS_ORIGINS = "https://admin.beacon.bz.it"
         KONTACT_IO_API_KEY = credentials('beacon-api-kontact-io-api-key')
     }
 
