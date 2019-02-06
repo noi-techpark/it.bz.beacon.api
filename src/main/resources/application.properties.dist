@@ -13,7 +13,7 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 
 # JWT token expiration time in milliseconds
-security.jwt.token.expire-length=31536000000 //1 year
+security.jwt.token.expire-length=31536000000
 
 # The secret the JWT tokens are signed with
 security.jwt.token.secret=
