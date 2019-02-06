@@ -31,7 +31,7 @@ spring.servlet.multipart.max-file-size=200MB
 spring.servlet.multipart.max-request-size=215MB
 
 # All files uploaded through the REST API will be stored in this directory
-file.upload-dir=./uploads
+file.upload-dir=/data/beacon-api
 
 # CORS
 it.bz.beacon.allowedOrigins=
