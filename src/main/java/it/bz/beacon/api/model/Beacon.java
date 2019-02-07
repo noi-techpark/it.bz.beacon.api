@@ -64,6 +64,8 @@ public class Beacon {
         setLng(beaconData.getLng());
         setName(beaconData.getName());
         setDescription(beaconData.getDescription());
+        setLocationType(beaconData.getLocationType());
+        setLocationDescription(beaconData.getLocationDescription());
     }
 
     @JsonIgnore

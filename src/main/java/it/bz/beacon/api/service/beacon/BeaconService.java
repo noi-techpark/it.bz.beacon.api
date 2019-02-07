@@ -8,6 +8,7 @@ import it.bz.beacon.api.exception.db.BeaconNotFoundException;
 import it.bz.beacon.api.exception.kontakt.io.InvalidOrderIdException;
 import it.bz.beacon.api.exception.kontakt.io.NoDeviceAddedException;
 import it.bz.beacon.api.kontakt.io.ApiService;
+import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
 import it.bz.beacon.api.kontakt.io.response.DefaultResponse;
@@ -91,12 +92,12 @@ public class BeaconService implements IBeaconService {
     public Beacon update(long id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException {
         Beacon beacon = find(id);
 
-        CompletableFuture<ResponseEntity<DefaultResponse>> configResponse = createConfig(beacon, beaconUpdate);
+        CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> configResponse = createConfig(beacon, beaconUpdate);
 
         CompletableFuture.allOf(configResponse).join();
 
         try {
-            if (configResponse.get().getStatusCode() != HttpStatus.OK) {
+            if (configResponse.get().getStatusCode() != HttpStatus.CREATED) {
                 throw new BeaconConfigurationNotCreatedException();
             }
 
@@ -109,7 +110,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Async
-    private CompletableFuture<ResponseEntity<DefaultResponse>> createConfig(Beacon beacon, BeaconUpdate beaconUpdate) {
+    private CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> createConfig(Beacon beacon, BeaconUpdate beaconUpdate) {
         return CompletableFuture.completedFuture(apiService.createConfig(TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon)));
     }
 

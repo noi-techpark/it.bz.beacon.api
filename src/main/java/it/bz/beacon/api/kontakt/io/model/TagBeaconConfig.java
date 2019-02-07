@@ -85,6 +85,7 @@ public class TagBeaconConfig {
     }
 
     private void init(Beacon beacon) {
+        setUniqueId(beacon.getManufacturerId());
         profiles = Sets.newHashSet();
         packets = Sets.newHashSet();
 

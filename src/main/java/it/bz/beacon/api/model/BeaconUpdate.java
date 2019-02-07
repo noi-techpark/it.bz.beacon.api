@@ -15,7 +15,6 @@ public class BeaconUpdate {
     private String name;
 
     @NotNull
-    @NotEmpty
     private String description;
 
     @NotNull
@@ -29,43 +28,33 @@ public class BeaconUpdate {
     private float lng;
 
     @NotNull
-    @NotEmpty
     private LocationType locationType;
 
     @NotNull
-    @NotEmpty
     private String locationDescription;
 
     @NotNull
-    @NotEmpty
     private boolean iBeacon;
 
     @NotNull
-    @NotEmpty
     private boolean telemetry;
 
     @NotNull
-    @NotEmpty
     private boolean eddystoneUid;
 
     @NotNull
-    @NotEmpty
     private boolean eddystoneUrl;
 
     @NotNull
-    @NotEmpty
     private boolean eddystoneTlm;
 
     @NotNull
-    @NotEmpty
     private boolean eddystoneEid;
 
     @NotNull
-    @NotEmpty
     private boolean eddystoneEtlm;
 
     @NotNull
-    @NotEmpty
     private UUID uuid;
 
     @NotNull
