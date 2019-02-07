@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.model.BeaconImage;
+import it.bz.beacon.api.exception.db.BeaconImageNotFoundException;
 import it.bz.beacon.api.model.BaseMessage;
 import it.bz.beacon.api.service.image.FileStorageService;
 import it.bz.beacon.api.service.beacon.IBeaconDataService;
@@ -53,9 +54,13 @@ public class ImageController {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = "image/*")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable long beaconId, @PathVariable long id, HttpServletRequest request) {
-        beaconDataService.find(beaconId);
+        BeaconData beaconData = beaconDataService.find(beaconId);
 
         BeaconImage beaconImage = service.find(id);
+
+        if (beaconImage.getBeaconId() != beaconData.getId()) {
+            throw new BeaconImageNotFoundException();
+        }
 
         Resource resource = fileStorageService.loadAsResource(beaconImage.getFileName());
 
