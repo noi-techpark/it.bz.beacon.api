@@ -39,6 +39,17 @@ file.upload-dir =
 it.bz.beacon.allowedOrigins =
 
 # Kontakt.IO properties
-kontakt.io.apiUrl=https://api.kontakt.io
-kontakt.io.acceptHeader=application/vnd.com.kontakt+json;version=10
-kontakt.io.apiKey=
+kontakt.io.apiUrl = https://api.kontakt.io
+kontakt.io.acceptHeader = application/vnd.com.kontakt+json;version=10
+kontakt.io.apiKey =
+
+# API INFORMATION
+api.info.title =
+api.info.description =
+api.info.version =
+api.info.termsOfServiceUrl =
+api.info.contactName =
+api.info.contactUrl =
+api.info.contactEmail =
+api.info.license =
+api.info.licenseUrl =

@@ -48,6 +48,7 @@ Fill in the required values
 * it.bz.beacon.allowedOrigins
 * kontakt.io.apiKey
 * file.upload-dir
+* api.info.*
 
 You may also change other values in the application.properties file on your own risk.
 Make sure your webserver is configured to handle file uploads for at least 10MB of size.

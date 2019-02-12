@@ -1,9 +1,10 @@
 package it.bz.beacon.api;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.classmate.TypeResolver;
+import com.google.common.collect.Lists;
+import it.bz.beacon.api.config.ApiInfoConfiguration;
+import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
+import it.bz.beacon.api.config.KontaktIOConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,24 +23,18 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import com.fasterxml.classmate.TypeResolver;
-import com.google.common.collect.Lists;
-
-import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
-import it.bz.beacon.api.config.KontaktIOConfiguration;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiKey;
-import springfox.documentation.service.AuthorizationScope;
-import springfox.documentation.service.Contact;
-import springfox.documentation.service.SecurityReference;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootApplication
 @EnableSwagger2
@@ -57,10 +52,8 @@ public class Application extends SpringBootServletInitializer {
     @Autowired
     private BeaconSuedtirolConfiguration beaconSuedtirolConfiguration;
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(Application.class);
-    }
+    @Autowired
+    private ApiInfoConfiguration apiInfoConfiguration;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -79,13 +72,13 @@ public class Application extends SpringBootServletInitializer {
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
-                "Beacon Südtirol API",
-                "An API to manage beacons of the Beacon Südtirol project.",
-                "1.0-beta",
-                "API TOS",
-                new Contact("Raiffeisen Online GmbH", "https://www.raiffeisen.net", "web@raiffeisen.net"),
-                "License of API",
-                "API license URL",
+                apiInfoConfiguration.getTitle(),
+                apiInfoConfiguration.getDescription(),
+                apiInfoConfiguration.getVersion(),
+                apiInfoConfiguration.getTermsOfServiceUrl(),
+                new Contact(apiInfoConfiguration.getContactName(), apiInfoConfiguration.getContactUrl(), apiInfoConfiguration.getContactEmail()),
+                apiInfoConfiguration.getLicense(),
+                apiInfoConfiguration.getLicenseUrl(),
                 Collections.emptyList()
         );
     }
