@@ -2,8 +2,8 @@ package it.bz.beacon.api.service.image;
 
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.model.BeaconImage;
-import it.bz.beacon.api.db.repository.ImageRepository;
-import it.bz.beacon.api.exception.db.ImageNotFoundException;
+import it.bz.beacon.api.db.repository.BeaconImageRepository;
+import it.bz.beacon.api.exception.db.BeaconImageNotFoundException;
 import it.bz.beacon.api.model.BaseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,29 +15,40 @@ import java.util.List;
 public class ImageService implements IImageService {
 
     @Autowired
-    private ImageRepository imageRepository;
+    private BeaconImageRepository repository;
 
     @Override
-    public List<BeaconImage> findAll() {
-        return null;
+    public List<BeaconImage> findAll(BeaconData beaconData) {
+        return repository.findAllByBeaconId(beaconData.getId());
+    }
+
+    @Override
+    public BeaconImage find(long id) throws BeaconImageNotFoundException {
+        return repository.findById(id).orElseThrow(BeaconImageNotFoundException::new);
     }
 
     @Override
     public BeaconImage create(BeaconData beaconData, String fileName) {
-        String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads/")
-                .path(fileName)
-                .toUriString();
+//        String uri = ServletUriComponentsBuilder.fromCurrentContextPath()
+//                .path("/uploads/")
+//                .path(fileName)
+//                .toUriString();
 
         BeaconImage image = new BeaconImage();
         image.setBeaconId(beaconData.getId());
-        image.setUrl(uri);
+        image.setFileName(fileName);
 
-        return imageRepository.save(image);
+        return repository.save(image);
     }
 
     @Override
-    public BaseMessage delete(long id) throws ImageNotFoundException {
-        return null;
+    public BaseMessage delete(long id) throws BeaconImageNotFoundException {
+        return repository.findById(id).map(
+                beaconImage -> {
+                    repository.delete(beaconImage);
+
+                    return new BaseMessage("Image deleted");
+                }
+        ).orElseThrow(BeaconImageNotFoundException::new);
     }
 }

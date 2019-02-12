@@ -3,8 +3,11 @@ package it.bz.beacon.api.db.model;
 import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.Manufacturer;
 import it.bz.beacon.api.model.RemoteBeacon;
+import it.bz.beacon.api.model.enumeration.LocationType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(uniqueConstraints={
@@ -31,6 +34,15 @@ public class BeaconData extends AuditModel {
 
     @Lob
     private String description;
+
+    @Column(nullable = false)
+    private LocationType locationType = LocationType.OUTDOOR;
+
+    @Lob
+    private String locationDescription;
+
+    @OneToMany(mappedBy = "beaconData", fetch = FetchType.EAGER)
+    private List<Issue> issues = new ArrayList<>();
 
     public static BeaconData fromRemoteBeacon(RemoteBeacon remoteBeacon) {
 
@@ -99,5 +111,29 @@ public class BeaconData extends AuditModel {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocationType getLocationType() {
+        return locationType;
+    }
+
+    public void setLocationType(LocationType locationType) {
+        this.locationType = locationType;
+    }
+
+    public String getLocationDescription() {
+        return locationDescription;
+    }
+
+    public void setLocationDescription(String locationDescription) {
+        this.locationDescription = locationDescription;
+    }
+
+    public List<Issue> getIssues() {
+        return issues;
+    }
+
+    public void setIssues(List<Issue> issues) {
+        this.issues = issues;
     }
 }

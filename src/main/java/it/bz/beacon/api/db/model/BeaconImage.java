@@ -16,7 +16,7 @@ public class BeaconImage extends AuditModel {
     private long beaconId;
 
     @Column(nullable = false)
-    private String url;
+    private String fileName = "";
 
     public long getId() {
         return id;
@@ -34,11 +34,11 @@ public class BeaconImage extends AuditModel {
         this.beaconId = beaconId;
     }
 
-    public String getUrl() {
-        return url;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

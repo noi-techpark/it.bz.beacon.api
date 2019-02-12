@@ -1,6 +1,9 @@
 package it.bz.beacon.api.model;
 
 import it.bz.beacon.api.kontakt.io.model.BeaconConfiguration;
+import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
+import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
+import it.bz.beacon.api.util.EddystoneUrl;
 
 import java.util.UUID;
 
@@ -8,11 +11,21 @@ public class PendingConfiguration {
     private UUID uuid;
     private Integer major;
     private Integer minor;
+
     private String namespace;
     private String url;
     private String instanceId;
-    //private Integer txPower;
-    //private Integer interval;
+
+    private Integer txPower;
+    private Integer interval;
+
+    private boolean iBeacon;
+    private boolean telemetry;
+    private boolean eddystoneUid;
+    private boolean eddystoneUrl;
+    private boolean eddystoneTlm;
+    private boolean eddystoneEid;
+    private boolean eddystoneEtlm;
 
     public static PendingConfiguration fromBeaconConfiguration(BeaconConfiguration configuration) {
         PendingConfiguration pendingConfiguration = new PendingConfiguration();
@@ -21,7 +34,16 @@ public class PendingConfiguration {
         pendingConfiguration.setMinor(configuration.getMinor());
         pendingConfiguration.setNamespace(configuration.getNamespace());
         pendingConfiguration.setInstanceId(configuration.getInstanceId());
-        pendingConfiguration.setUrl(configuration.getUrl());
+        pendingConfiguration.setUrl(EddystoneUrl.decodeUri(configuration.getUrl()));
+        pendingConfiguration.setTxPower(configuration.getTxPower());
+        pendingConfiguration.setInterval(configuration.getInterval());
+        pendingConfiguration.setEddystoneEid(configuration.getPackets().contains(Packet.EDDYSTONE_EID));
+        pendingConfiguration.setEddystoneEtlm(configuration.getPackets().contains(Packet.EDDYSTONE_ETLM));
+        pendingConfiguration.setEddystoneTlm(configuration.getPackets().contains(Packet.EDDYSTONE_TLM));
+        pendingConfiguration.setEddystoneUid(configuration.getPackets().contains(Packet.EDDYSTONE_UID) || configuration.getProfiles().contains(Profile.EDDYSTONE));
+        pendingConfiguration.setEddystoneUrl(configuration.getPackets().contains(Packet.EDDYSTONE_URL));
+        pendingConfiguration.setiBeacon(configuration.getPackets().contains(Packet.IBEACON) || configuration.getProfiles().contains(Profile.IBEACON));
+        pendingConfiguration.setTelemetry(configuration.getPackets().contains(Packet.KONTAKT_TLM));
 
         return pendingConfiguration;
     }
@@ -72,5 +94,77 @@ public class PendingConfiguration {
 
     public void setInstanceId(String instanceId) {
         this.instanceId = instanceId;
+    }
+
+    public Integer getTxPower() {
+        return txPower;
+    }
+
+    public void setTxPower(Integer txPower) {
+        this.txPower = txPower;
+    }
+
+    public Integer getInterval() {
+        return interval;
+    }
+
+    public void setInterval(Integer interval) {
+        this.interval = interval;
+    }
+
+    public boolean isiBeacon() {
+        return iBeacon;
+    }
+
+    public void setiBeacon(boolean iBeacon) {
+        this.iBeacon = iBeacon;
+    }
+
+    public boolean isTelemetry() {
+        return telemetry;
+    }
+
+    public void setTelemetry(boolean telemetry) {
+        this.telemetry = telemetry;
+    }
+
+    public boolean isEddystoneUid() {
+        return eddystoneUid;
+    }
+
+    public void setEddystoneUid(boolean eddystoneUid) {
+        this.eddystoneUid = eddystoneUid;
+    }
+
+    public boolean isEddystoneUrl() {
+        return eddystoneUrl;
+    }
+
+    public void setEddystoneUrl(boolean eddystoneUrl) {
+        this.eddystoneUrl = eddystoneUrl;
+    }
+
+    public boolean isEddystoneTlm() {
+        return eddystoneTlm;
+    }
+
+    public void setEddystoneTlm(boolean eddystoneTlm) {
+        this.eddystoneTlm = eddystoneTlm;
+    }
+
+    public boolean isEddystoneEid() {
+        return eddystoneEid;
+    }
+
+    public void setEddystoneEid(boolean eddystoneEid) {
+        this.eddystoneEid = eddystoneEid;
+    }
+
+    public boolean isEddystoneEtlm() {
+        return eddystoneEtlm;
+    }
+
+    public void setEddystoneEtlm(boolean eddystoneEtlm) {
+        this.eddystoneEtlm = eddystoneEtlm;
     }
 }

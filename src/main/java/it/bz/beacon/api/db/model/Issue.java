@@ -14,9 +14,12 @@ public class Issue extends AuditModel {
     private long id;
 
     @JsonIgnore
+    @ManyToOne
     private BeaconData beaconData;
 
     private String problem;
+
+    @Lob
     private String problemDescription;
     private String reporter;
 
@@ -27,7 +30,7 @@ public class Issue extends AuditModel {
         Issue issue = new Issue();
         issue.setBeaconData(beaconData);
         issue.setProblem(issueCreation.getProblem());
-        issue.setProblemDescription(issue.getProblemDescription());
+        issue.setProblemDescription(issueCreation.getProblemDescription());
         issue.setReporter(issueCreation.getReporter());
 
         return issue;

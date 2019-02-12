@@ -3,6 +3,7 @@ package it.bz.beacon.api.model;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
+import it.bz.beacon.api.util.EddystoneUrl;
 
 import java.util.UUID;
 
@@ -39,8 +40,7 @@ public class RemoteBeacon {
         remoteBeacon.setUuid(tagBeaconDevice.getProximity());
         remoteBeacon.setMajor(tagBeaconDevice.getMajor());
         remoteBeacon.setMinor(tagBeaconDevice.getMinor());
-        //TODO decode eddystoneUid url hash
-        remoteBeacon.setUrl(tagBeaconDevice.getUrl());
+        remoteBeacon.setUrl(EddystoneUrl.decodeUri(tagBeaconDevice.getUrl()));
         remoteBeacon.setNamespace(tagBeaconDevice.getNamespace());
         remoteBeacon.setInstanceId(tagBeaconDevice.getInstanceId());
         remoteBeacon.setInterval(tagBeaconDevice.getInterval());
