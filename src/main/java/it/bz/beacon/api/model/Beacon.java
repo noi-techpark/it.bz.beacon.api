@@ -44,7 +44,6 @@ public class Beacon {
 
     private Integer batteryLevel;
 
-    @JsonIgnore
     private PendingConfiguration pendingConfiguration;
 
     public static Beacon fromRemoteBeacon(BeaconData beaconData, RemoteBeacon remoteBeacon) {
@@ -64,6 +63,8 @@ public class Beacon {
         setLng(beaconData.getLng());
         setName(beaconData.getName());
         setDescription(beaconData.getDescription());
+        setLocationType(beaconData.getLocationType());
+        setLocationDescription(beaconData.getLocationDescription());
     }
 
     @JsonIgnore

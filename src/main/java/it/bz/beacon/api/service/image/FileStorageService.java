@@ -1,14 +1,18 @@
 package it.bz.beacon.api.service.image;
 
 import it.bz.beacon.api.config.FileStorageProperties;
+import it.bz.beacon.api.exception.db.BeaconImageNotFoundException;
 import it.bz.beacon.api.exception.storage.FileStorageException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,6 +51,20 @@ public class FileStorageService {
             return fileName;
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        }
+    }
+
+    public Resource loadAsResource(String fileName) {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if(resource.exists()) {
+                return resource;
+            } else {
+                throw new BeaconImageNotFoundException();
+            }
+        } catch (MalformedURLException ex) {
+            throw new BeaconImageNotFoundException();
         }
     }
 

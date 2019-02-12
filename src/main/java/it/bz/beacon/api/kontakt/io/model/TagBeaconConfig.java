@@ -16,8 +16,8 @@ public class TagBeaconConfig {
     private String uniqueId;
     private String name;
     private Model model;
-    private Set<Profile> profiles;
-    private Set<Packet> packets;
+    private Set<Profile> profiles = Sets.newHashSet();
+    private Set<Packet> packets = Sets.newHashSet();
     private UUID proximity;
     private Integer major;
     private Integer minor;
@@ -54,69 +54,54 @@ public class TagBeaconConfig {
         if (!beaconUpdate.isEddystoneEid()) {
             config.removeProfile(Profile.EDDYSTONE);
             config.removePacket(Packet.EDDYSTONE_EID);
+        } else {
+            config.addPacket(Packet.EDDYSTONE_EID);
+            config.addProfile(Profile.EDDYSTONE);
         }
 
         if (!beaconUpdate.isEddystoneEtlm()) {
             config.removePacket(Packet.EDDYSTONE_ETLM);
+        } else {
+            config.addPacket(Packet.EDDYSTONE_ETLM);
         }
 
         if (!beaconUpdate.isEddystoneTlm()) {
             config.removePacket(Packet.EDDYSTONE_TLM);
+        } else {
+            config.addPacket(Packet.EDDYSTONE_TLM);
         }
 
         if (!beaconUpdate.isEddystoneUid()) {
             config.removePacket(Packet.EDDYSTONE_UID);
+        } else {
+            config.addPacket(Packet.EDDYSTONE_UID);
         }
 
         if (!beaconUpdate.isEddystoneUrl()) {
             config.removePacket(Packet.EDDYSTONE_URL);
+        } else {
+            config.addPacket(Packet.EDDYSTONE_URL);
         }
 
         if (!beaconUpdate.isiBeacon()) {
             config.removeProfile(Profile.IBEACON);
             config.removePacket(Packet.IBEACON);
+        } else {
+            config.addPacket(Packet.IBEACON);
+            config.addProfile(Profile.IBEACON);
         }
 
         if (!beaconUpdate.isTelemetry()) {
             config.removePacket(Packet.KONTAKT_TLM);
+        } else {
+            config.addPacket(Packet.KONTAKT_TLM);
         }
 
         return config;
     }
 
     private void init(Beacon beacon) {
-        profiles = Sets.newHashSet();
-        packets = Sets.newHashSet();
-
-        if (beacon.isEddystoneEid()) {
-            profiles.add(Profile.EDDYSTONE);
-            packets.add(Packet.EDDYSTONE_EID);
-        }
-
-        if (beacon.isEddystoneEtlm()) {
-            packets.add(Packet.EDDYSTONE_ETLM);
-        }
-
-        if (beacon.isEddystoneTlm()) {
-            packets.add(Packet.EDDYSTONE_TLM);
-        }
-
-        if (beacon.isEddystoneUid()) {
-            packets.add(Packet.EDDYSTONE_UID);
-        }
-
-        if (beacon.isEddystoneUrl()) {
-            packets.add(Packet.EDDYSTONE_URL);
-        }
-
-        if (beacon.isiBeacon()) {
-            profiles.add(Profile.IBEACON);
-            packets.add(Packet.IBEACON);
-        }
-
-        if (beacon.isTelemetry()) {
-            packets.add(Packet.KONTAKT_TLM);
-        }
+        setUniqueId(beacon.getManufacturerId());
     }
 
     @JsonIgnore
@@ -127,10 +112,20 @@ public class TagBeaconConfig {
     }
 
     @JsonIgnore
+    private void addProfile(Profile profile) {
+        profiles.add(profile);
+    }
+
+    @JsonIgnore
     private void removePacket(Packet packet) {
         if (packets != null) {
             packets.remove(packet);
         }
+    }
+
+    @JsonIgnore
+    private void addPacket(Packet packet) {
+        packets.add(packet);
     }
 
     public String getUniqueId() {

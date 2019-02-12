@@ -1,6 +1,7 @@
 package it.bz.beacon.api.kontakt.io;
 
 import com.google.common.collect.Lists;
+import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
 import it.bz.beacon.api.kontakt.io.model.Device;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
@@ -69,14 +70,14 @@ public class ApiService {
         return responseEntity.getBody();
     }
 
-    public ResponseEntity<DefaultResponse> createConfig(TagBeaconConfig config) {
+    public ResponseEntity<List<BeaconConfigResponse>> createConfig(TagBeaconConfig config) {
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("uniqueId", config.getUniqueId());
         requestBody.add("deviceType", Device.DeviceType.BEACON.toString());
-        requestBody.add("profiles", String.join(",", config.getProfiles().stream().map(profile -> profile.toString()).collect(Collectors.joining())));
-        requestBody.add("packets", String.join(",", config.getPackets().stream().map(packet -> packet.toString()).collect(Collectors.joining())));
+        requestBody.add("profiles", config.getProfiles().stream().map(profile -> profile.toString()).collect(Collectors.joining(",")));
+        requestBody.add("packets", config.getPackets().stream().map(packet -> packet.toString()).collect(Collectors.joining(",")));
         requestBody.add("proximity", config.getProximity().toString());
         requestBody.add("major", config.getMajor().toString());
         requestBody.add("minor", config.getMinor().toString());
@@ -90,7 +91,7 @@ public class ApiService {
                 "/config/create",
                 HttpMethod.POST,
                 new HttpEntity<>(requestBody, httpHeaders),
-                new ParameterizedTypeReference<DefaultResponse>() {}
+                new ParameterizedTypeReference<List<BeaconConfigResponse>>() {}
         );
     }
 

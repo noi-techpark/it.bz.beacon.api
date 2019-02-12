@@ -13,6 +13,7 @@ import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -44,6 +45,7 @@ public class IssueService implements IIssueService {
     }
 
     @Override
+    @Transactional
     public List<BeaconIssue> findAllByBeacon(BeaconData beaconData, boolean onlyUnresolved) {
         List<Issue> issues = onlyUnresolved ? repository.findAllByBeaconDataAndSolution(beaconData, null) : repository.findAllByBeaconData(beaconData);
 
