@@ -7,22 +7,22 @@ spring.datasource.password=
 spring.jpa.properties.hibernate.dialect =
 
 # Hibernate ddl auto (create, create-drop, validate, update)
-spring.jpa.hibernate.ddl-auto = update
+spring.jpa.hibernate.ddl-auto = validate
 
 # Hibernate disable createClob() as it is not implemented yet in the driver
-spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation = true
 
 # JWT token expiration time in milliseconds
-security.jwt.token.expire-length = 31536000000 //1 year
+security.jwt.token.expire-length = 31536000000
 
 # The secret the JWT tokens are signed with
 security.jwt.token.secret =
 
 # Enable multipart uploads
-spring.servlet.multipart.enabled=true
+spring.servlet.multipart.enabled = true
 
 # Threshold after which files are written to disk.
-spring.servlet.multipart.file-size-threshold=2KB
+spring.servlet.multipart.file-size-threshold = 2KB
 
 # Max file size.
 spring.servlet.multipart.max-file-size = 10MB
@@ -33,9 +33,9 @@ spring.servlet.multipart.max-request-size = 12MB
 spring.http.multipart.max-request-size = 12MB
 
 # All files uploaded through the REST API will be stored in this directory
-file.upload-dir=./uploads
+file.upload-dir =
 
-# CORS
+# CORS (e.g. https://api.beacon.bz.it)
 it.bz.beacon.allowedOrigins =
 
 # Kontakt.IO properties

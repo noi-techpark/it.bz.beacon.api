@@ -44,7 +44,6 @@ public class Beacon {
 
     private Integer batteryLevel;
 
-    @JsonIgnore
     private PendingConfiguration pendingConfiguration;
 
     public static Beacon fromRemoteBeacon(BeaconData beaconData, RemoteBeacon remoteBeacon) {
