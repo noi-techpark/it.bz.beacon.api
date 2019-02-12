@@ -5,7 +5,7 @@
     <packaging>war</packaging>
 
     <groupId>it.bz.beacon</groupId>
-    <artifactId>api</artifactId>
+    <artifactId>beacon-api</artifactId>
     <version>0.1.0</version>
 
     <parent>
@@ -95,6 +95,7 @@
 
 
     <build>
+        <finalName>beacon-api</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
