@@ -37,8 +37,13 @@ Change directory:
 cd beacon-suedtirol-api/
 ```
 
+### Perpare your database
+Use src/resources/dbinit.sql to initalize your database instance.
+
+Also an admin user will be inserted with username "admin" and password "password". Change this as soon as possible using the API or the administration web application.
+
 ### Configure application.properties file
-Make a copy of the application.properties.dist file and name it "application.properties".
+Make a copy of the src/resources/application.properties.dist file and name it "application.properties".
 Fill in the required values
 * spring.datasource.url
 * spring.datasource.username
