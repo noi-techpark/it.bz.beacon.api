@@ -7,7 +7,6 @@ The API for the Beacon Südtirol project for configuring beacons and accessing b
 - [Getting started](#getting-started)
 - [Running tests](#running-tests)
 - [Deployment](#deployment)
-- [Docker environment](#docker-environment)
 - [Information](#information)
 
 ## Getting started
@@ -38,7 +37,7 @@ Change directory:
 cd beacon-suedtirol-api/
 ```
 
-## Configure application.properties file
+### Configure application.properties file
 Make a copy of the application.properties.dist file and name it "application.properties".
 Fill in the required values
 * spring.datasource.url
