@@ -7,6 +7,8 @@ pipeline {
     }
 
     environment {
+        AWS_ACCESS_KEY_ID = credentials('aws_secret_key_id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
         DB_URL = "jdbc:postgresql://postgres-prod.co90ybcr8iim.eu-west-1.rds.amazonaws.com:5432/beacon"
         DB_USERNAME = credentials('beacon-api-db-username')
         DB_PASSWORD = credentials('beacon-api-db-password')
@@ -39,9 +41,12 @@ pipeline {
                 sh 'mvn -B -U clean package'
             }
         }
-        stage('Archive') {
+        stage('Deploy') {
             steps {
-                archiveArtifacts artifacts: 'target/beacon-api.war', onlyIfSuccessful: true
+                sh 'rm -rf deployment/build'
+                sh 'cp -R deployment/elastic-beanstalk deployment/build'
+                sh 'cp target/beacon-api.war deployment/build'
+                sh 'cd deployment/build && ~/.local/bin/eb deploy'
             }
         }
     }
