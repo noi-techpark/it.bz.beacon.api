@@ -56,5 +56,5 @@ alter table "user" add constraint UK_sb8bbouer5wak8vyiiy4pf2bx unique (username)
 alter table beacon_data drop constraint UK2x2vcndj2x3u5bje9n1sv7cqk
 alter table beacon_data add constraint UK2x2vcndj2x3u5bje9n1sv7cqk unique (manufacturer_id, manufacturer)
 create sequence hibernate_sequence start 1 increment 1
-alter table issueadd constraint FKhbve5ev5htnpoykq9lporie1bforeign key (solution_id)references issue_solution
+alter table issue add constraint FKhbve5ev5htnpoykq9lporie1b foreign key (solution_id) references issue_solution
 insert into "user" (id, username, password, name, created_at, updated_at) values (1, 'admin', '$2y$04$CrEwSZC.F21.YuXUN.tSgeMN4ToqQ4Rqb2uzmOqv2R4aUMRuAwHBS', 'Admin', '2019-01-01 00:00:00', '2019-01-01 00:00:00')
