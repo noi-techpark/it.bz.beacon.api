@@ -20,13 +20,13 @@ pipeline {
         stage('Configure') {
             steps {
                 sh 'cp src/main/resources/application.properties.dist src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.datasource.url=\\).*\\$%\\1${DB_URL}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.datasource.username=\\).*\\$%\\1${DB_USERNAME}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.datasource.password=\\).*\\$%\\1${DB_PASSWORD}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.jpa.properties.hibernate.dialect=\\).*\\$%\\1${DB_DIALECT}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(security.jwt.token.secret=\\).*\\$%\\1${JWT_SECRET}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(it.bz.beacon.allowedOrigins=\\).*\\$%\\1${CORS_ORIGINS}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(kontakt.io.apiKey=\\).*\\$%\\1${KONTACT_IO_API_KEY}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(spring.datasource.url\s*=\\).*\\$%\\1${DB_URL}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(spring.datasource.username\s*=\\).*\\$%\\1${DB_USERNAME}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(spring.datasource.password\s*=\\).*\\$%\\1${DB_PASSWORD}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(spring.jpa.properties.hibernate.dialect\s*=\\).*\\$%\\1${DB_DIALECT}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(security.jwt.token.secret\s*=\\).*\\$%\\1${JWT_SECRET}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(it.bz.beacon.allowedOrigins\s*=\\).*\\$%\\1${CORS_ORIGINS}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(kontakt.io.apiKey\s*=\\).*\\$%\\1${KONTACT_IO_API_KEY}%" src/main/resources/application.properties'
             }
         }
         stage('Test') {
