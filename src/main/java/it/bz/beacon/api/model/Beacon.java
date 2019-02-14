@@ -7,6 +7,8 @@ import it.bz.beacon.api.model.enumeration.LocationType;
 import it.bz.beacon.api.model.enumeration.Status;
 import org.springframework.lang.NonNull;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -238,6 +240,16 @@ public class Beacon {
     }
 
     public Status getStatus() {
+        Calendar sixMonthsAgo = Calendar.getInstance();
+        sixMonthsAgo.add(Calendar.MONTH, -6);
+
+        Date date = new Date(lastSeen);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(lastSeen);
+        if (date.before(sixMonthsAgo.getTime())) {
+            return Status.NO_SIGNAL;
+        }
+
         if (getPendingConfiguration() != null) {
             return Status.CONFIGURATION_PENDING;
         }
