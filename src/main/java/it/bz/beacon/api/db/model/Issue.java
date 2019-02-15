@@ -14,6 +14,7 @@ public class Issue extends AuditModel {
     private long id;
 
     @JsonIgnore
+    @ManyToOne
     private BeaconData beaconData;
 
     private String problem;

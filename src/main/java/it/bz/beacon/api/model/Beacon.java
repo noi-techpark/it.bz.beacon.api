@@ -3,12 +3,14 @@ package it.bz.beacon.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.bz.beacon.api.db.model.BeaconData;
+import it.bz.beacon.api.db.model.Issue;
 import it.bz.beacon.api.model.enumeration.LocationType;
 import it.bz.beacon.api.model.enumeration.Status;
 import org.springframework.lang.NonNull;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -48,6 +50,9 @@ public class Beacon {
 
     private PendingConfiguration pendingConfiguration;
 
+    @JsonIgnore
+    private List<Issue> issues;
+
     public static Beacon fromRemoteBeacon(BeaconData beaconData, RemoteBeacon remoteBeacon) {
         Beacon beacon = new Beacon();
         beacon.applyBeaconData(beaconData);
@@ -67,6 +72,7 @@ public class Beacon {
         setDescription(beaconData.getDescription());
         setLocationType(beaconData.getLocationType());
         setLocationDescription(beaconData.getLocationDescription());
+        setIssues(beaconData.getIssues());
     }
 
     @JsonIgnore
@@ -240,18 +246,21 @@ public class Beacon {
     }
 
     public Status getStatus() {
-        Calendar sixMonthsAgo = Calendar.getInstance();
-        sixMonthsAgo.add(Calendar.MONTH, -6);
-
-        Date date = new Date(lastSeen);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(lastSeen);
-        if (date.before(sixMonthsAgo.getTime())) {
-            return Status.NO_SIGNAL;
-        }
 
         if (getPendingConfiguration() != null) {
             return Status.CONFIGURATION_PENDING;
+        }
+
+        Calendar checkDate = Calendar.getInstance();
+        checkDate.add(Calendar.MONTH, -12);
+
+        Date date = new Date(lastSeen * 1000);
+        if (date.before(checkDate.getTime())) {
+            return Status.NO_SIGNAL;
+        }
+
+        if (getIssues() != null && getIssues().size() > 0) {
+            return Status.ISSUE;
         }
 
         if (getBatteryLevel() != null && getBatteryLevel() < 5) {
@@ -331,5 +340,13 @@ public class Beacon {
 
     public void setPendingConfiguration(PendingConfiguration pendingConfiguration) {
         this.pendingConfiguration = pendingConfiguration;
+    }
+
+    public List<Issue> getIssues() {
+        return issues;
+    }
+
+    public void setIssues(List<Issue> issues) {
+        this.issues = issues;
     }
 }

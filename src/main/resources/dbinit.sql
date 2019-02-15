@@ -58,3 +58,7 @@ alter table beacon_dataadd constraint UK2x2vcndj2x3u5bje9n1sv7cqk unique (manufa
 create sequence hibernate_sequence start 1 increment 1
 alter table issueadd constraint FKhbve5ev5htnpoykq9lporie1bforeign key (solution_id)references issue_solution
 insert into "user" (id, username, password, name, created_at, updated_at) values (1, 'admin', '$2y$04$CrEwSZC.F21.YuXUN.tSgeMN4ToqQ4Rqb2uzmOqv2R4aUMRuAwHBS', 'Admin', '2019-01-01 00:00:00', '2019-01-01 00:00:00')
+
+alter table issue drop column beacon_data
+alter table issue add column beacon_data_id int8
+alter table issue add constraint FKn3tkf7lgl2hald844n35p695i foreign key (beacon_data_id) references beacon_data

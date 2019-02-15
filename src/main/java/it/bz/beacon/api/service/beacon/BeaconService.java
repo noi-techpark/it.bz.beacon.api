@@ -11,9 +11,8 @@ import it.bz.beacon.api.kontakt.io.ApiService;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
-import it.bz.beacon.api.kontakt.io.response.DefaultResponse;
-import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
+import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -92,8 +91,8 @@ public class BeaconService implements IBeaconService {
     public Beacon update(long id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException {
         BeaconData beaconData = beaconDataService.find(id);
 
+        //TODO check if changes were made... if not, delete config
         CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> configResponse = createConfig(beaconData, beaconUpdate);
-
         CompletableFuture.allOf(configResponse).join();
 
         try {

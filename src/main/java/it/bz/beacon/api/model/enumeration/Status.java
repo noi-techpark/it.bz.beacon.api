@@ -4,5 +4,6 @@ public enum Status {
     OK,
     BATTERY_LOW,
     CONFIGURATION_PENDING,
-    NO_SIGNAL
+    NO_SIGNAL,
+    ISSUE
 }
