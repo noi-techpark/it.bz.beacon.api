@@ -106,7 +106,6 @@ public class BeaconService implements IBeaconService {
                 }
 
                 beacon = find(id);
-
                 beacon.applyBeaconData(beaconDataService.update(id, beaconUpdate));
 
                 return beacon;
