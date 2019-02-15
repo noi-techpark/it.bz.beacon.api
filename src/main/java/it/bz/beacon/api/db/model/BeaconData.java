@@ -41,7 +41,7 @@ public class BeaconData extends AuditModel {
     @Lob
     private String locationDescription;
 
-    @OneToMany(mappedBy = "beaconData")
+    @OneToMany(mappedBy = "beaconData", fetch = FetchType.EAGER)
     private List<Issue> issues = new ArrayList<>();
 
     public static BeaconData fromRemoteBeacon(RemoteBeacon remoteBeacon) {

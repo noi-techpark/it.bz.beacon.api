@@ -4,12 +4,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.exception.db.BeaconConfigurationNotCreatedException;
+import it.bz.beacon.api.exception.db.BeaconConfigurationNotDeletedException;
 import it.bz.beacon.api.exception.db.BeaconNotFoundException;
 import it.bz.beacon.api.exception.kontakt.io.InvalidOrderIdException;
 import it.bz.beacon.api.exception.kontakt.io.NoDeviceAddedException;
 import it.bz.beacon.api.kontakt.io.ApiService;
+import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
+import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
+import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
 import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
@@ -89,30 +93,71 @@ public class BeaconService implements IBeaconService {
 
     @Override
     public Beacon update(long id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException {
-        BeaconData beaconData = beaconDataService.find(id);
+        Beacon beacon = find(id);
 
         //TODO check if changes were made... if not, delete config
-        CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> configResponse = createConfig(beaconData, beaconUpdate);
-        CompletableFuture.allOf(configResponse).join();
+        TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon);
 
-        try {
-            if (configResponse.get().getStatusCode() != HttpStatus.CREATED) {
+        if (isNewConfig(tagBeaconConfig, beacon)) {
+            CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> configResponse = createConfig(tagBeaconConfig);
+            CompletableFuture.allOf(configResponse).join();
+
+            try {
+                if (configResponse.get().getStatusCode() != HttpStatus.CREATED) {
+                    throw new BeaconConfigurationNotCreatedException();
+                }
+
+                beacon = find(id);
+
+                beacon.applyBeaconData(beaconDataService.update(id, beaconUpdate));
+
+                return beacon;
+            } catch (InterruptedException | ExecutionException e) {
                 throw new BeaconConfigurationNotCreatedException();
             }
 
-            Beacon beacon = find(id);
+        } else {
+            CompletableFuture<ResponseEntity<BeaconConfigDeletionResponse>> configResponse = deleteConfig(beacon);
+            CompletableFuture.allOf(configResponse).join();
 
-            beacon.applyBeaconData(beaconDataService.update(id, beaconUpdate));
+            try {
+                if (configResponse.get().getStatusCode() != HttpStatus.OK) {
+                    throw new BeaconConfigurationNotDeletedException();
+                }
 
-            return beacon;
-        } catch (InterruptedException | ExecutionException e) {
-            throw new BeaconConfigurationNotCreatedException();
+                beacon = find(id);
+
+                beacon.applyBeaconData(beaconDataService.update(id, beaconUpdate));
+
+                return beacon;
+            } catch (InterruptedException | ExecutionException e) {
+                throw new BeaconConfigurationNotCreatedException();
+            }
         }
     }
 
+    private boolean isNewConfig(TagBeaconConfig tagBeaconConfig, Beacon beacon) {
+        return !tagBeaconConfig.getProximity().equals(beacon.getUuid())
+                || tagBeaconConfig.getMajor() != beacon.getMajor()
+                || tagBeaconConfig.getMinor() != beacon.getMinor()
+                || tagBeaconConfig.getInterval() != beacon.getInterval()
+                || tagBeaconConfig.getTxPower() != beacon.getTxPower()
+                || (tagBeaconConfig.getPackets().contains(Packet.IBEACON) && tagBeaconConfig.getProfiles().contains(Profile.IBEACON)) != beacon.isiBeacon()
+                || (tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_UID) && tagBeaconConfig.getProfiles().contains(Profile.EDDYSTONE)) != beacon.isEddystoneUid()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_URL) != beacon.isEddystoneUrl()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_TLM) != beacon.isEddystoneTlm()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_EID) != beacon.isEddystoneEid()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_ETLM) != beacon.isEddystoneEtlm();
+    }
+
     @Async
-    private CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> createConfig(BeaconData beaconData, BeaconUpdate beaconUpdate) {
-        return CompletableFuture.completedFuture(apiService.createConfig(TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beaconData)));
+    private CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> createConfig(TagBeaconConfig tagBeaconConfig) {
+        return CompletableFuture.completedFuture(apiService.createConfig(tagBeaconConfig));
+    }
+
+    @Async
+    private CompletableFuture<ResponseEntity<BeaconConfigDeletionResponse>> deleteConfig(Beacon beacon) {
+        return CompletableFuture.completedFuture(apiService.deleteConfig(beacon.getManufacturerId()));
     }
 
     @Override

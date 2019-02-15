@@ -1,6 +1,7 @@
 package it.bz.beacon.api.kontakt.io;
 
 import com.google.common.collect.Lists;
+import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
 import it.bz.beacon.api.kontakt.io.model.Device;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
@@ -95,14 +96,27 @@ public class ApiService {
         );
     }
 
+    public ResponseEntity<BeaconConfigDeletionResponse> deleteConfig(String id) {
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("uniqueId", id);
+
+        return restTemplate.exchange(
+                "/config/delete",
+                HttpMethod.POST,
+                new HttpEntity<>(requestBody, httpHeaders),
+                new ParameterizedTypeReference<BeaconConfigDeletionResponse>() {}
+        );
+    }
+
     public List<String> checkOrder(String orderId) {
         ResponseEntity<List<String>> responseEntity = restTemplate.exchange(
                 "/order?orderId=" + orderId,
                 HttpMethod.GET,
                 new HttpEntity<>(null, httpHeaders),
-                new ParameterizedTypeReference<List<String>>() {
-                }
-                );
+                new ParameterizedTypeReference<List<String>>() {}
+        );
         return responseEntity.getBody();
     }
 
