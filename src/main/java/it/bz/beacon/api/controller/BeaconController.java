@@ -6,6 +6,7 @@ import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.Order;
 import it.bz.beacon.api.model.BeaconUpdate;
 import it.bz.beacon.api.service.beacon.IBeaconService;
+import it.bz.beacon.api.util.EddystoneUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,14 @@ public class BeaconController {
     @ApiOperation(value = "View a list of available beacons", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public List<Beacon> getList() {
+        String testHex = EddystoneUrl.encodeUri("http://kntk.io/eddystone");
+        String testUrl = EddystoneUrl.decodeUri(testHex);
+        String url = EddystoneUrl.decodeUri("026b6e746b2e696f2f6564647973746f6e65");
+        String urlHex = EddystoneUrl.encodeUri(url);
+
+        boolean sameHex = testHex.equals(urlHex);
+        boolean sameUrl = url.equals(testUrl);
+
         return service.findAll();
     }
 

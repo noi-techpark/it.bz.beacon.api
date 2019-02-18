@@ -94,8 +94,6 @@ public class BeaconService implements IBeaconService {
     @Override
     public Beacon update(long id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException {
         Beacon beacon = find(id);
-
-        //TODO check if changes were made... if not, delete config
         TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon);
 
         if (isNewConfig(tagBeaconConfig, beacon)) {

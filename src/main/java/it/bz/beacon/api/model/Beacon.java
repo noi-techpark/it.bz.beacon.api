@@ -134,6 +134,9 @@ public class Beacon {
     }
 
     public String getName() {
+        if (name == null) {
+            return "";
+        }
         return name;
     }
 
@@ -142,6 +145,9 @@ public class Beacon {
     }
 
     public String getDescription() {
+        if (description == null) {
+            return "";
+        }
         return description;
     }
 
@@ -166,6 +172,9 @@ public class Beacon {
     }
 
     public String getUrl() {
+        if (url == null) {
+            return "";
+        }
         return url;
     }
 
@@ -174,6 +183,9 @@ public class Beacon {
     }
 
     public String getNamespace() {
+        if (namespace == null) {
+            return "";
+        }
         return namespace;
     }
 
@@ -182,6 +194,9 @@ public class Beacon {
     }
 
     public String getInstanceId() {
+        if (instanceId == null) {
+            return "";
+        }
         return instanceId;
     }
 
@@ -222,6 +237,9 @@ public class Beacon {
     }
 
     public String getManufacturerId() {
+        if (manufacturerId == null) {
+            return "";
+        }
         return manufacturerId;
     }
 
@@ -238,6 +256,9 @@ public class Beacon {
     }
 
     public String getLocationDescription() {
+        if (locationDescription == null) {
+            return "";
+        }
         return locationDescription;
     }
 
@@ -259,8 +280,12 @@ public class Beacon {
             return Status.NO_SIGNAL;
         }
 
-        if (getIssues() != null && getIssues().size() > 0) {
-            return Status.ISSUE;
+        if (getIssues() != null) {
+            for(Issue issue : getIssues()) {
+                if (issue.getSolution() == null) {
+                    return Status.ISSUE;
+                }
+            }
         }
 
         if (getBatteryLevel() != null && getBatteryLevel() < 5) {
