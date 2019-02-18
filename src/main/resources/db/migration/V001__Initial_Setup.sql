@@ -1,3 +1,5 @@
+create sequence hibernate_sequence;
+
 create table "user" (
     id int8 not null,
     created_at timestamp not null,
