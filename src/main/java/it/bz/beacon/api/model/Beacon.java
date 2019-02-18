@@ -88,7 +88,7 @@ public class Beacon {
             setTxPower(remoteBeacon.getTxPower());
             setBatteryLevel(remoteBeacon.getBatteryLevel());
 
-            setLastSeen(remoteBeacon.getLastSeen());
+            setLastSeen(remoteBeacon.getLastSeen() * 1000);
             setiBeacon(remoteBeacon.isiBeacon());
             setTelemetry(remoteBeacon.isTelemetry());
             setEddystoneUid(remoteBeacon.isEddystoneUid());

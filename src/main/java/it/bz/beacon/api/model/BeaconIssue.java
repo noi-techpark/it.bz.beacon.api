@@ -1,5 +1,6 @@
 package it.bz.beacon.api.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import it.bz.beacon.api.db.model.Issue;
 
 import java.util.Date;
@@ -12,11 +13,15 @@ public class BeaconIssue {
     private String problem;
     private String problemDescription;
     private String reporter;
+
+    @ApiModelProperty(dataType = "java.lang.Long")
     private Date reportDate;
 
     private boolean resolved = false;
     private String solution;
     private String solutionDescription;
+
+    @ApiModelProperty(dataType = "java.lang.Long")
     private Date resolveDate;
 
     public static BeaconIssue fromIssue(Issue issue, Beacon beacon) {
