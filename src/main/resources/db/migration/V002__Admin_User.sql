@@ -1,1 +1,1 @@
-insert into "user" (id, username, password, name, created_at, updated_at) values (1, 'admin', '$2y$04$CrEwSZC.F21.YuXUN.tSgeMN4ToqQ4Rqb2uzmOqv2R4aUMRuAwHBS', 'Admin', '2019-01-01 00:00:00', '2019-01-01 00:00:00');
+insert into "user" (id, username, password, name, created_at, updated_at) values (1, 'admin', '$2a$10$/o8Ws2I8aaXQu5vNcTnU6.5S3NTmdUKPece3gcPN53TNxd19VUOne', 'Admin', '2019-01-01 00:00:00', '2019-01-01 00:00:00');
