@@ -23,14 +23,6 @@ public class BeaconController {
     @ApiOperation(value = "View a list of available beacons", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public List<Beacon> getList() {
-        String testHex = EddystoneUrl.encodeUri("http://kntk.io/eddystone");
-        String testUrl = EddystoneUrl.decodeUri(testHex);
-        String url = EddystoneUrl.decodeUri("026b6e746b2e696f2f6564647973746f6e65");
-        String urlHex = EddystoneUrl.encodeUri(url);
-
-        boolean sameHex = testHex.equals(urlHex);
-        boolean sameUrl = url.equals(testUrl);
-
         return service.findAll();
     }
 
