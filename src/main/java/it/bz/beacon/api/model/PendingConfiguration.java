@@ -3,6 +3,7 @@ package it.bz.beacon.api.model;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfiguration;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
+import it.bz.beacon.api.util.EddystoneUrl;
 
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ public class PendingConfiguration {
         pendingConfiguration.setMinor(configuration.getMinor());
         pendingConfiguration.setNamespace(configuration.getNamespace());
         pendingConfiguration.setInstanceId(configuration.getInstanceId());
-        pendingConfiguration.setUrl(configuration.getUrl());
+        pendingConfiguration.setUrl(EddystoneUrl.decodeUri(configuration.getUrl()));
         pendingConfiguration.setTxPower(configuration.getTxPower());
         pendingConfiguration.setInterval(configuration.getInterval());
         pendingConfiguration.setEddystoneEid(configuration.getPackets().contains(Packet.EDDYSTONE_EID));

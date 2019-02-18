@@ -24,7 +24,7 @@ public class RestResponseExceptionHandler extends ResponseEntityExceptionHandler
             HttpClientErrorException.class
     })
     public final ResponseEntity<Object> handleClientErrorException(HttpClientErrorException ex, WebRequest request) throws Exception {
-        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage());
+        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), ex.getResponseBodyAsString());
         return new ResponseEntity<>(errorDetails, ex.getStatusCode());
     }
 }
