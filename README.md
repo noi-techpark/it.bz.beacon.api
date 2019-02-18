@@ -37,14 +37,10 @@ Change directory:
 cd beacon-suedtirol-api/
 ```
 
-### Perpare your database
-Use src/resources/dbinit.sql to initalize your database instance.
+### Configuration
 
-Also an admin user will be inserted with username "admin" and password "password". Change this as soon as possible using the API or the administration web application.
+Make a copy of the src/resources/application.properties.dist file and name it "application.properties". Fill in the required values:
 
-### Configure application.properties file
-Make a copy of the src/resources/application.properties.dist file and name it "application.properties".
-Fill in the required values
 * spring.datasource.url
 * spring.datasource.username
 * spring.datasource.password
@@ -58,6 +54,11 @@ Fill in the required values
 You may also change other values in the application.properties file on your own risk.
 Make sure your webserver is configured to handle file uploads for at least 10MB of size.
 
+### Database
+
+The schema of the database will be automatically generated when starting the application based on the SQL files located in `src/main/resources/db/migration`.
+
+Also an admin user will be inserted with username "admin" and password "password".
 
 ### Build
 
@@ -77,18 +78,61 @@ mvn clean test
 
 ## Deployment
 
-ToDo: A detailed description about how the application must be deployed.
+To build the application for production, execute the following command:
 
-### Build production war file
 ```bash
 mvn clean package
 ```
+
+## Docker environment
+
+For the project a Docker environment is already prepared and ready to use with all necessary prerequisites.
+
+These Docker containers are the same as used by the continuous integration servers.
+
+### Installation
+
+Install [Docker](https://docs.docker.com/install/) (with Docker Compose) locally on your machine.
+
+### Start and stop the containers
+
+Before start working you have to start the Docker containers:
+
+```
+docker-compose up --build --detach
+```
+
+After finished working you can stop the Docker containers:
+
+```
+docker-compose stop
+```
+
+### Running commands inside the container
+
+When the containers are running, you can execute any command inside the environment. Just replace the dots `...` in the following example with the command you wish to execute:
+
+```bash
+docker-compose exec java /bin/bash -c "..."
+```
+
+Some examples are:
+
+```bash
+docker-compose exec java /bin/bash -c "mvn clean test"
+
+# or
+
+docker-compose exec java /bin/bash -c "mvn clean spring-boot:run"
+```
+
+While running the last command, you can access the website at http://localhost:8080.
 
 ## Information
 
 ### Support
 
-ToDo: For support, please contact [EMAIL](mailto:EMAIL).
+For support, please contact [info@beacon.bz.it](mailto:info@beacon.bz.it).
 
 ### Contributing
 
@@ -104,10 +148,10 @@ If you'd like to contribute, please follow the following instructions:
 
 ### Documentation
 
-ToDo: More documentation can be found at [URL](URL).
+More documentation can be found at [https://opendatahub.readthedocs.io/en/latest/index.html](https://opendatahub.readthedocs.io/en/latest/index.html).
 
 ### License
 
-ToDo: The code in this project is licensed under the [LICENSE].
+The code in this project is licensed under the Mozilla Public License 2.0 license.
 See the LICENSE.md file for more information.
 
