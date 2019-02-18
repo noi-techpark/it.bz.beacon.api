@@ -47,7 +47,7 @@ public class RemoteBeacon {
         remoteBeacon.setTxPower(tagBeaconDevice.getTxPower());
         remoteBeacon.setName(tagBeaconDevice.getName());
 
-        remoteBeacon.setLastSeen(tagBeaconDevice.getLastSeen());
+        remoteBeacon.setLastSeen(tagBeaconDevice.getLastSeen() * 1000);
         remoteBeacon.setiBeacon(tagBeaconDevice.getProfiles().contains(Profile.IBEACON));
         remoteBeacon.setEddystoneUid(tagBeaconDevice.getProfiles().contains(Profile.EDDYSTONE));
         remoteBeacon.setTelemetry(tagBeaconDevice.getPackets().contains(Packet.KONTAKT_TLM));
