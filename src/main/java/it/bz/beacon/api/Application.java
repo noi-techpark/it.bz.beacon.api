@@ -122,6 +122,7 @@ public class Application extends SpringBootServletInitializer {
     public WebMvcConfigurer corsConfigurer() {
 
         return new WebMvcConfigurer() {
+
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/v1/**")
