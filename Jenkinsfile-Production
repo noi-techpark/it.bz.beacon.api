@@ -13,7 +13,7 @@ pipeline {
         DB_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
         JWT_SECRET = credentials('beacon-api-jwt-secret')
         CORS_ORIGINS = "https://admin.beacon.bz.it"
-        KONTACT_IO_API_KEY = credentials('beacon-api-kontact-io-api-key')
+        KONTAKT_IO_API_KEY = credentials('beacon-api-kontakt-io-api-key')
         INFO_TITLE = ""
         INFO_DESCRIPTION = ""
         INFO_VERSION = ""
@@ -35,7 +35,7 @@ pipeline {
                 sh 'sed -i -e "s%\\(spring.jpa.properties.hibernate.dialect\\s*=\\).*\\$%\\1${DB_DIALECT}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(security.jwt.token.secret\\s*=\\).*\\$%\\1${JWT_SECRET}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(it.bz.beacon.allowedOrigins\\s*=\\).*\\$%\\1${CORS_ORIGINS}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(kontakt.io.apiKey\\s*=\\).*\\$%\\1${KONTACT_IO_API_KEY}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(kontakt.io.apiKey\\s*=\\).*\\$%\\1${KONTAKT_IO_API_KEY}%" src/main/resources/application.properties'
 
                 sh 'sed -i -e "s%\\(api.info.title\\s*=\\).*\\$%\\1${INFO_TITLE}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(api.info.description\\s*=\\).*\\$%\\1${INFO_DESCRIPTION}%" src/main/resources/application.properties'
