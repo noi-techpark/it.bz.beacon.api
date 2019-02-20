@@ -53,11 +53,9 @@ public class TagBeaconConfig {
         config.setNamespace(beaconUpdate.getNamespace());
 
         if (!beaconUpdate.isEddystoneEid()) {
-            config.removeProfile(Profile.EDDYSTONE);
             config.removePacket(Packet.EDDYSTONE_EID);
         } else {
             config.addPacket(Packet.EDDYSTONE_EID);
-            config.addProfile(Profile.EDDYSTONE);
         }
 
         if (!beaconUpdate.isEddystoneEtlm()) {
@@ -73,9 +71,11 @@ public class TagBeaconConfig {
         }
 
         if (!beaconUpdate.isEddystoneUid()) {
+            config.removeProfile(Profile.EDDYSTONE);
             config.removePacket(Packet.EDDYSTONE_UID);
         } else {
             config.addPacket(Packet.EDDYSTONE_UID);
+            config.addProfile(Profile.EDDYSTONE);
         }
 
         if (!beaconUpdate.isEddystoneUrl()) {
