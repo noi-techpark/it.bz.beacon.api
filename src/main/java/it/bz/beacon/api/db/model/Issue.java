@@ -23,7 +23,7 @@ public class Issue extends AuditModel {
     private String problemDescription;
     private String reporter;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     private IssueSolution solution;
 
     public static Issue create(BeaconData beaconData, IssueCreation issueCreation) {
