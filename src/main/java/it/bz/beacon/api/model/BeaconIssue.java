@@ -31,6 +31,7 @@ public class BeaconIssue {
         beaconIssue.setProblem(issue.getProblem());
         beaconIssue.setProblemDescription(issue.getProblemDescription());
         beaconIssue.setReportDate(issue.getReportDate());
+        beaconIssue.setReporter(issue.getReporter());
         if (issue.getSolution() != null) {
             beaconIssue.setResolved(true);
             beaconIssue.setSolution(issue.getSolution().getSolution());
