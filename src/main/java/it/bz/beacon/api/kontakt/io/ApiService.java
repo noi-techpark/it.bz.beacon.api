@@ -29,7 +29,7 @@ public class ApiService {
 
     public BeaconListResponse getBeacons() {
         ResponseEntity<BeaconListResponse> responseEntity = restTemplate.exchange(
-                "/device?deviceType=" + Device.DeviceType.BEACON,
+                "/device?deviceType=" + Device.DeviceType.BEACON + "&maxResult=10000",
                 HttpMethod.GET,
                 new HttpEntity<>(null, httpHeaders),
                 new ParameterizedTypeReference<BeaconListResponse>() {}
