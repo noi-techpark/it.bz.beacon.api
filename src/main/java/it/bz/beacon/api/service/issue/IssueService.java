@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,6 +41,7 @@ public class IssueService implements IIssueService {
     private BeaconSuedtirolConfiguration beaconSuedtirolConfiguration;
 
     @Override
+    @Transactional
     public List<BeaconIssue> findAll(boolean onlyUnresolved) {
         List<Issue> issues = onlyUnresolved ? repository.findAllBySolution(null) : repository.findAll();
 
