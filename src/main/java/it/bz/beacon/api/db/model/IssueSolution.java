@@ -24,6 +24,10 @@ public class IssueSolution extends AuditModel {
     @Lob
     private String solutionDescription;
 
+    @NotEmpty
+    @NotNull
+    private String resolver;
+
     public long getId() {
         return id;
     }
@@ -54,5 +58,13 @@ public class IssueSolution extends AuditModel {
 
     public void setSolutionDescription(String solutionDescription) {
         this.solutionDescription = solutionDescription;
+    }
+
+    public String getResolver() {
+        return resolver;
+    }
+
+    public void setResolver(String resolver) {
+        this.resolver = resolver;
     }
 }
