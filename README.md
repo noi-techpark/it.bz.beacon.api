@@ -50,7 +50,8 @@ Make a copy of the src/resources/application.properties.dist file and name it "a
 * kontakt.io.apiKey
 * file.upload-dir
 * api.info.*
-* it.bz.beacon.issueEmail
+* it.bz.beacon.issueEmailTo
+* it.bz.beacon.issueEmailFrom
 * spring.mail.*
 
 You may also change other values in the application.properties file on your own risk.
