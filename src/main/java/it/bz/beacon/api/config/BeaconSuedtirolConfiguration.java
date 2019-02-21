@@ -12,11 +12,33 @@ public class BeaconSuedtirolConfiguration {
     @NotBlank
     private String allowedOrigins;
 
+    @NotBlank
+    private String issueEmailFrom;
+
+    @NotBlank
+    private String issueEmailTo;
+
     public String getAllowedOrigins() {
         return allowedOrigins;
     }
 
     public void setAllowedOrigins(String allowedOrigins) {
         this.allowedOrigins = allowedOrigins;
+    }
+
+    public String getIssueEmailFrom() {
+        return issueEmailFrom;
+    }
+
+    public void setIssueEmailFrom(String issueEmailFrom) {
+        this.issueEmailFrom = issueEmailFrom;
+    }
+
+    public String getIssueEmailTo() {
+        return issueEmailTo;
+    }
+
+    public void setIssueEmailTo(String issueEmailTo) {
+        this.issueEmailTo = issueEmailTo;
     }
 }

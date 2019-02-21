@@ -50,6 +50,8 @@ Make a copy of the src/resources/application.properties.dist file and name it "a
 * kontakt.io.apiKey
 * file.upload-dir
 * api.info.*
+* it.bz.beacon.issueEmail
+* spring.mail.*
 
 You may also change other values in the application.properties file on your own risk.
 Make sure your webserver is configured to handle file uploads for at least 10MB of size.
