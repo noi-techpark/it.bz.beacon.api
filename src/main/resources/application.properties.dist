@@ -1,7 +1,7 @@
 # DB configuration (e.g. jdbc:postgresql://<host>:<port>/<database>)
-spring.datasource.url=jdbc:postgresql://postgres:5432/beacon
-spring.datasource.username=beacon
-spring.datasource.password=password
+spring.datasource.url =
+spring.datasource.username =
+spring.datasource.password =
 
 # The SQL dialect makes Hibernate generate better SQL for the chosen database
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
