@@ -3,10 +3,9 @@ package it.bz.beacon.api.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.model.Beacon;
-import it.bz.beacon.api.model.Order;
 import it.bz.beacon.api.model.BeaconUpdate;
+import it.bz.beacon.api.model.Order;
 import it.bz.beacon.api.service.beacon.IBeaconService;
-import it.bz.beacon.api.util.EddystoneUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +27,7 @@ public class BeaconController {
 
     @ApiOperation(value = "Search a beacon with an ID", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = "application/json")
-    public Beacon get(@PathVariable long id) {
+    public Beacon get(@PathVariable String id) {
         return service.find(id);
     }
 
@@ -40,7 +39,7 @@ public class BeaconController {
 
     @ApiOperation(value = "Update a beacon", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.PATCH, value = "/{id}", produces = "application/json")
-    public Beacon update(@PathVariable long id, @Valid @RequestBody BeaconUpdate beaconUpdate) {
+    public Beacon update(@PathVariable String id, @Valid @RequestBody BeaconUpdate beaconUpdate) {
         return service.update(id, beaconUpdate);
     }
 }

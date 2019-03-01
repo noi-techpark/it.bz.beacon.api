@@ -1,0 +1,5 @@
+ALTER TABLE issue DROP CONSTRAINT fkn3tkf7lgl2hald844n35p695i;
+ALTER TABLE beacon_data ALTER COLUMN id TYPE VARCHAR;
+ALTER TABLE issue ALTER COLUMN beacon_data_id TYPE VARCHAR;
+ALTER TABLE issue ADD CONSTRAINT fkn3tkf7lgl2hald844n35p695i FOREIGN KEY (beacon_data_id) REFERENCES beacon_data (id);
+ALTER TABLE beacon_image ALTER COLUMN beacon_id TYPE VARCHAR;

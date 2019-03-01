@@ -1,5 +1,6 @@
 package it.bz.beacon.api.model;
 
+import it.bz.beacon.api.exception.db.InvalidBeaconIdentifierException;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
@@ -11,6 +12,10 @@ public class RemoteBeacon {
 
     private Manufacturer manufacturer;
     private String manufacturerId;
+
+    private String id;
+    private String zone;
+    private String zoneCode;
     private String name;
 
     private UUID uuid;
@@ -35,6 +40,8 @@ public class RemoteBeacon {
     public static RemoteBeacon fromTagBeaconDevice(TagBeaconDevice tagBeaconDevice) {
         RemoteBeacon remoteBeacon = new RemoteBeacon();
 
+        remoteBeacon.parseManufacturerName(tagBeaconDevice.getName());
+
         remoteBeacon.setManufacturer(Manufacturer.KONTAKT_IO);
         remoteBeacon.setManufacturerId(tagBeaconDevice.getUniqueId());
         remoteBeacon.setUuid(tagBeaconDevice.getProximity());
@@ -45,7 +52,6 @@ public class RemoteBeacon {
         remoteBeacon.setInstanceId(tagBeaconDevice.getInstanceId());
         remoteBeacon.setInterval(tagBeaconDevice.getInterval());
         remoteBeacon.setTxPower(tagBeaconDevice.getTxPower());
-        remoteBeacon.setName(tagBeaconDevice.getName());
 
         remoteBeacon.setLastSeen(tagBeaconDevice.getLastSeen());
         remoteBeacon.setiBeacon(tagBeaconDevice.getProfiles().contains(Profile.IBEACON));
@@ -57,6 +63,43 @@ public class RemoteBeacon {
         remoteBeacon.setEddystoneEtlm(tagBeaconDevice.getPackets().contains(Packet.EDDYSTONE_ETLM));
 
         return remoteBeacon;
+    }
+
+    private void parseManufacturerName(String name) throws InvalidBeaconIdentifierException {
+//        if (name == null || !name.matches("^[A-Z]{4}[0-9]{3}[A-Z]#[A-Za-z0-9]{6}$")) {
+//            throw new InvalidBeaconIdentifierException();
+//        }
+
+        setName(name);
+
+//        String[] parts = name.split("#");
+//        setZone(parts[0].substring(0, 4));
+//        setZoneCode(parts[0].substring(4, 8));
+//        setId(parts[1]);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getZone() {
+        return zone;
+    }
+
+    public void setZone(String zone) {
+        this.zone = zone;
+    }
+
+    public String getZoneCode() {
+        return zoneCode;
+    }
+
+    public void setZoneCode(String zoneCode) {
+        this.zoneCode = zoneCode;
     }
 
     public Manufacturer getManufacturer() {

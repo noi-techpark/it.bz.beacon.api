@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface IBeaconService {
     List<Beacon> findAll();
-    List<Beacon> findAllWithIds(List<Long> ids);
-    Beacon find(long id) throws BeaconNotFoundException;
+    List<Beacon> findAllWithIds(List<String> ids);
+    Beacon find(String id) throws BeaconNotFoundException;
     List<Beacon> createByOrder(Order order);
-    Beacon update(long id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException;
-    ResponseEntity<?> delete(long id) throws BeaconNotFoundException;
+    Beacon update(String id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException;
+    ResponseEntity<?> delete(String id) throws BeaconNotFoundException;
 }

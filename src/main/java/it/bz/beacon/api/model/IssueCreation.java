@@ -8,7 +8,7 @@ public class IssueCreation {
 
     @NotNull
     @Min(1)
-    private long beaconId;
+    private String beaconId;
 
     @NotEmpty
     @NotNull
@@ -20,11 +20,11 @@ public class IssueCreation {
     @NotNull
     private String reporter;
 
-    public long getBeaconId() {
+    public String getBeaconId() {
         return beaconId;
     }
 
-    public void setBeaconId(long beaconId) {
+    public void setBeaconId(String beaconId) {
         this.beaconId = beaconId;
     }
 

@@ -23,7 +23,7 @@ public class IssueController {
 
     @ApiOperation(value = "View a list of available issues for the specified beacon ID", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    public List<BeaconIssue> getList(@PathVariable long beaconId, @RequestParam(defaultValue = "false", required = false) boolean onlyUnresolved) {
+    public List<BeaconIssue> getList(@PathVariable String beaconId, @RequestParam(defaultValue = "false", required = false) boolean onlyUnresolved) {
         BeaconData beaconData = beaconDataService.find(beaconId);
         return service.findAllByBeacon(beaconData, onlyUnresolved);
     }

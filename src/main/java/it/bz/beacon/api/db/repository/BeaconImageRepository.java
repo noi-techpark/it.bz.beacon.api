@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface BeaconImageRepository extends JpaRepository<BeaconImage, Long> {
-    List<BeaconImage> findAllByBeaconId(long beaconId);
+    List<BeaconImage> findAllByBeaconId(String beaconId);
 }

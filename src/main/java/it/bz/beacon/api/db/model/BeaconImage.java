@@ -13,7 +13,7 @@ public class BeaconImage extends AuditModel {
 
     @Column(nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private long beaconId;
+    private String beaconId;
 
     @Column(nullable = false)
     private String fileName = "";
@@ -26,11 +26,11 @@ public class BeaconImage extends AuditModel {
         this.id = id;
     }
 
-    public long getBeaconId() {
+    public String getBeaconId() {
         return beaconId;
     }
 
-    public void setBeaconId(long beaconId) {
+    public void setBeaconId(String beaconId) {
         this.beaconId = beaconId;
     }
 

@@ -52,7 +52,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public List<Beacon> findAllWithIds(List<Long> ids) {
+    public List<Beacon> findAllWithIds(List<String> ids) {
         List<BeaconData> beaconDatas = beaconDataService.findAllById(ids);
         Map<String, RemoteBeacon> remoteBeacons = getRemoteBeacons(beaconDatas);
 
@@ -62,7 +62,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public Beacon find(long id) throws BeaconNotFoundException {
+    public Beacon find(String id) throws BeaconNotFoundException {
         BeaconData beaconData = beaconDataService.find(id);
         Map<String, RemoteBeacon> remoteBeacons = getRemoteBeacons(Lists.newArrayList(beaconData));
 
@@ -92,7 +92,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public Beacon update(long id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException {
+    public Beacon update(String id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException {
         Beacon beacon = find(id);
         TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon);
 
@@ -158,7 +158,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public ResponseEntity<?> delete(long id) throws BeaconNotFoundException {
+    public ResponseEntity<?> delete(String id) throws BeaconNotFoundException {
         return null;
     }
 

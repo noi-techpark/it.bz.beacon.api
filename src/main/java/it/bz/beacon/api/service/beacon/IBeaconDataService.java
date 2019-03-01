@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface IBeaconDataService {
     List<BeaconData> findAll();
-    List<BeaconData> findAllById(List<Long> ids);
-    BeaconData find(long id) throws BeaconDataNotFoundException;
+    List<BeaconData> findAllById(List<String> ids);
+    BeaconData find(String id) throws BeaconDataNotFoundException;
     BeaconData create(BeaconData beaconData);
-    BeaconData update(long id, BeaconUpdate beaconUpdate) throws BeaconDataNotFoundException;
-    ResponseEntity<?> delete(long id) throws BeaconDataNotFoundException;
+    BeaconData update(String id, BeaconUpdate beaconUpdate) throws BeaconDataNotFoundException;
+    ResponseEntity<?> delete(String id) throws BeaconDataNotFoundException;
 }

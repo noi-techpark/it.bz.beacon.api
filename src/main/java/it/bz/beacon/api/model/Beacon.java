@@ -16,7 +16,7 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Beacon {
 
-    private long id;
+    private String id;
     private Manufacturer manufacturer;
     private String manufacturerId;
     private String name;
@@ -101,11 +101,11 @@ public class Beacon {
         }
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
