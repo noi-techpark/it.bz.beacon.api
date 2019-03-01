@@ -27,7 +27,7 @@ public class PendingConfiguration {
     private boolean eddystoneEid;
     private boolean eddystoneEtlm;
 
-    public static PendingConfiguration fromBeaconConfiguration(BeaconConfiguration configuration) {
+    public static PendingConfiguration fromBeaconConfiguration(BeaconConfiguration configuration, RemoteBeacon remoteBeacon) {
         PendingConfiguration pendingConfiguration = new PendingConfiguration();
         pendingConfiguration.setUuid(configuration.getProximity());
         pendingConfiguration.setMajor(configuration.getMajor());
@@ -37,13 +37,28 @@ public class PendingConfiguration {
         pendingConfiguration.setUrl(EddystoneUrl.decodeUri(configuration.getUrl()));
         pendingConfiguration.setTxPower(configuration.getTxPower());
         pendingConfiguration.setInterval(configuration.getInterval());
-        pendingConfiguration.setEddystoneEid(configuration.getPackets().contains(Packet.EDDYSTONE_EID));
-        pendingConfiguration.setEddystoneEtlm(configuration.getPackets().contains(Packet.EDDYSTONE_ETLM));
-        pendingConfiguration.setEddystoneTlm(configuration.getPackets().contains(Packet.EDDYSTONE_TLM));
-        pendingConfiguration.setEddystoneUid(configuration.getPackets().contains(Packet.EDDYSTONE_UID) || configuration.getProfiles().contains(Profile.EDDYSTONE));
-        pendingConfiguration.setEddystoneUrl(configuration.getPackets().contains(Packet.EDDYSTONE_URL));
-        pendingConfiguration.setiBeacon(configuration.getPackets().contains(Packet.IBEACON) || configuration.getProfiles().contains(Profile.IBEACON));
-        pendingConfiguration.setTelemetry(configuration.getPackets().contains(Packet.KONTAKT_TLM));
+        if (configuration.getPackets() != null) {
+            pendingConfiguration.setEddystoneEid(configuration.getPackets().contains(Packet.EDDYSTONE_EID));
+            pendingConfiguration.setEddystoneEtlm(configuration.getPackets().contains(Packet.EDDYSTONE_ETLM));
+            pendingConfiguration.setEddystoneTlm(configuration.getPackets().contains(Packet.EDDYSTONE_TLM));
+            pendingConfiguration.setEddystoneUrl(configuration.getPackets().contains(Packet.EDDYSTONE_URL));
+            pendingConfiguration.setTelemetry(configuration.getPackets().contains(Packet.KONTAKT_TLM));
+            if (configuration.getProfiles() != null) {
+                pendingConfiguration.setEddystoneUid(configuration.getPackets().contains(Packet.EDDYSTONE_UID) || configuration.getProfiles().contains(Profile.EDDYSTONE));
+                pendingConfiguration.setiBeacon(configuration.getPackets().contains(Packet.IBEACON) || configuration.getProfiles().contains(Profile.IBEACON));
+            } else {
+                pendingConfiguration.setEddystoneUid(remoteBeacon.isEddystoneUid());
+                pendingConfiguration.setiBeacon(remoteBeacon.isiBeacon());
+            }
+        } else {
+            pendingConfiguration.setEddystoneEid(remoteBeacon.isEddystoneEid());
+            pendingConfiguration.setEddystoneEtlm(remoteBeacon.isEddystoneEtlm());
+            pendingConfiguration.setEddystoneTlm(remoteBeacon.isEddystoneTlm());
+            pendingConfiguration.setEddystoneUid(remoteBeacon.isEddystoneUid());
+            pendingConfiguration.setEddystoneUrl(remoteBeacon.isEddystoneUrl());
+            pendingConfiguration.setiBeacon(remoteBeacon.isiBeacon());
+            pendingConfiguration.setTelemetry(remoteBeacon.isTelemetry());
+        }
 
         return pendingConfiguration;
     }
