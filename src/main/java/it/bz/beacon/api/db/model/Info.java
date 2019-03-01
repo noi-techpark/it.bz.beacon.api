@@ -27,8 +27,7 @@ public class Info extends AuditModel {
     private float longitude;
     private String floor;
 
-    //6a84c716-0f2a-1ce9-f210-6a63bd873dd9
-    private UUID uuid;
+    private UUID uuid = UUID.fromString("6a84c716-0f2a-1ce9-f210-6a63bd873dd9");
     private int major;
     private int minor;
 

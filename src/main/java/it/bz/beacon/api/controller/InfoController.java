@@ -27,8 +27,20 @@ public class InfoController {
 
     @ApiOperation(value = "Search a info with an ID")
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = "application/json")
-    public Info get(@PathVariable long id) {
-        return service.find(id);
+    public Info get(@PathVariable String id) {
+        return service.findById(id);
+    }
+
+    @ApiOperation(value = "Search a info with an Eddystone instanceId value")
+    @RequestMapping(method = RequestMethod.GET, value = "/eddystone/{instanceId}", produces = "application/json")
+    public Info getEddyStone(@PathVariable String instanceId) {
+        return service.findByInstanceId(instanceId);
+    }
+
+    @ApiOperation(value = "Search a info with an iBeacon major and minor value")
+    @RequestMapping(method = RequestMethod.GET, value = "/ibeacon/{major}/{minor}", produces = "application/json")
+    public Info getiBeacon(@PathVariable int major, @PathVariable int minor) {
+        return service.findByMajorMinor(major, minor);
     }
 
     @ApiOperation(value = "Create a info", authorizations = {@Authorization(value = "JWT")})
@@ -42,5 +54,4 @@ public class InfoController {
     public Info update(@PathVariable long id, @Valid @RequestBody InfoUpdate userUpdate) {
         return service.update(id, userUpdate);
     }
-
 }
