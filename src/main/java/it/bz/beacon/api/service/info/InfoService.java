@@ -36,12 +36,12 @@ public class InfoService implements IInfoService {
 
     @Override
     public Info findByInstanceId(String instanceId) throws InfoNotFoundException {
-        return repository.findByEddystone(beaconSuedtirolConfiguration.getNamespace(), instanceId).orElseThrow(InfoNotFoundException::new);
+        return repository.findByNamespaceAndInstanceId(beaconSuedtirolConfiguration.getNamespace(), instanceId).orElseThrow(InfoNotFoundException::new);
     }
 
     @Override
     public Info findByMajorMinor(int major, int minor) throws InfoNotFoundException {
-        return repository.findByIBeacon(beaconSuedtirolConfiguration.getUuid(), major, minor).orElseThrow(InfoNotFoundException::new);
+        return repository.findByUuidAndMajorAndMinor(beaconSuedtirolConfiguration.getUuid(), major, minor).orElseThrow(InfoNotFoundException::new);
     }
 
     @Override

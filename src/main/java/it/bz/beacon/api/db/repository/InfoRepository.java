@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface InfoRepository extends JpaRepository<Info, Long> {
     Optional<Info> findByBeaconId(String beaconId);
-    Optional<Info> findByEddystone(String namespace, String instanceId);
-    Optional<Info> findByIBeacon(String uuid, int major, int minor);
+    Optional<Info> findByNamespaceAndInstanceId(String namespace, String instanceId);
+    Optional<Info> findByUuidAndMajorAndMinor(String uuid, int major, int minor);
 }
