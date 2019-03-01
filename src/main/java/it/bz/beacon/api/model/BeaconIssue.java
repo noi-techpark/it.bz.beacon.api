@@ -24,6 +24,8 @@ public class BeaconIssue {
     @ApiModelProperty(dataType = "java.lang.Long")
     private Date resolveDate;
 
+    private String resolver;
+
     public static BeaconIssue fromIssue(Issue issue, Beacon beacon) {
         BeaconIssue beaconIssue = new BeaconIssue();
         beaconIssue.setId(issue.getId());
@@ -37,6 +39,7 @@ public class BeaconIssue {
             beaconIssue.setSolution(issue.getSolution().getSolution());
             beaconIssue.setSolutionDescription(issue.getSolution().getSolution());
             beaconIssue.setResolveDate(issue.getSolution().getCreatedAt());
+            beaconIssue.setResolver(issue.getSolution().getResolver());
         }
 
         return beaconIssue;
@@ -120,5 +123,13 @@ public class BeaconIssue {
 
     public void setResolveDate(Date resolveDate) {
         this.resolveDate = resolveDate;
+    }
+
+    public String getResolver() {
+        return resolver;
+    }
+
+    public void setResolver(String resolver) {
+        this.resolver = resolver;
     }
 }

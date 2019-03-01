@@ -1,12 +1,13 @@
 package it.bz.beacon.api.kontakt.io;
 
-import com.google.common.collect.Lists;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
 import it.bz.beacon.api.kontakt.io.model.Device;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
-import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
-import it.bz.beacon.api.kontakt.io.response.*;
+import it.bz.beacon.api.kontakt.io.response.AssignOrderResponse;
+import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
+import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
+import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
