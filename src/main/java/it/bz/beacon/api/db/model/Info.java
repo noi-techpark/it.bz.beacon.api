@@ -1,19 +1,9 @@
 package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.Lists;
 import it.bz.beacon.api.model.InfoCreation;
-import it.bz.beacon.api.model.InfoUpdate;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(
@@ -26,34 +16,32 @@ public class Info extends AuditModel {
     private String id;
 
     private String beaconId;
-    private String nameDe;
-    private String nameIt;
-    private String nameEn;
-    private String descriptionDe;
-    private String descriptionIt;
-    private String descriptionEn;
-
-    private String websiteDe;
-    private String websiteIt;
-    private String websiteEn;
+    private String name;
+    private String website;
+    private String openDataPoiId;
 
     private String address;
     private String location;
     private String cap;
+    private float latitude;
+    private float longitude;
+    private String floor;
 
-    private String latitude;
-    private String longitude;
-    private String additionalLocationInfo;
+    //6a84c716-0f2a-1ce9-f210-6a63bd873dd9
+    private UUID uuid;
+    private int major;
+    private int minor;
 
-    private String contactPersonName;
-    private String contactPersonLastName;
-    private String contactPersonEmail;
-    private String contactPersonOrganisation;
+    private String namespace = "6a84c7166a63bd873dd9";
+    private String instanceId;
+
+    @JsonIgnore
+    private String orderSymbol;
 
     public static Info create(InfoCreation infoCreation) {
         Info info = new Info();
         info.setBeaconId(infoCreation.getBeaconId());
-        info.setNameDe(infoCreation.getNameDe());
+        info.setName(infoCreation.getNameDe());
         //TODO:All Fields
 
         return info;
@@ -75,76 +63,28 @@ public class Info extends AuditModel {
         this.beaconId = beaconId;
     }
 
-    public String getNameDe() {
-        return nameDe;
+    public String getName() {
+        return name;
     }
 
-    public void setNameDe(String nameDe) {
-        this.nameDe = nameDe;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getNameIt() {
-        return nameIt;
+    public String getWebsite() {
+        return website;
     }
 
-    public void setNameIt(String nameIt) {
-        this.nameIt = nameIt;
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
-    public String getNameEn() {
-        return nameEn;
+    public String getOpenDataPoiId() {
+        return openDataPoiId;
     }
 
-    public void setNameEn(String nameEn) {
-        this.nameEn = nameEn;
-    }
-
-    public String getDescriptionDe() {
-        return descriptionDe;
-    }
-
-    public void setDescriptionDe(String descriptionDe) {
-        this.descriptionDe = descriptionDe;
-    }
-
-    public String getDescriptionIt() {
-        return descriptionIt;
-    }
-
-    public void setDescriptionIt(String descriptionIt) {
-        this.descriptionIt = descriptionIt;
-    }
-
-    public String getDescriptionEn() {
-        return descriptionEn;
-    }
-
-    public void setDescriptionEn(String descriptionEn) {
-        this.descriptionEn = descriptionEn;
-    }
-
-    public String getWebsiteDe() {
-        return websiteDe;
-    }
-
-    public void setWebsiteDe(String websiteDe) {
-        this.websiteDe = websiteDe;
-    }
-
-    public String getWebsiteIt() {
-        return websiteIt;
-    }
-
-    public void setWebsiteIt(String websiteIt) {
-        this.websiteIt = websiteIt;
-    }
-
-    public String getWebsiteEn() {
-        return websiteEn;
-    }
-
-    public void setWebsiteEn(String websiteEn) {
-        this.websiteEn = websiteEn;
+    public void setOpenDataPoiId(String openDataPoiId) {
+        this.openDataPoiId = openDataPoiId;
     }
 
     public String getAddress() {
@@ -171,59 +111,27 @@ public class Info extends AuditModel {
         this.cap = cap;
     }
 
-    public String getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
 
-    public String getAdditionalLocationInfo() {
-        return additionalLocationInfo;
+    public String getFloor() {
+        return floor;
     }
 
-    public void setAdditionalLocationInfo(String additionalLocationInfo) {
-        this.additionalLocationInfo = additionalLocationInfo;
-    }
-
-    public String getContactPersonName() {
-        return contactPersonName;
-    }
-
-    public void setContactPersonName(String contactPersonName) {
-        this.contactPersonName = contactPersonName;
-    }
-
-    public String getContactPersonLastName() {
-        return contactPersonLastName;
-    }
-
-    public void setContactPersonLastName(String contactPersonLastName) {
-        this.contactPersonLastName = contactPersonLastName;
-    }
-
-    public String getContactPersonEmail() {
-        return contactPersonEmail;
-    }
-
-    public void setContactPersonEmail(String contactPersonEmail) {
-        this.contactPersonEmail = contactPersonEmail;
-    }
-
-    public String getContactPersonOrganisation() {
-        return contactPersonOrganisation;
-    }
-
-    public void setContactPersonOrganisation(String contactPersonOrganisation) {
-        this.contactPersonOrganisation = contactPersonOrganisation;
+    public void setFloor(String floor) {
+        this.floor = floor;
     }
 }
