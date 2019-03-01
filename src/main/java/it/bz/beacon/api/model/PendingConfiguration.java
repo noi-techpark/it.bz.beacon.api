@@ -29,14 +29,67 @@ public class PendingConfiguration {
 
     public static PendingConfiguration fromBeaconConfiguration(BeaconConfiguration configuration, RemoteBeacon remoteBeacon) {
         PendingConfiguration pendingConfiguration = new PendingConfiguration();
-        pendingConfiguration.setUuid(configuration.getProximity());
-        pendingConfiguration.setMajor(configuration.getMajor());
-        pendingConfiguration.setMinor(configuration.getMinor());
-        pendingConfiguration.setNamespace(configuration.getNamespace());
-        pendingConfiguration.setInstanceId(configuration.getInstanceId());
-        pendingConfiguration.setUrl(EddystoneUrl.decodeUri(configuration.getUrl()));
-        pendingConfiguration.setTxPower(configuration.getTxPower());
-        pendingConfiguration.setInterval(configuration.getInterval());
+
+        if (configuration.getProximity() != null) {
+            pendingConfiguration.setUuid(configuration.getProximity());
+        } else {
+            pendingConfiguration.setUuid(remoteBeacon.getUuid());
+        }
+
+        if (configuration.getMajor() != null) {
+            pendingConfiguration.setMajor(configuration.getMajor());
+        } else {
+            pendingConfiguration.setMajor(remoteBeacon.getMajor());
+        }
+
+        if (configuration.getMinor() != null) {
+            pendingConfiguration.setMinor(configuration.getMinor());
+        } else {
+            pendingConfiguration.setMinor(remoteBeacon.getMinor());
+        }
+
+        if (configuration.getNamespace() != null) {
+            pendingConfiguration.setNamespace(configuration.getNamespace());
+        } else {
+            pendingConfiguration.setNamespace(remoteBeacon.getNamespace());
+        }
+
+        if (configuration.getInstanceId() != null) {
+            pendingConfiguration.setInstanceId(configuration.getInstanceId());
+        } else {
+            pendingConfiguration.setInstanceId(remoteBeacon.getInstanceId());
+        }
+
+        if (configuration.getUrl() != null) {
+            pendingConfiguration.setUrl(EddystoneUrl.decodeUri(configuration.getUrl()));
+        } else {
+            pendingConfiguration.setUrl(remoteBeacon.getUrl());
+        }
+
+        if (configuration.getTxPower() != null) {
+            pendingConfiguration.setTxPower(configuration.getTxPower());
+        } else {
+            pendingConfiguration.setTxPower(remoteBeacon.getTxPower());
+        }
+
+        if (configuration.getInterval() != null) {
+            pendingConfiguration.setInterval(configuration.getInterval());
+        } else {
+            pendingConfiguration.setInterval(remoteBeacon.getInterval());
+        }
+
+        if (configuration.getProximity() != null) {
+            pendingConfiguration.setUuid(configuration.getProximity());
+        } else {
+            pendingConfiguration.setUuid(remoteBeacon.getUuid());
+        }
+
+        if (configuration.getProximity() != null) {
+            pendingConfiguration.setUuid(configuration.getProximity());
+        } else {
+            pendingConfiguration.setUuid(remoteBeacon.getUuid());
+        }
+
         if (configuration.getPackets() != null) {
             pendingConfiguration.setEddystoneEid(configuration.getPackets().contains(Packet.EDDYSTONE_EID));
             pendingConfiguration.setEddystoneEtlm(configuration.getPackets().contains(Packet.EDDYSTONE_ETLM));
