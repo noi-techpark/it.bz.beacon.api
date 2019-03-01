@@ -103,6 +103,9 @@ public class EddystoneUrl {
     }
 
     public static String decodeUri(String hexString) {
+        if (hexString == null) {
+            return null;
+        }
         return decodeUri(hexStringToByteArray(hexString), 0);
     }
 

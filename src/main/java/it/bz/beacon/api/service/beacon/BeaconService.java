@@ -195,7 +195,7 @@ public class BeaconService implements IBeaconService {
             configListResponse.getConfigs().forEach(configuration -> {
                 RemoteBeacon remoteBeacon = remoteBeacons.get(configuration.getUniqueId());
                 if (remoteBeacon != null) {
-                    remoteBeacon.setPendingConfiguration(PendingConfiguration.fromBeaconConfiguration(configuration));
+                    remoteBeacon.setPendingConfiguration(PendingConfiguration.fromBeaconConfiguration(configuration, remoteBeacon));
                 }
             });
         }
