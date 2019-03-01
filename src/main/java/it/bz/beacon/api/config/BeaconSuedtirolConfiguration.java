@@ -18,6 +18,12 @@ public class BeaconSuedtirolConfiguration {
     @NotBlank
     private String issueEmailTo;
 
+    @NotBlank
+    private String uuid;
+
+    @NotBlank
+    private String namespace;
+
     public String getAllowedOrigins() {
         return allowedOrigins;
     }
@@ -40,5 +46,21 @@ public class BeaconSuedtirolConfiguration {
 
     public void setIssueEmailTo(String issueEmailTo) {
         this.issueEmailTo = issueEmailTo;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 }

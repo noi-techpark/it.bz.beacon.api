@@ -27,11 +27,11 @@ public class Info extends AuditModel {
     private float longitude;
     private String floor;
 
-    private UUID uuid = UUID.fromString("6a84c716-0f2a-1ce9-f210-6a63bd873dd9");
+    private UUID uuid;
     private int major;
     private int minor;
 
-    private String namespace = "6a84c7166a63bd873dd9";
+    private String namespace;
     private String instanceId;
 
     @JsonIgnore

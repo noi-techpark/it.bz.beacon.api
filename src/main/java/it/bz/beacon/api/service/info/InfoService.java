@@ -1,8 +1,10 @@
 package it.bz.beacon.api.service.info;
 
+import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.Info;
 import it.bz.beacon.api.db.repository.InfoRepository;
 import it.bz.beacon.api.exception.db.DuplicateEntryException;
+import it.bz.beacon.api.exception.db.InfoNotFoundException;
 import it.bz.beacon.api.exception.db.UserNotFoundException;
 
 import it.bz.beacon.api.model.InfoCreation;
@@ -19,14 +21,27 @@ public class InfoService implements IInfoService {
     @Autowired
     private InfoRepository repository;
 
+    @Autowired
+    private BeaconSuedtirolConfiguration beaconSuedtirolConfiguration;
+
     @Override
     public List<Info> findAll() {
         return repository.findAll();
     }
 
     @Override
-    public Info find(long id) throws UserNotFoundException {
-        return repository.findById(id).orElseThrow(UserNotFoundException::new);
+    public Info findByBeaconId(String beaconId) throws InfoNotFoundException {
+        return repository.findByBeaconId(beaconId).orElseThrow(InfoNotFoundException::new);
+    }
+
+    @Override
+    public Info findByInstanceId(String instanceId) throws InfoNotFoundException {
+        return repository.findByEddystone(beaconSuedtirolConfiguration.getNamespace(), instanceId).orElseThrow(InfoNotFoundException::new);
+    }
+
+    @Override
+    public Info findByMajorMinor(int major, int minor) throws InfoNotFoundException {
+        return repository.findByIBeacon(beaconSuedtirolConfiguration.getUuid(), major, minor).orElseThrow(InfoNotFoundException::new);
     }
 
     @Override

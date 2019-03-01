@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IInfoService {
     List<Info> findAll();
-    Info findById(String id) throws InfoNotFoundException;
+    Info findByBeaconId(String beaconId) throws InfoNotFoundException;
     Info findByInstanceId(String instanceId) throws InfoNotFoundException;
     Info findByMajorMinor(int major, int minor) throws InfoNotFoundException;
     Info create(InfoCreation userCreation);

@@ -28,7 +28,7 @@ public class InfoController {
     @ApiOperation(value = "Search a info with an ID")
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = "application/json")
     public Info get(@PathVariable String id) {
-        return service.findById(id);
+        return service.findByBeaconId(id);
     }
 
     @ApiOperation(value = "Search a info with an Eddystone instanceId value")
