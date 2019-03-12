@@ -12,6 +12,7 @@ pipeline {
         DB_PASSWORD = credentials('beacon-api-db-password')
         DB_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
         JWT_SECRET = credentials('beacon-api-jwt-secret')
+        UPLOAD_DIR = "/data/beacon-api"
         CORS_ORIGINS = "https://admin.beacon.bz.it"
         KONTAKT_IO_API_KEY = credentials('beacon-api-kontakt-io-api-key')
         INFO_TITLE = ""
@@ -34,6 +35,7 @@ pipeline {
                 sh 'sed -i -e "s%\\(spring.datasource.password\\s*=\\).*\\$%\\1${DB_PASSWORD}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(spring.jpa.properties.hibernate.dialect\\s*=\\).*\\$%\\1${DB_DIALECT}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(security.jwt.token.secret\\s*=\\).*\\$%\\1${JWT_SECRET}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(file.upload-dir\\s*=\\).*\\$%\\1${UPLOAD_DIR}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(it.bz.beacon.allowedOrigins\\s*=\\).*\\$%\\1${CORS_ORIGINS}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(kontakt.io.apiKey\\s*=\\).*\\$%\\1${KONTAKT_IO_API_KEY}%" src/main/resources/application.properties'
 
