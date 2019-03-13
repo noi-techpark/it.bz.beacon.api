@@ -67,7 +67,7 @@ public class InfoReplicationTask {
                 info.setMajor(beacon.getMajor());
                 info.setMinor(beacon.getMinor());
                 info.setNamespace(beacon.getNamespace());
-                info.setNamespace(beacon.getNamespace());
+                info.setInstanceId(beacon.getInstanceId());
 
                 repository.save(info);
             } catch (InfoNotFoundException e) {
