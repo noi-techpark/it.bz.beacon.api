@@ -6,6 +6,7 @@ import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.Order;
 import it.bz.beacon.api.model.BeaconUpdate;
 import it.bz.beacon.api.service.beacon.IBeaconService;
+import it.bz.beacon.api.util.EddystoneUrl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

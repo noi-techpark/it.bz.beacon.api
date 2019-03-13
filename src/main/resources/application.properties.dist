@@ -1,55 +1,73 @@
 # DB configuration (e.g. jdbc:postgresql://<host>:<port>/<database>)
-spring.datasource.url=jdbc:postgresql://postgres:5432/beacon
-spring.datasource.username=beacon
-spring.datasource.password=password
+spring.datasource.url =
+spring.datasource.username =
+spring.datasource.password =
 
 # The SQL dialect makes Hibernate generate better SQL for the chosen database
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
 
 # Hibernate ddl auto (create, create-drop, validate, update)
-spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.hibernate.ddl-auto = validate
 
 # Hibernate disable createClob() as it is not implemented yet in the driver
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
 
+# Send dates as timestamp
+spring.jackson.serialization.write-dates-as-timestamps = true
+
 # JWT token expiration time in milliseconds
-security.jwt.token.expire-length=31536000000
+security.jwt.token.expire-length = 31536000000
 
 # The secret the JWT tokens are signed with
-security.jwt.token.secret=
+security.jwt.token.secret =
 
 # Enable multipart uploads
-spring.servlet.multipart.enabled=true
+spring.servlet.multipart.enabled = true
 
 # Threshold after which files are written to disk.
-spring.servlet.multipart.file-size-threshold=2KB
+spring.servlet.multipart.file-size-threshold = 2KB
 
 # Max file size.
-spring.servlet.multipart.max-file-size=10MB
-spring.http.multipart.max-file-size=10MB
+spring.servlet.multipart.max-file-size = 10MB
+spring.http.multipart.max-file-size = 10MB
 
 # Max Request Size
-spring.servlet.multipart.max-request-size=12MB
-spring.http.multipart.max-request-size=12MB
+spring.servlet.multipart.max-request-size = 12MB
+spring.http.multipart.max-request-size = 12MB
 
 # All files uploaded through the REST API will be stored in this directory
-file.upload-dir=
+file.upload-dir =
 
 # CORS (e.g. https://api.beacon.bz.it)
-it.bz.beacon.allowedOrigins=
+it.bz.beacon.allowedOrigins =
 
 # Kontakt.IO properties
-kontakt.io.apiUrl=https://api.kontakt.io
-kontakt.io.acceptHeader=application/vnd.com.kontakt+json;version=10
-kontakt.io.apiKey=
+kontakt.io.apiUrl = https://api.kontakt.io
+kontakt.io.acceptHeader = application/vnd.com.kontakt+json;version=10
+kontakt.io.apiKey =
 
 # API INFORMATION
-api.info.title=
-api.info.description=
-api.info.version=
-api.info.termsOfServiceUrl=
-api.info.contactName=
-api.info.contactUrl=
-api.info.contactEmail=
-api.info.license=
-api.info.licenseUrl=
+api.info.title =
+api.info.description =
+api.info.version =
+api.info.termsOfServiceUrl =
+api.info.contactName =
+api.info.contactUrl =
+api.info.contactEmail =
+api.info.license =
+api.info.licenseUrl =
+
+# Email address were new issue notifications will be send to
+it.bz.beacon.issueEmailFrom =
+it.bz.beacon.issueEmailTo =
+
+# Email sending configuration
+spring.mail.host =
+spring.mail.port =
+spring.mail.username =
+spring.mail.password =
+spring.mail.properties.mail.smtp.auth =
+spring.mail.properties.mail.smtp.starttls.enable =
+spring.mail.properties.mail.smtp.connectiontimeout = 5000
+spring.mail.properties.mail.smtp.timeout = 3000
+spring.mail.properties.mail.smtp.writetimeout = 5000

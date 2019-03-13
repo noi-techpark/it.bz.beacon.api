@@ -1,5 +1,6 @@
 package it.bz.beacon.api.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import it.bz.beacon.api.db.model.Issue;
 
 import java.util.Date;
@@ -12,12 +13,18 @@ public class BeaconIssue {
     private String problem;
     private String problemDescription;
     private String reporter;
+
+    @ApiModelProperty(dataType = "java.lang.Long")
     private Date reportDate;
 
     private boolean resolved = false;
     private String solution;
     private String solutionDescription;
+
+    @ApiModelProperty(dataType = "java.lang.Long")
     private Date resolveDate;
+
+    private String resolver;
 
     public static BeaconIssue fromIssue(Issue issue, Beacon beacon) {
         BeaconIssue beaconIssue = new BeaconIssue();
@@ -26,11 +33,13 @@ public class BeaconIssue {
         beaconIssue.setProblem(issue.getProblem());
         beaconIssue.setProblemDescription(issue.getProblemDescription());
         beaconIssue.setReportDate(issue.getReportDate());
+        beaconIssue.setReporter(issue.getReporter());
         if (issue.getSolution() != null) {
             beaconIssue.setResolved(true);
             beaconIssue.setSolution(issue.getSolution().getSolution());
             beaconIssue.setSolutionDescription(issue.getSolution().getSolution());
             beaconIssue.setResolveDate(issue.getSolution().getCreatedAt());
+            beaconIssue.setResolver(issue.getSolution().getResolver());
         }
 
         return beaconIssue;
@@ -114,5 +123,13 @@ public class BeaconIssue {
 
     public void setResolveDate(Date resolveDate) {
         this.resolveDate = resolveDate;
+    }
+
+    public String getResolver() {
+        return resolver;
+    }
+
+    public void setResolver(String resolver) {
+        this.resolver = resolver;
     }
 }

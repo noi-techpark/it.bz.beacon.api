@@ -8,6 +8,7 @@ import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
 import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.BeaconUpdate;
+import it.bz.beacon.api.util.EddystoneUrl;
 
 import java.util.Set;
 import java.util.UUID;
@@ -40,23 +41,21 @@ public class TagBeaconConfig {
 
     public static TagBeaconConfig fromBeaconUpdate(BeaconUpdate beaconUpdate, Beacon beacon) {
         TagBeaconConfig config = new TagBeaconConfig();
-        config.init(beacon);
+        config.setUniqueId(beacon.getManufacturerId());
 
         config.setProximity(beaconUpdate.getUuid());
         config.setMajor(beaconUpdate.getMajor());
         config.setMinor(beaconUpdate.getMinor());
-        config.setUrl(beaconUpdate.getUrl());
+        config.setUrl(EddystoneUrl.encodeUri(beaconUpdate.getUrl()));
         config.setInstanceId(beaconUpdate.getInstanceId());
         config.setInterval(beaconUpdate.getInterval());
         config.setTxPower(beaconUpdate.getTxPower());
         config.setNamespace(beaconUpdate.getNamespace());
 
         if (!beaconUpdate.isEddystoneEid()) {
-            config.removeProfile(Profile.EDDYSTONE);
             config.removePacket(Packet.EDDYSTONE_EID);
         } else {
             config.addPacket(Packet.EDDYSTONE_EID);
-            config.addProfile(Profile.EDDYSTONE);
         }
 
         if (!beaconUpdate.isEddystoneEtlm()) {
@@ -72,9 +71,11 @@ public class TagBeaconConfig {
         }
 
         if (!beaconUpdate.isEddystoneUid()) {
+            config.removeProfile(Profile.EDDYSTONE);
             config.removePacket(Packet.EDDYSTONE_UID);
         } else {
             config.addPacket(Packet.EDDYSTONE_UID);
+            config.addProfile(Profile.EDDYSTONE);
         }
 
         if (!beaconUpdate.isEddystoneUrl()) {
@@ -98,10 +99,6 @@ public class TagBeaconConfig {
         }
 
         return config;
-    }
-
-    private void init(Beacon beacon) {
-        setUniqueId(beacon.getManufacturerId());
     }
 
     @JsonIgnore

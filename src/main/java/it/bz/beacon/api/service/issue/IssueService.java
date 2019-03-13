@@ -1,5 +1,6 @@
 package it.bz.beacon.api.service.issue;
 
+import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.model.Issue;
 import it.bz.beacon.api.db.model.IssueSolution;
@@ -11,9 +12,11 @@ import it.bz.beacon.api.model.IssueCreation;
 import it.bz.beacon.api.service.beacon.IBeaconDataService;
 import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -31,7 +34,14 @@ public class IssueService implements IIssueService {
     @Autowired
     private IBeaconDataService beaconDataService;
 
+    @Autowired
+    private JavaMailSender emailSender;
+
+    @Autowired
+    private BeaconSuedtirolConfiguration beaconSuedtirolConfiguration;
+
     @Override
+    @Transactional
     public List<BeaconIssue> findAll(boolean onlyUnresolved) {
         List<Issue> issues = onlyUnresolved ? repository.findAllBySolution(null) : repository.findAll();
 
@@ -73,7 +83,10 @@ public class IssueService implements IIssueService {
         Issue issue = repository.save(Issue.create(beaconData, issueCreation));
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
 
-        return BeaconIssue.fromIssue(issue, beacon);
+        BeaconIssue beaconIssue = BeaconIssue.fromIssue(issue, beacon);
+        notifyNewBeaconIssue(beaconIssue);
+
+        return beaconIssue;
     }
 
     @Override
@@ -85,5 +98,21 @@ public class IssueService implements IIssueService {
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
 
         return BeaconIssue.fromIssue(issue, beacon);
+    }
+
+    private void notifyNewBeaconIssue(BeaconIssue beaconIssue) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(beaconSuedtirolConfiguration.getIssueEmailFrom());
+        message.setTo(beaconSuedtirolConfiguration.getIssueEmailTo());
+        message.setSubject("New issue for beacon " + beaconIssue.getBeacon().getName());
+        message.setText(String.format(
+                "A new issue has been reported by '%s' for beacon '%s'",
+                beaconIssue.getReporter(),
+                beaconIssue.getBeacon().getName()
+        ));
+
+        try {
+            emailSender.send(message);
+        } catch (Exception e) { }
     }
 }

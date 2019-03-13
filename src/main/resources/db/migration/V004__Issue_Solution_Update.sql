@@ -1,0 +1,1 @@
+alter table issue_solution add column if not exists resolver varchar(255);
