@@ -155,7 +155,7 @@ public class InfoReplicationTask {
     private Info createInfo(Sheets sheetService, List<Object> row) {
         Info info = new Info();
         info.setId(generateBeaconId());
-        info.setUuid(UUID.fromString(beaconSuedtirolConfiguration.getUuid()));
+        info.setUuid(beaconSuedtirolConfiguration.getUuid());
         info.setNamespace(beaconSuedtirolConfiguration.getNamespace());
 
         //TODO generate and set unused [major, minor] and [instanceId]

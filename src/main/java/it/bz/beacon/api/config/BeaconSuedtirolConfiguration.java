@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import javax.validation.constraints.NotBlank;
+import java.util.UUID;
 
 @Configuration
 @ConfigurationProperties(prefix = "it.bz.beacon")
@@ -48,8 +49,11 @@ public class BeaconSuedtirolConfiguration {
         this.issueEmailTo = issueEmailTo;
     }
 
-    public String getUuid() {
-        return uuid;
+    public UUID getUuid() {
+        if (uuid == null) {
+            return null;
+        }
+        return UUID.fromString(uuid);
     }
 
     public void setUuid(String uuid) {
