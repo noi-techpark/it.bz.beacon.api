@@ -12,11 +12,22 @@ public class InfoImporterTaskConfiguration {
     @NotBlank
     private boolean enabled;
 
+    @NotBlank
+    private String spreadSheetId;
+
     public boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getSpreadSheetId() {
+        return spreadSheetId;
+    }
+
+    public void setSpreadSheetId(String spreadSheetId) {
+        this.spreadSheetId = spreadSheetId;
     }
 }

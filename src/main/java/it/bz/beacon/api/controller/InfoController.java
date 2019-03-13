@@ -43,15 +43,15 @@ public class InfoController {
         return service.findByMajorMinor(major, minor);
     }
 
-    @ApiOperation(value = "Create a info", authorizations = {@Authorization(value = "JWT")})
-    @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public Info create(@Valid @RequestBody InfoCreation userCreation) {
-        return service.create(userCreation);
-    }
-
-    @ApiOperation(value = "Update a info", authorizations = {@Authorization(value = "JWT")})
-    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}", produces = "application/json")
-    public Info update(@PathVariable long id, @Valid @RequestBody InfoUpdate userUpdate) {
-        return service.update(id, userUpdate);
-    }
+//    @ApiOperation(value = "Create a info", authorizations = {@Authorization(value = "JWT")})
+//    @RequestMapping(method = RequestMethod.POST, produces = "application/json")
+//    public Info create(@Valid @RequestBody InfoCreation userCreation) {
+//        return service.create(userCreation);
+//    }
+//
+//    @ApiOperation(value = "Update a info", authorizations = {@Authorization(value = "JWT")})
+//    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}", produces = "application/json")
+//    public Info update(@PathVariable long id, @Valid @RequestBody InfoUpdate userUpdate) {
+//        return service.update(id, userUpdate);
+//    }
 }
