@@ -43,3 +43,4 @@ secrets.yml
 *.properties.dev
 *.properties.test
 /uploads/*
+/resources/google-api-service-account.json
