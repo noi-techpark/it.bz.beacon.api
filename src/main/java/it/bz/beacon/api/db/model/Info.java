@@ -15,7 +15,6 @@ public class Info extends AuditModel {
     @Column(unique = true)
     private String id;
 
-    private String beaconId;
     private String name;
     private String website;
     private String openDataPoiId;
@@ -39,7 +38,7 @@ public class Info extends AuditModel {
 
     public static Info create(InfoCreation infoCreation, String uuid, String namespace) {
         Info info = new Info();
-        info.setBeaconId(infoCreation.getBeaconId());
+        info.setId(infoCreation.getBeaconId());
         info.setName(infoCreation.getName());
         info.setWebsite(infoCreation.getWebsite());
         info.setOpenDataPoiId(infoCreation.getOpenDataPoiId());
@@ -65,14 +64,6 @@ public class Info extends AuditModel {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getBeaconId() {
-        return beaconId;
-    }
-
-    public void setBeaconId(String beaconId) {
-        this.beaconId = beaconId;
     }
 
     public String getName() {

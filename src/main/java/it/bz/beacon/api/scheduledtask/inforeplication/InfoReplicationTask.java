@@ -10,11 +10,15 @@ import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.config.InfoImporterTaskConfiguration;
+import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.model.Info;
+import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.db.repository.InfoRepository;
 import it.bz.beacon.api.exception.db.InfoNotFoundException;
-import it.bz.beacon.api.service.info.InfoService;
+import it.bz.beacon.api.model.Beacon;
+import it.bz.beacon.api.service.beacon.BeaconService;
 import it.bz.beacon.api.util.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,68 +27,101 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class InfoReplicationTask {
 
     @Autowired
-    private InfoImporterTaskConfiguration configuration;
+    private BeaconSuedtirolConfiguration beaconSuedtirolConfiguration;
+
+    @Autowired
+    private InfoImporterTaskConfiguration importerConfiguration;
 
     @Autowired
     private InfoRepository repository;
+
+    @Autowired
+    private BeaconService beaconService;
 
     private static final Logger log = LoggerFactory.getLogger(InfoReplicationTask.class);
 
     @Scheduled(fixedDelay = 30 * 60 * 1000)
     public void startImport() {
-        if (configuration.isEnabled()) {
+        if (importerConfiguration.isEnabled()) {
+            replicateGoogleSheet();
+            updateBeaconPackageData();
+        }
+    }
+
+    private void updateBeaconPackageData() {
+        List<Beacon> beacons = beaconService.findAll();
+        for (Beacon beacon : beacons) {
             try {
-                log.info("Starting info import...");
-                Sheets sheetService = getSheetsService();
-                Spreadsheet spreadsheet = sheetService.spreadsheets().get(configuration.getSpreadSheetId()).execute();
-                for (Sheet sheet : spreadsheet.getSheets()) {
-                    if (sheet.getProperties().getTitle().equals("Zones")) {
-                        //TODO handle zones sheet
-                        continue;
-                    }
+                Info info = repository.findById(beacon.getId()).orElseThrow(InfoNotFoundException::new);
+                info.setUuid(beacon.getUuid());
+                info.setMajor(beacon.getMajor());
+                info.setMinor(beacon.getMinor());
+                info.setNamespace(beacon.getNamespace());
+                info.setNamespace(beacon.getNamespace());
 
-                    String title = sheet.getProperties().getTitle();
+                repository.save(info);
+            } catch (InfoNotFoundException e) {
+                //TODO handle
+            }
+        }
+    }
 
-                    log.info(String.format("Reading sheet [ %s ]", title));
+    private void replicateGoogleSheet() {
+        try {
+            log.info("Starting info import...");
+            Sheets sheetService = getSheetsService();
+            Spreadsheet spreadsheet = sheetService.spreadsheets().get(importerConfiguration.getSpreadSheetId()).execute();
+            for (Sheet sheet : spreadsheet.getSheets()) {
+                if (sheet.getProperties().getTitle().equals("Zones")) {
+                    //TODO handle zones sheet
+                    continue;
+                }
 
-                    BatchGetValuesResponse response = sheetService.spreadsheets().values()
-                            .batchGet(configuration.getSpreadSheetId()).setRanges(Collections.singletonList(title))
-                            .execute();
+                String title = sheet.getProperties().getTitle();
 
-                    for (ValueRange valueRange : response.getValueRanges()) {
-                        List<List<Object>> rows = valueRange.getValues();
-                        for (int i = 1; i < rows.size(); i++) {
-                            List<Object> row = rows.get(i);
+                log.info(String.format("Reading sheet [ %s ]", title));
 
-                            String beaconId = (String) row.get(0);
+                BatchGetValuesResponse response = sheetService.spreadsheets().values()
+                        .batchGet(importerConfiguration.getSpreadSheetId()).setRanges(Collections.singletonList(title))
+                        .execute();
 
+                for (ValueRange valueRange : response.getValueRanges()) {
+                    List<List<Object>> rows = valueRange.getValues();
+                    for (int i = 1; i < rows.size(); i++) {
+                        List<Object> row = rows.get(i);
+
+                        String beaconId = (String) row.get(0);
+
+                        try {
                             Info info;
                             if (beaconId != null) {
                                 info = updateInfo(beaconId, row);
-                                log.info(String.format("Info updated [ %s ]", info.getBeaconId()));
+                                log.info(String.format("Info updated [ %s ]", info.getId()));
                             } else {
                                 info = createInfo(sheetService, row);
-                                log.info(String.format("Info created [ %s ]", info.getBeaconId()));
+                                log.info(String.format("Info created [ %s ]", info.getId()));
                             }
+                        } catch (Exception e) {
+                            log.info(String.format("Row data corrupt #%s", i));
+                            //TODO inform about data inconsistency
                         }
                     }
-
-                    log.info("Tschuff Tschuff Tschuff, die Eisenbahn...");
                 }
-            } catch (IOException | GeneralSecurityException e) {
-                log.error("An error occured during Google Sheets reading", e);
+
+                log.info("Tschuff Tschuff Tschuff, die Eisenbahn...");
             }
+        } catch (IOException | GeneralSecurityException e) {
+            log.error("An error occured during Google Sheets reading", e);
         }
     }
 
@@ -103,14 +140,13 @@ public class InfoReplicationTask {
     private Info updateInfo(String beaconId, List<Object> row) {
         Info info;
         try {
-            info = repository.findByBeaconId(beaconId).orElseThrow(InfoNotFoundException::new);
+            info = repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
         } catch (InfoNotFoundException e) {
             info = new Info();
-            info.setBeaconId(beaconId);
+            info.setId(beaconId);
         }
 
         applyRowData(info, row);
-        repository.save(info);
 
         return info;
     }
@@ -118,10 +154,13 @@ public class InfoReplicationTask {
     @Transactional(rollbackFor = Exception.class)
     private Info createInfo(Sheets sheetService, List<Object> row) {
         Info info = new Info();
-        info.setBeaconId(generateBeaconId());
+        info.setId(generateBeaconId());
+        info.setUuid(UUID.fromString(beaconSuedtirolConfiguration.getUuid()));
+        info.setNamespace(beaconSuedtirolConfiguration.getNamespace());
+
+        //TODO generate and set unused [major, minor] and [instanceId]
 
         applyRowData(info, row);
-        repository.save(info);
 
         //TODO write beaconId back to sheet, throw exception on failure to perform rollback
 
@@ -137,6 +176,8 @@ public class InfoReplicationTask {
         info.setLatitude(Float.parseFloat((String)row.get(13)));
         info.setLongitude(Float.parseFloat((String)row.get(14)));
         info.setFloor((String)row.get(15));
+
+        repository.save(info);
     }
 
     private String generateBeaconId() {
@@ -144,7 +185,7 @@ public class InfoReplicationTask {
         String beaconId = randomString.nextString();
 
         try {
-            repository.findByBeaconId(beaconId).orElseThrow(InfoNotFoundException::new);
+            repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
             return generateBeaconId();
         } catch (InfoNotFoundException e) {
             return beaconId;

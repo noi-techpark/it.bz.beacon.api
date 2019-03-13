@@ -3,14 +3,8 @@ package it.bz.beacon.api.service.info;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.Info;
 import it.bz.beacon.api.db.repository.InfoRepository;
-import it.bz.beacon.api.exception.db.DuplicateEntryException;
 import it.bz.beacon.api.exception.db.InfoNotFoundException;
-import it.bz.beacon.api.exception.db.UserNotFoundException;
-
-import it.bz.beacon.api.model.InfoCreation;
-import it.bz.beacon.api.model.InfoUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,7 +25,7 @@ public class InfoService implements IInfoService {
 
     @Override
     public Info findByBeaconId(String beaconId) throws InfoNotFoundException {
-        return repository.findByBeaconId(beaconId).orElseThrow(InfoNotFoundException::new);
+        return repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
     }
 
     @Override
@@ -44,24 +38,24 @@ public class InfoService implements IInfoService {
         return repository.findByUuidAndMajorAndMinor(beaconSuedtirolConfiguration.getUuid(), major, minor).orElseThrow(InfoNotFoundException::new);
     }
 
-    @Override
-    public Info create(InfoCreation infoCreation) {
-        try {
-            return repository.save(Info.create(infoCreation, beaconSuedtirolConfiguration.getUuid(), beaconSuedtirolConfiguration.getNamespace()));
-        } catch (DataIntegrityViolationException e) {
-            throw new DuplicateEntryException();
-        }
-    }
-
-    @Override
-    public Info update(long id, InfoUpdate infoUpdate) throws UserNotFoundException {
-        return repository.findById(id).map(info -> {
-            if (infoUpdate.getPassword() != null) {
-
-            }
-//            info.applyUpdate(infoUpdate);
+//    @Override
+//    public Info create(InfoCreation infoCreation) {
+//        try {
+//            return repository.save(Info.create(infoCreation, beaconSuedtirolConfiguration.getUuid(), beaconSuedtirolConfiguration.getNamespace()));
+//        } catch (DataIntegrityViolationException e) {
+//            throw new DuplicateEntryException();
+//        }
+//    }
 //
-            return repository.save(info);
-        }).orElseThrow(UserNotFoundException::new);
-    }
+//    @Override
+//    public Info update(long id, InfoUpdate infoUpdate) throws UserNotFoundException {
+//        return repository.findById(id).map(info -> {
+//            if (infoUpdate.getPassword() != null) {
+//
+//            }
+////            info.applyUpdate(infoUpdate);
+////
+//            return repository.save(info);
+//        }).orElseThrow(UserNotFoundException::new);
+//    }
 }
