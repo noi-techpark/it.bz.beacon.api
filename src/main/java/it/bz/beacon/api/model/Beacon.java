@@ -50,6 +50,8 @@ public class Beacon {
 
     private PendingConfiguration pendingConfiguration;
 
+    private String internalName;
+
     @JsonIgnore
     private List<Issue> issues;
 
@@ -98,6 +100,8 @@ public class Beacon {
             setEddystoneEtlm(remoteBeacon.isEddystoneEtlm());
 
             setPendingConfiguration(remoteBeacon.getPendingConfiguration());
+
+            setInternalName(remoteBeacon.getName());
         }
     }
 
@@ -373,5 +377,13 @@ public class Beacon {
 
     public void setIssues(List<Issue> issues) {
         this.issues = issues;
+    }
+
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
     }
 }

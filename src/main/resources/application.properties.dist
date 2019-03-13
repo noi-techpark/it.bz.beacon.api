@@ -77,3 +77,6 @@ it.bz.beacon.uuid =
 
 # Eddystone namespace
 it.bz.beacon.namespace =
+
+# Info import
+it.bz.beacon.task.infoimport.enabled =

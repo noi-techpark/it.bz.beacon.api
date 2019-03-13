@@ -37,10 +37,23 @@ public class Info extends AuditModel {
     @JsonIgnore
     private String orderSymbol;
 
-    public static Info create(InfoCreation infoCreation) {
+    public static Info create(InfoCreation infoCreation, String uuid, String namespace) {
         Info info = new Info();
         info.setBeaconId(infoCreation.getBeaconId());
-        info.setName(infoCreation.getNameDe());
+        info.setName(infoCreation.getName());
+        info.setWebsite(infoCreation.getWebsite());
+        info.setOpenDataPoiId(infoCreation.getOpenDataPoiId());
+        info.setAddress(infoCreation.getAddress());
+        info.setLocation(infoCreation.getLocation());
+        info.setCap(infoCreation.getCap());
+        info.setLatitude(infoCreation.getLatitude());
+        info.setLongitude(infoCreation.getLongitude());
+        info.setFloor(infoCreation.getFloor());
+        info.setUuid(UUID.fromString(uuid));
+        info.setNamespace(namespace);
+//        info.setMajor(infoCreation.getMajor());
+//        info.setMinor(infoCreation.getMinor());
+//        info.setInstanceId(infoCreation.getInstanceId());
         //TODO:All Fields
 
         return info;
@@ -132,5 +145,53 @@ public class Info extends AuditModel {
 
     public void setFloor(String floor) {
         this.floor = floor;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public int getMajor() {
+        return major;
+    }
+
+    public void setMajor(int major) {
+        this.major = major;
+    }
+
+    public int getMinor() {
+        return minor;
+    }
+
+    public void setMinor(int minor) {
+        this.minor = minor;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+    public String getOrderSymbol() {
+        return orderSymbol;
+    }
+
+    public void setOrderSymbol(String orderSymbol) {
+        this.orderSymbol = orderSymbol;
     }
 }

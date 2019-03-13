@@ -37,7 +37,7 @@ public class RemoteBeacon {
     private boolean eddystoneEtlm;
     private PendingConfiguration pendingConfiguration;
 
-    public static RemoteBeacon fromTagBeaconDevice(TagBeaconDevice tagBeaconDevice) {
+    public static RemoteBeacon fromTagBeaconDevice(TagBeaconDevice tagBeaconDevice) throws InvalidBeaconIdentifierException {
         RemoteBeacon remoteBeacon = new RemoteBeacon();
 
         remoteBeacon.parseManufacturerName(tagBeaconDevice.getName());
@@ -66,16 +66,16 @@ public class RemoteBeacon {
     }
 
     private void parseManufacturerName(String name) throws InvalidBeaconIdentifierException {
-//        if (name == null || !name.matches("^[A-Z]{4}[0-9]{3}[A-Z]#[A-Za-z0-9]{6}$")) {
-//            throw new InvalidBeaconIdentifierException();
-//        }
+        if (name == null || !name.matches("^[A-Z]{4}[0-9]{3}[A-Z]#[A-Za-z0-9]{6}$")) {
+            throw new InvalidBeaconIdentifierException();
+        }
 
         setName(name);
 
-//        String[] parts = name.split("#");
-//        setZone(parts[0].substring(0, 4));
-//        setZoneCode(parts[0].substring(4, 8));
-//        setId(parts[1]);
+        String[] parts = name.split("#");
+        setZone(parts[0].substring(0, 4));
+        setZoneCode(parts[0].substring(4, 8));
+        setId(parts[1]);
     }
 
     public String getId() {

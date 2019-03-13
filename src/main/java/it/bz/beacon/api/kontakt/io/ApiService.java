@@ -41,7 +41,7 @@ public class ApiService {
 
     public BeaconListResponse getBeacons(List<String> ids) {
         ResponseEntity<BeaconListResponse> responseEntity = restTemplate.exchange(
-                "/device?maxResults=" + ids.size() + "&deviceType=" + Device.DeviceType.BEACON + "&uniqueId=" + String.join(",", ids),
+                "/device?maxResult=" + ids.size() + "&deviceType=" + Device.DeviceType.BEACON + "&uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,
                 new HttpEntity<>(null, httpHeaders),
                 new ParameterizedTypeReference<BeaconListResponse>() {}
@@ -52,7 +52,7 @@ public class ApiService {
 
     public DeviceStatusListResponse getDeviceStatuses(List<String> ids) {
         ResponseEntity<DeviceStatusListResponse> responseEntity = restTemplate.exchange(
-                "/device/status?maxResults=" + ids.size() + "&uniqueId=" + String.join(",", ids),
+                "/device/status?maxResult=" + ids.size() + "&uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,
                 new HttpEntity<>(null, httpHeaders),
                 new ParameterizedTypeReference<DeviceStatusListResponse>() {}
@@ -63,7 +63,7 @@ public class ApiService {
 
     public ConfigurationListResponse getConfigurations(List<String> ids) {
         ResponseEntity<ConfigurationListResponse> responseEntity = restTemplate.exchange(
-                "/config?maxResults=" + ids.size() + "&uniqueId=" + String.join(",", ids),
+                "/config?maxResult=" + ids.size() + "&uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,
                 new HttpEntity<>(null, httpHeaders),
                 new ParameterizedTypeReference<ConfigurationListResponse>() {}

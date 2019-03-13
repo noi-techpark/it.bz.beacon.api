@@ -46,9 +46,12 @@ public class BeaconData extends AuditModel {
 
         BeaconData beaconData = new BeaconData();
 
+        beaconData.setId(remoteBeacon.getId());
+
         beaconData.setManufacturer(remoteBeacon.getManufacturer());
         beaconData.setManufacturerId(remoteBeacon.getManufacturerId());
 
+        //TODO set name from info if possible
         beaconData.setName(remoteBeacon.getName());
 
         return beaconData;

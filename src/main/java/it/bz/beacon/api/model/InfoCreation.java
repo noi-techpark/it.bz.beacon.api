@@ -12,21 +12,11 @@ public class InfoCreation {
 
     @NotEmpty
     @NotNull
-    private String nameDe;
-    private String nameIt;
-    private String nameEn;
+    private String name;
 
     @NotEmpty
     @NotNull
-    private String descriptionDe;
-    private String descriptionIt;
-    private String descriptionEn;
-
-    @NotEmpty
-    @NotNull
-    private String websiteDe;
-    private String websiteIt;
-    private String websiteEn;
+    private String website;
 
     @NotEmpty
     @NotNull
@@ -42,18 +32,15 @@ public class InfoCreation {
 
     @NotEmpty
     @NotNull
-    private String latitude;
+    private float latitude;
+
     @NotEmpty
     @NotNull
-    private String longitude;
+    private float longitude;
 
-    private String additionalLocationInfo;
+    private String floor;
 
-    private String contactPersonName;
-    private String contactPersonLastName;
-    @Email
-    private String contactPersonEmail;
-    private String contactPersonOrganisation;
+    private String openDataPoiId;
 
     public String getBeaconId() {
         return beaconId;
@@ -61,78 +48,6 @@ public class InfoCreation {
 
     public void setBeaconId(String beaconId) {
         this.beaconId = beaconId;
-    }
-
-    public String getNameDe() {
-        return nameDe;
-    }
-
-    public void setNameDe(String nameDe) {
-        this.nameDe = nameDe;
-    }
-
-    public String getNameIt() {
-        return nameIt;
-    }
-
-    public void setNameIt(String nameIt) {
-        this.nameIt = nameIt;
-    }
-
-    public String getNameEn() {
-        return nameEn;
-    }
-
-    public void setNameEn(String nameEn) {
-        this.nameEn = nameEn;
-    }
-
-    public String getDescriptionDe() {
-        return descriptionDe;
-    }
-
-    public void setDescriptionDe(String descriptionDe) {
-        this.descriptionDe = descriptionDe;
-    }
-
-    public String getDescriptionIt() {
-        return descriptionIt;
-    }
-
-    public void setDescriptionIt(String descriptionIt) {
-        this.descriptionIt = descriptionIt;
-    }
-
-    public String getDescriptionEn() {
-        return descriptionEn;
-    }
-
-    public void setDescriptionEn(String descriptionEn) {
-        this.descriptionEn = descriptionEn;
-    }
-
-    public String getWebsiteDe() {
-        return websiteDe;
-    }
-
-    public void setWebsiteDe(String websiteDe) {
-        this.websiteDe = websiteDe;
-    }
-
-    public String getWebsiteIt() {
-        return websiteIt;
-    }
-
-    public void setWebsiteIt(String websiteIt) {
-        this.websiteIt = websiteIt;
-    }
-
-    public String getWebsiteEn() {
-        return websiteEn;
-    }
-
-    public void setWebsiteEn(String websiteEn) {
-        this.websiteEn = websiteEn;
     }
 
     public String getAddress() {
@@ -159,59 +74,51 @@ public class InfoCreation {
         this.cap = cap;
     }
 
-    public String getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
 
-    public String getAdditionalLocationInfo() {
-        return additionalLocationInfo;
+    public String getName() {
+        return name;
     }
 
-    public void setAdditionalLocationInfo(String additionalLocationInfo) {
-        this.additionalLocationInfo = additionalLocationInfo;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getContactPersonName() {
-        return contactPersonName;
+    public String getWebsite() {
+        return website;
     }
 
-    public void setContactPersonName(String contactPersonName) {
-        this.contactPersonName = contactPersonName;
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
-    public String getContactPersonLastName() {
-        return contactPersonLastName;
+    public String getOpenDataPoiId() {
+        return openDataPoiId;
     }
 
-    public void setContactPersonLastName(String contactPersonLastName) {
-        this.contactPersonLastName = contactPersonLastName;
+    public void setOpenDataPoiId(String openDataPoiId) {
+        this.openDataPoiId = openDataPoiId;
     }
 
-    public String getContactPersonEmail() {
-        return contactPersonEmail;
+    public String getFloor() {
+        return floor;
     }
 
-    public void setContactPersonEmail(String contactPersonEmail) {
-        this.contactPersonEmail = contactPersonEmail;
-    }
-
-    public String getContactPersonOrganisation() {
-        return contactPersonOrganisation;
-    }
-
-    public void setContactPersonOrganisation(String contactPersonOrganisation) {
-        this.contactPersonOrganisation = contactPersonOrganisation;
+    public void setFloor(String floor) {
+        this.floor = floor;
     }
 }

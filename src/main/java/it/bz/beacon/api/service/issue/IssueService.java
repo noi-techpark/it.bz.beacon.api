@@ -51,7 +51,6 @@ public class IssueService implements IIssueService {
 
         return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId())))
                 .collect(Collectors.toList());
-
     }
 
     @Override
@@ -65,7 +64,6 @@ public class IssueService implements IIssueService {
 
         return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId())))
                 .collect(Collectors.toList());
-
     }
 
     @Override

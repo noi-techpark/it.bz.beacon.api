@@ -47,7 +47,7 @@ public class InfoService implements IInfoService {
     @Override
     public Info create(InfoCreation infoCreation) {
         try {
-            return repository.save(Info.create(infoCreation));
+            return repository.save(Info.create(infoCreation, beaconSuedtirolConfiguration.getUuid(), beaconSuedtirolConfiguration.getNamespace()));
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateEntryException();
         }

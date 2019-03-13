@@ -6,6 +6,7 @@ import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.exception.db.BeaconConfigurationNotCreatedException;
 import it.bz.beacon.api.exception.db.BeaconConfigurationNotDeletedException;
 import it.bz.beacon.api.exception.db.BeaconNotFoundException;
+import it.bz.beacon.api.exception.db.InvalidBeaconIdentifierException;
 import it.bz.beacon.api.exception.kontakt.io.InvalidOrderIdException;
 import it.bz.beacon.api.exception.kontakt.io.NoDeviceAddedException;
 import it.bz.beacon.api.kontakt.io.ApiService;
@@ -53,6 +54,10 @@ public class BeaconService implements IBeaconService {
 
     @Override
     public List<Beacon> findAllWithIds(List<String> ids) {
+        if (ids.size() <= 0) {
+            return Lists.newArrayList();
+        }
+
         List<BeaconData> beaconDatas = beaconDataService.findAllById(ids);
         Map<String, RemoteBeacon> remoteBeacons = getRemoteBeacons(beaconDatas);
 
@@ -79,15 +84,20 @@ public class BeaconService implements IBeaconService {
         long addedDevices = apiService.assignOrder(order.getId()).getAddedDevices();
 
         if (addedDevices <= 0) {
+
             throw new NoDeviceAddedException();
         }
 
         return apiService.getBeacons(uniqueIds).getDevices().stream().map(tagBeaconDevice -> {
 
-            RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
-            BeaconData beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
+            try {
+                RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
+                BeaconData beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
 
-            return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
+                return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
+            } catch (InvalidBeaconIdentifierException e) {
+                return null;
+            }
         }).collect(Collectors.toList());
     }
 
