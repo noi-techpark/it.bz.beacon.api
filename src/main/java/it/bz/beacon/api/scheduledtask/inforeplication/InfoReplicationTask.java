@@ -12,9 +12,7 @@ import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.config.InfoImporterTaskConfiguration;
-import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.model.Info;
-import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.db.repository.InfoRepository;
 import it.bz.beacon.api.exception.db.InfoNotFoundException;
 import it.bz.beacon.api.model.Beacon;
@@ -31,7 +29,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class InfoReplicationTask {
