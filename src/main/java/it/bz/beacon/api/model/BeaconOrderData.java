@@ -14,6 +14,8 @@ public class BeaconOrderData {
     private int minor;
     private String namespace;
     private String instanceId;
+    private int zoneId;
+    private String zoneCode;
 
     public BeaconOrderData(OrderData orderData) {
         this.orderSymbol = orderData.getOrderSymbol();
@@ -23,6 +25,8 @@ public class BeaconOrderData {
         this.minor = orderData.getInfo().getMinor();
         this.namespace = orderData.getInfo().getNamespace();
         this.instanceId = orderData.getInfo().getInstanceId();
+        this.zoneId = orderData.getZoneId();
+        this.zoneCode = orderData.getZoneCode();
     }
 
     public String getOrderSymbol() {

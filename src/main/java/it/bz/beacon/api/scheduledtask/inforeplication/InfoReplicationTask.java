@@ -99,7 +99,6 @@ public class InfoReplicationTask {
 
     private void replicateGoogleSheet() {
         try {
-            log.info("Starting info import...");
             Sheets sheetService = getSheetsService();
             Spreadsheet spreadsheet = sheetService.spreadsheets().get(importerConfiguration.getSpreadSheetId()).execute();
 
@@ -157,8 +156,6 @@ public class InfoReplicationTask {
                 if (sheetError.hasErrors()) {
                     sheetErrors.add(sheetError);
                 }
-
-                log.info("Tschuff Tschuff Tschuff, die Eisenbahn...");
             }
 
             notfiyErrors(sheetErrors);
@@ -226,7 +223,7 @@ public class InfoReplicationTask {
         ).setApplicationName("Beacon Südtirol").build();
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = DbWriteException.class)
     private void update(String beaconId, InfoData infoData) {
         Info info;
         try {
@@ -256,10 +253,16 @@ public class InfoReplicationTask {
 
         applyRowData(info, infoData);
 
-        OrderData order = new OrderData();
-        order.setId(info.getId());
-        order.setInfo(info);
-        orderRepository.save(order);
+        try {
+            OrderData order = new OrderData();
+            order.setId(info.getId());
+            order.setInfo(info);
+            order.setZoneCode(zone.getCode());
+            order.setZoneId(orderRepository.getNextZoneId(zone.getCode()));
+            orderRepository.save(order);
+        } catch (Exception e) {
+            throw new DbWriteException(e);
+        }
 
         ValueRange body = new ValueRange().setValues(Collections.singletonList(Collections.singletonList(info.getId())));
         try {
@@ -268,11 +271,11 @@ public class InfoReplicationTask {
                     .setValueInputOption("RAW")
                     .execute();
         } catch (IOException e) {
-            throw new SheetWriteException();
+            throw new SheetWriteException(e);
         }
     }
 
-    private void applyRowData(Info info, InfoData infoData) {
+    private void applyRowData(Info info, InfoData infoData) throws DbWriteException {
         info.setName(infoData.getName());
         info.setWebsite(infoData.getWebsite());
         info.setAddress(infoData.getAddress());
@@ -282,7 +285,11 @@ public class InfoReplicationTask {
         info.setLongitude(infoData.getLongitude());
         info.setFloor(infoData.getFloor());
 
-        infoRepository.save(info);
+        try {
+            infoRepository.save(info);
+        } catch (Exception e) {
+            throw new DbWriteException(e);
+        }
     }
 
     private String generateBeaconId() {

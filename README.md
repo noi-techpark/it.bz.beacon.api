@@ -58,7 +58,7 @@ Make a copy of the src/resources/application.properties.dist file and name it "a
 * it.bz.beacon.task.infoimport.enabled
 * it.bz.beacon.task.infoimport.spreadSheetId
 
-If you enable infor import, you have to create a Google service account which is able to use the Google Sheet API and move the resulting client-secret.json file to /src/main/resources/google-api-service-account.json.
+If you enable info import, you have to create a Google service account which is able to use the Google Sheet API and move the resulting client-secret.json file to /src/main/resources/google-api-service-account.json.
 For more information on generating this json file, have a look at the Google documentation for [Using OAuth 2.0 for Server to Server Applications](https://developers.google.com/identity/protocols/OAuth2ServiceAccount) 
 
 You may also change other values in the application.properties file on your own risk.
