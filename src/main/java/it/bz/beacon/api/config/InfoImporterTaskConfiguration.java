@@ -12,7 +12,6 @@ public class InfoImporterTaskConfiguration {
     @NotBlank
     private boolean enabled;
 
-    @NotBlank
     private String spreadSheetId;
 
     public boolean isEnabled() {

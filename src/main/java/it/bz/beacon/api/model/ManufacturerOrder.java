@@ -3,7 +3,7 @@ package it.bz.beacon.api.model;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-public class Order {
+public class ManufacturerOrder {
 
     @NotNull
     @NotEmpty

@@ -75,7 +75,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public List<Beacon> createByOrder(Order order) {
+    public List<Beacon> createByOrder(ManufacturerOrder order) {
         List<String> uniqueIds = apiService.checkOrder(order.getId());
         if (uniqueIds.size() <= 0) {
             throw new InvalidOrderIdException();

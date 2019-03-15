@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.BeaconUpdate;
-import it.bz.beacon.api.model.Order;
+import it.bz.beacon.api.model.ManufacturerOrder;
 import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +33,7 @@ public class BeaconController {
 
     @ApiOperation(value = "Create a beacon", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.POST, value = "/createByOrder", produces = "application/json")
-    public List<Beacon> create(@Valid @RequestBody Order order) {
+    public List<Beacon> create(@Valid @RequestBody ManufacturerOrder order) {
         return service.createByOrder(order);
     }
 

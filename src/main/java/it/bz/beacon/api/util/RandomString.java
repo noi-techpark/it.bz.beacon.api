@@ -2,24 +2,15 @@ package it.bz.beacon.api.util;
 
 import java.security.SecureRandom;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Random;
 
 public class RandomString {
 
-    public String nextString() {
-        for (int idx = 0; idx < buf.length; ++idx)
-            buf[idx] = symbols[random.nextInt(symbols.length)];
-        return new String(buf);
-    }
-
-    private static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    private static final String lower = upper.toLowerCase(Locale.ROOT);
-
-    private static final String digits = "0123456789";
-
-    private static final String alphanum = upper + lower + digits;
+    public static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static final String LOWERCASE = UPPERCASE.toLowerCase(Locale.ROOT);
+    public static final String DIGITS = "0123456789";
+    public static final String ALPHANUMERIC = UPPERCASE + LOWERCASE + DIGITS;
+    public static final String HEX = "0123456789abcdef";
 
     private final Random random;
 
@@ -27,7 +18,7 @@ public class RandomString {
 
     private final char[] buf;
 
-    private RandomString(int length, Random random, String symbols) {
+    public RandomString(int length, String symbols) {
         if (length < 1) {
             throw new IllegalArgumentException();
         }
@@ -36,16 +27,14 @@ public class RandomString {
             throw new IllegalArgumentException();
         }
 
-        this.random = Objects.requireNonNull(random);
+        this.random = new SecureRandom();
         this.symbols = symbols.toCharArray();
         this.buf = new char[length];
     }
 
-    private RandomString(int length, Random random) {
-        this(length, random, alphanum);
-    }
-
-    public RandomString(int length) {
-        this(length, new SecureRandom());
+    public String nextString() {
+        for (int idx = 0; idx < buf.length; ++idx)
+            buf[idx] = symbols[random.nextInt(symbols.length)];
+        return new String(buf);
     }
 }

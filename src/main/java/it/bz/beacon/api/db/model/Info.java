@@ -1,62 +1,34 @@
 package it.bz.beacon.api.db.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import it.bz.beacon.api.model.InfoCreation;
 import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "Info"
-)
+@Table( name = "Info" )
 public class Info extends AuditModel {
 
     @Id
     @Column(unique = true)
     private String id;
 
-    private String name;
-    private String website;
-    private String openDataPoiId;
-
-    private String address;
-    private String location;
-    private String cap;
-    private float latitude;
-    private float longitude;
-    private String floor;
-
     private UUID uuid;
     private int major;
     private int minor;
-
     private String namespace;
     private String instanceId;
 
-    @JsonIgnore
-    private String orderSymbol;
-
-    public static Info create(InfoCreation infoCreation, String uuid, String namespace) {
-        Info info = new Info();
-        info.setId(infoCreation.getBeaconId());
-        info.setName(infoCreation.getName());
-        info.setWebsite(infoCreation.getWebsite());
-        info.setOpenDataPoiId(infoCreation.getOpenDataPoiId());
-        info.setAddress(infoCreation.getAddress());
-        info.setLocation(infoCreation.getLocation());
-        info.setCap(infoCreation.getCap());
-        info.setLatitude(infoCreation.getLatitude());
-        info.setLongitude(infoCreation.getLongitude());
-        info.setFloor(infoCreation.getFloor());
-        info.setUuid(UUID.fromString(uuid));
-        info.setNamespace(namespace);
-//        info.setMajor(infoCreation.getMajor());
-//        info.setMinor(infoCreation.getMinor());
-//        info.setInstanceId(infoCreation.getInstanceId());
-        //TODO:All Fields
-
-        return info;
-    }
+    @Lob
+    private String name;
+    @Lob
+    private String website;
+    @Lob
+    private String address;
+    @Lob
+    private String location;
+    private String cap;
+    private double latitude;
+    private double longitude;
+    private String floor;
 
     public String getId() {
         return id;
@@ -80,14 +52,6 @@ public class Info extends AuditModel {
 
     public void setWebsite(String website) {
         this.website = website;
-    }
-
-    public String getOpenDataPoiId() {
-        return openDataPoiId;
-    }
-
-    public void setOpenDataPoiId(String openDataPoiId) {
-        this.openDataPoiId = openDataPoiId;
     }
 
     public String getAddress() {
@@ -114,19 +78,19 @@ public class Info extends AuditModel {
         this.cap = cap;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
@@ -176,13 +140,5 @@ public class Info extends AuditModel {
 
     public void setInstanceId(String instanceId) {
         this.instanceId = instanceId;
-    }
-
-    public String getOrderSymbol() {
-        return orderSymbol;
-    }
-
-    public void setOrderSymbol(String orderSymbol) {
-        this.orderSymbol = orderSymbol;
     }
 }
