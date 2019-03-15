@@ -22,12 +22,12 @@ public class BeaconDataService implements IBeaconDataService {
     }
 
     @Override
-    public List<BeaconData> findAllById(List<Long> ids) {
+    public List<BeaconData> findAllById(List<String> ids) {
         return repository.findAllById(ids);
     }
 
     @Override
-    public BeaconData find(long id) throws BeaconDataNotFoundException {
+    public BeaconData find(String id) throws BeaconDataNotFoundException {
         return repository.findById(id).orElseThrow(BeaconDataNotFoundException::new);
     }
 
@@ -37,7 +37,7 @@ public class BeaconDataService implements IBeaconDataService {
     }
 
     @Override
-    public BeaconData update(long id, BeaconUpdate beaconUpdate) throws BeaconDataNotFoundException {
+    public BeaconData update(String id, BeaconUpdate beaconUpdate) throws BeaconDataNotFoundException {
         return repository.findById(id).map(beaconData -> {
             beaconData.setName(beaconUpdate.getName());
             beaconData.setDescription(beaconUpdate.getDescription());
@@ -51,7 +51,7 @@ public class BeaconDataService implements IBeaconDataService {
     }
 
     @Override
-    public ResponseEntity<?> delete(long id) throws BeaconDataNotFoundException {
+    public ResponseEntity<?> delete(String id) throws BeaconDataNotFoundException {
         return repository.findById(id).map(
                 beaconData -> {
                     repository.delete(beaconData);

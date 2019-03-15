@@ -1,6 +1,5 @@
 package it.bz.beacon.api.db.model;
 
-import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.Manufacturer;
 import it.bz.beacon.api.model.RemoteBeacon;
 import it.bz.beacon.api.model.enumeration.LocationType;
@@ -16,8 +15,7 @@ import java.util.List;
 public class BeaconData extends AuditModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private String id;
 
     @Column(nullable = false)
     private String manufacturerId;
@@ -48,20 +46,22 @@ public class BeaconData extends AuditModel {
 
         BeaconData beaconData = new BeaconData();
 
+        beaconData.setId(remoteBeacon.getId());
+
         beaconData.setManufacturer(remoteBeacon.getManufacturer());
         beaconData.setManufacturerId(remoteBeacon.getManufacturerId());
-        if (remoteBeacon.getName() != null && !remoteBeacon.getName().isEmpty() && !remoteBeacon.getName().equals("Kontakt")) {
-            beaconData.setName(remoteBeacon.getName());
-        }
+
+        //TODO set name from info if possible
+        beaconData.setName(remoteBeacon.getName());
 
         return beaconData;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

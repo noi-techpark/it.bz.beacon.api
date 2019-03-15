@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -41,6 +42,7 @@ import java.util.Map;
 @Import(BeanValidatorPluginsConfiguration.class)
 @ComponentScan("it.bz.beacon.api")
 @EnableJpaAuditing
+@EnableScheduling
 public class Application extends SpringBootServletInitializer {
 
     @Autowired
@@ -159,5 +161,4 @@ public class Application extends SpringBootServletInitializer {
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(Application.class);
     }
-
 }

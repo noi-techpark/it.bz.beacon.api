@@ -45,13 +45,12 @@ public class IssueService implements IIssueService {
     public List<BeaconIssue> findAll(boolean onlyUnresolved) {
         List<Issue> issues = onlyUnresolved ? repository.findAllBySolution(null) : repository.findAll();
 
-        Map<Long, Beacon> beacons = beaconService.findAllWithIds(issues.stream()
+        Map<String, Beacon> beacons = beaconService.findAllWithIds(issues.stream()
                 .map(issue -> issue.getBeaconData().getId()).collect(Collectors.toList()))
                 .stream().collect(Collectors.toMap(Beacon::getId, Function.identity()));
 
         return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId())))
                 .collect(Collectors.toList());
-
     }
 
     @Override
@@ -59,13 +58,12 @@ public class IssueService implements IIssueService {
     public List<BeaconIssue> findAllByBeacon(BeaconData beaconData, boolean onlyUnresolved) {
         List<Issue> issues = onlyUnresolved ? repository.findAllByBeaconDataAndSolution(beaconData, null) : repository.findAllByBeaconData(beaconData);
 
-        Map<Long, Beacon> beacons = beaconService.findAllWithIds(issues.stream()
+        Map<String, Beacon> beacons = beaconService.findAllWithIds(issues.stream()
                 .map(issue -> issue.getBeaconData().getId()).collect(Collectors.toList()))
                 .stream().collect(Collectors.toMap(Beacon::getId, Function.identity()));
 
         return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId())))
                 .collect(Collectors.toList());
-
     }
 
     @Override

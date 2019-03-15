@@ -36,7 +36,7 @@ public class ImageController {
 
     @ApiOperation(value = "View a list of available images for a beacon", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    public List<BeaconImage> getList(@PathVariable long beaconId) {
+    public List<BeaconImage> getList(@PathVariable String beaconId) {
         BeaconData beaconData = beaconDataService.find(beaconId);
 
         return service.findAll(beaconData);
@@ -44,7 +44,7 @@ public class ImageController {
 
     @ApiOperation(value = "Create an image for a beacon", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public BeaconImage create(@PathVariable long beaconId, @RequestParam("file") MultipartFile file) {
+    public BeaconImage create(@PathVariable String beaconId, @RequestParam("file") MultipartFile file) {
         BeaconData beaconData = beaconDataService.find(beaconId);
 
         return service.create(beaconData, fileStorageService.storeFile(file));
@@ -53,7 +53,7 @@ public class ImageController {
     @ApiOperation(value = "Get an image for a beacon", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = "image/*")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable long beaconId, @PathVariable long id, HttpServletRequest request) {
+    public ResponseEntity<Resource> serveFile(@PathVariable String beaconId, @PathVariable long id, HttpServletRequest request) {
         BeaconData beaconData = beaconDataService.find(beaconId);
 
         BeaconImage beaconImage = service.find(id);
@@ -80,7 +80,7 @@ public class ImageController {
 
     @ApiOperation(value = "Delete an image", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}", produces = "application/json")
-    public BaseMessage delete(@PathVariable long beaconId, @PathVariable long id) {
+    public BaseMessage delete(@PathVariable String beaconId, @PathVariable long id) {
         beaconDataService.find(beaconId);
 
         return service.delete(id);

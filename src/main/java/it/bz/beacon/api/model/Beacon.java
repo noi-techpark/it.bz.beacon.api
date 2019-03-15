@@ -16,7 +16,7 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Beacon {
 
-    private long id;
+    private String id;
     private Manufacturer manufacturer;
     private String manufacturerId;
     private String name;
@@ -49,6 +49,8 @@ public class Beacon {
     private Integer batteryLevel;
 
     private PendingConfiguration pendingConfiguration;
+
+    private String internalName;
 
     @JsonIgnore
     private List<Issue> issues;
@@ -98,14 +100,16 @@ public class Beacon {
             setEddystoneEtlm(remoteBeacon.isEddystoneEtlm());
 
             setPendingConfiguration(remoteBeacon.getPendingConfiguration());
+
+            setInternalName(remoteBeacon.getName());
         }
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -373,5 +377,13 @@ public class Beacon {
 
     public void setIssues(List<Issue> issues) {
         this.issues = issues;
+    }
+
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
     }
 }
