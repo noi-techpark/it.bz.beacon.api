@@ -40,6 +40,10 @@ public class ApiService {
     }
 
     public BeaconListResponse getBeacons(List<String> ids) {
+        if (ids.size() <= 0) {
+            return new BeaconListResponse();
+        }
+
         ResponseEntity<BeaconListResponse> responseEntity = restTemplate.exchange(
                 "/device?maxResult=" + ids.size() + "&deviceType=" + Device.DeviceType.BEACON + "&uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,

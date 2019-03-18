@@ -37,25 +37,4 @@ public class InfoService implements IInfoService {
     public Info findByMajorMinor(int major, int minor) throws InfoNotFoundException {
         return repository.findByUuidAndMajorAndMinor(beaconSuedtirolConfiguration.getUuid(), major, minor).orElseThrow(InfoNotFoundException::new);
     }
-
-//    @Override
-//    public Info create(InfoCreation infoCreation) {
-//        try {
-//            return repository.save(Info.create(infoCreation, beaconSuedtirolConfiguration.getUuid(), beaconSuedtirolConfiguration.getNamespace()));
-//        } catch (DataIntegrityViolationException e) {
-//            throw new DuplicateEntryException();
-//        }
-//    }
-//
-//    @Override
-//    public Info update(long id, InfoUpdate infoUpdate) throws UserNotFoundException {
-//        return repository.findById(id).map(info -> {
-//            if (infoUpdate.getPassword() != null) {
-//
-//            }
-////            info.applyUpdate(infoUpdate);
-////
-//            return repository.save(info);
-//        }).orElseThrow(UserNotFoundException::new);
-//    }
 }
