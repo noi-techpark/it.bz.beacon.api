@@ -2,8 +2,10 @@ package it.bz.beacon.api.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
-@Controller //note - this is a spring-boot controller, not @RestController
+@ApiIgnore
+@Controller
 public class SwaggerController {
 
     @RequestMapping("/")
