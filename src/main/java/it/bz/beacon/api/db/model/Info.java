@@ -1,5 +1,7 @@
 package it.bz.beacon.api.db.model;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -17,13 +19,13 @@ public class Info extends AuditModel {
     private String namespace;
     private String instanceId;
 
-    @Lob
+    @Type(type="org.hibernate.type.StringType")
     private String name;
-    @Lob
+    @Type(type="org.hibernate.type.StringType")
     private String website;
-    @Lob
+    @Type(type="org.hibernate.type.StringType")
     private String address;
-    @Lob
+    @Type(type="org.hibernate.type.StringType")
     private String location;
     private String cap;
     private double latitude;

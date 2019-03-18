@@ -7,7 +7,6 @@ import it.bz.beacon.api.model.BeaconUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,31 +17,26 @@ public class BeaconDataService implements IBeaconDataService {
     private BeaconDataRepository repository;
 
     @Override
-    @Transactional
     public List<BeaconData> findAll() {
         return repository.findAll();
     }
 
     @Override
-    @Transactional
     public List<BeaconData> findAllById(List<String> ids) {
         return repository.findAllById(ids);
     }
 
     @Override
-    @Transactional
     public BeaconData find(String id) throws BeaconDataNotFoundException {
         return repository.findById(id).orElseThrow(BeaconDataNotFoundException::new);
     }
 
     @Override
-    @Transactional
     public BeaconData create(BeaconData beaconData) {
         return repository.save(beaconData);
     }
 
     @Override
-    @Transactional
     public BeaconData update(String id, BeaconUpdate beaconUpdate) throws BeaconDataNotFoundException {
         return repository.findById(id).map(beaconData -> {
             beaconData.setName(beaconUpdate.getName());
@@ -57,7 +51,6 @@ public class BeaconDataService implements IBeaconDataService {
     }
 
     @Override
-    @Transactional
     public ResponseEntity<?> delete(String id) throws BeaconDataNotFoundException {
         return repository.findById(id).map(
                 beaconData -> {

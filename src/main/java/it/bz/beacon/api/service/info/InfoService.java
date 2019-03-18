@@ -20,25 +20,21 @@ public class InfoService implements IInfoService {
     private BeaconSuedtirolConfiguration beaconSuedtirolConfiguration;
 
     @Override
-    @Transactional
     public List<Info> findAll() {
         return repository.findAll();
     }
 
     @Override
-    @Transactional
     public Info findByBeaconId(String beaconId) throws InfoNotFoundException {
         return repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
     }
 
     @Override
-    @Transactional
     public Info findByInstanceId(String instanceId) throws InfoNotFoundException {
         return repository.findByNamespaceAndInstanceId(beaconSuedtirolConfiguration.getNamespace(), instanceId).orElseThrow(InfoNotFoundException::new);
     }
 
     @Override
-    @Transactional
     public Info findByMajorMinor(int major, int minor) throws InfoNotFoundException {
         return repository.findByUuidAndMajorAndMinor(beaconSuedtirolConfiguration.getUuid(), major, minor).orElseThrow(InfoNotFoundException::new);
     }

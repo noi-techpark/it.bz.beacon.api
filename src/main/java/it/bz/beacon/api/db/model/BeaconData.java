@@ -3,6 +3,7 @@ package it.bz.beacon.api.db.model;
 import it.bz.beacon.api.model.Manufacturer;
 import it.bz.beacon.api.model.RemoteBeacon;
 import it.bz.beacon.api.model.enumeration.LocationType;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,13 +31,13 @@ public class BeaconData extends AuditModel {
 
     private String name;
 
-    @Lob
+    @Type(type="org.hibernate.type.StringType")
     private String description;
 
     @Column(nullable = false)
     private LocationType locationType = LocationType.OUTDOOR;
 
-    @Lob
+    @Type(type="org.hibernate.type.StringType")
     private String locationDescription;
 
     @OneToMany(mappedBy = "beaconData", fetch = FetchType.EAGER)
