@@ -67,6 +67,7 @@ public class IssueService implements IIssueService {
     }
 
     @Override
+    @Transactional
     public BeaconIssue find(long id) {
         Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
@@ -75,6 +76,7 @@ public class IssueService implements IIssueService {
     }
 
     @Override
+    @Transactional
     public BeaconIssue create(IssueCreation issueCreation) {
         BeaconData beaconData = beaconDataService.find(issueCreation.getBeaconId());
 
@@ -88,6 +90,7 @@ public class IssueService implements IIssueService {
     }
 
     @Override
+    @Transactional
     public BeaconIssue resolve(long id, IssueSolution issueSolution) {
         Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
         issue.setSolution(issueSolution);
