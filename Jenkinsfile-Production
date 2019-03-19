@@ -16,7 +16,7 @@ pipeline {
         CORS_ORIGINS = "https://admin.beacon.bz.it"
         KONTAKT_IO_API_KEY = credentials('beacon-api-kontakt-io-api-key')
 
-        INFO_HOST = "https://api.beacon.bz.it"
+        INFO_HOST = "api.beacon.bz.it"
         INFO_TITLE = "Beacon Suedtirol API"
         INFO_DESCRIPTION = "The API for the Beacon Suedtirol project for configuring beacons and accessing beacon data."
         INFO_VERSION = "0.1"
