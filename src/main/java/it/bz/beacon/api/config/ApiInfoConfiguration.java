@@ -10,6 +10,9 @@ import javax.validation.constraints.NotBlank;
 public class ApiInfoConfiguration {
 
     @NotBlank
+    private String host;
+
+    @NotBlank
     private String title;
 
     @NotBlank
@@ -35,6 +38,14 @@ public class ApiInfoConfiguration {
 
     @NotBlank
     private String licenseUrl;
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
 
     public String getTitle() {
         return title;
