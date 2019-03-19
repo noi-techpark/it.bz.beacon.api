@@ -19,6 +19,7 @@ import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
 import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.*;
+import it.bz.beacon.api.util.ManufacturerNameValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -186,6 +187,7 @@ public class BeaconService implements IBeaconService {
         }
 
         Map<String, RemoteBeacon> remoteBeacons = response.getDevices().stream()
+                .filter(tagBeaconDevice -> ManufacturerNameValidator.isValid(tagBeaconDevice.getName()))
                 .map(RemoteBeacon::fromTagBeaconDevice)
                 .collect(Collectors.toMap(RemoteBeacon::getManufacturerId, Function.identity()));
 

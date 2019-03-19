@@ -55,6 +55,10 @@ public class ApiService {
     }
 
     public DeviceStatusListResponse getDeviceStatuses(List<String> ids) {
+        if (ids.size() <= 0) {
+            return new DeviceStatusListResponse();
+        }
+
         ResponseEntity<DeviceStatusListResponse> responseEntity = restTemplate.exchange(
                 "/device/status?maxResult=" + ids.size() + "&uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,
@@ -66,6 +70,10 @@ public class ApiService {
     }
 
     public ConfigurationListResponse getConfigurations(List<String> ids) {
+        if (ids.size() <= 0) {
+            return new ConfigurationListResponse();
+        }
+
         ResponseEntity<ConfigurationListResponse> responseEntity = restTemplate.exchange(
                 "/config?maxResult=" + ids.size() + "&uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,

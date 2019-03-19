@@ -2,6 +2,7 @@ package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.bz.beacon.api.model.IssueCreation;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,7 +20,7 @@ public class Issue extends AuditModel {
 
     private String problem;
 
-    @Lob
+    @Type(type="org.hibernate.type.StringType")
     private String problemDescription;
     private String reporter;
 

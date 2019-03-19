@@ -5,6 +5,7 @@ import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
 import it.bz.beacon.api.util.EddystoneUrl;
+import it.bz.beacon.api.util.ManufacturerNameValidator;
 
 import java.util.UUID;
 
@@ -66,7 +67,7 @@ public class RemoteBeacon {
     }
 
     private void parseManufacturerName(String name) throws InvalidBeaconIdentifierException {
-        if (name == null || !name.matches("^[A-Z]{4}[0-9]{3}[A-Z]#[A-Za-z0-9]{6}$")) {
+        if (!ManufacturerNameValidator.isValid(name)) {
             throw new InvalidBeaconIdentifierException();
         }
 

@@ -1,6 +1,7 @@
 package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -21,7 +22,7 @@ public class IssueSolution extends AuditModel {
     @NotNull
     private String solution;
 
-    @Lob
+    @Type(type="org.hibernate.type.StringType")
     private String solutionDescription;
 
     @NotEmpty
