@@ -47,6 +47,7 @@ kontakt.io.acceptHeader = application/vnd.com.kontakt+json;version=10
 kontakt.io.apiKey =
 
 # API INFORMATION
+api.info.host =
 api.info.title =
 api.info.description =
 api.info.version =

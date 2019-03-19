@@ -64,6 +64,7 @@ public class Application extends SpringBootServletInitializer {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .host(apiInfoConfiguration.getHost())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("it.bz.beacon.api.controller"))
                 .build()
