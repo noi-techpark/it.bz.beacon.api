@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.Random;
 
 @Component
-public class iBeaconValueGenerator extends BaseValueGenerator<iBeaconValue> {
+public class IBeaconValueGenerator extends BaseValueGenerator<iBeaconValue> {
 
     @Autowired
     private BeaconSuedtirolConfiguration beaconSuedtirolConfiguration;

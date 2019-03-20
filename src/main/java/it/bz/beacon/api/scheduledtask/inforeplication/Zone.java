@@ -1,5 +1,6 @@
 package it.bz.beacon.api.scheduledtask.inforeplication;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Zone {
@@ -9,13 +10,21 @@ public class Zone {
     private String email;
     private String sheetName;
 
-    public Zone(List<String> row) {
+    public Zone(List<Object> row) throws InvalidZoneException {
+        List<String> fields = new ArrayList<>();
+        for (Object entry : row) {
+            try {
+                fields.add((String) entry);
+            } catch (ClassCastException e) {
+                throw new InvalidZoneException("Zone row contains unparseable values");
+            }
+        }
 
-        this.id = Integer.parseInt(row.get(0));
-        this.code = row.get(1);
-        this.name = row.get(2);
-        this.email = row.get(3);
-        this.sheetName = row.get(4);
+        this.id = Integer.parseInt(fields.get(0));
+        this.code = fields.get(1);
+        this.name = fields.get(2);
+        this.email = fields.get(3);
+        this.sheetName = fields.get(4);
     }
 
     public int getId() {

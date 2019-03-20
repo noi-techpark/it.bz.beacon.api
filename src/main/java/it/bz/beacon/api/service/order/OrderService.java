@@ -4,16 +4,14 @@ import it.bz.beacon.api.db.model.OrderData;
 import it.bz.beacon.api.db.repository.InfoRepository;
 import it.bz.beacon.api.db.repository.OrderRepository;
 import it.bz.beacon.api.exception.db.OrderSymbolNotFoundException;
+import it.bz.beacon.api.exception.order.NoBeaconsToOrderException;
 import it.bz.beacon.api.model.BeaconOrder;
 import it.bz.beacon.api.model.BeaconOrderData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class OrderService implements IOrderService {
@@ -59,11 +57,16 @@ public class OrderService implements IOrderService {
     }
 
     @Override
+    @Transactional
     public BeaconOrder create() {
         List<OrderData> orderDataList = repository.findAllByOrderSymbol(null);
 
-        //TODO generate symbol
-        String orderSymbol = "TEST";
+        if (orderDataList.size() <= 0) {
+            throw new NoBeaconsToOrderException();
+        }
+
+        String maxOrderSymbol = repository.getMaxOrderSymbol().toUpperCase(Locale.ROOT);
+        String orderSymbol = String.valueOf( (char) (maxOrderSymbol.charAt(0) + 1));
 
         BeaconOrder beaconOrder = new BeaconOrder(orderSymbol);
 

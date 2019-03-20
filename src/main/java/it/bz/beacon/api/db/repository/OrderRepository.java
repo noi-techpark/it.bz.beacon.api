@@ -10,5 +10,8 @@ public interface OrderRepository extends JpaRepository<OrderData, String> {
     List<OrderData> findAllByOrderSymbol(String orderSymbol);
 
     @Query("SELECT coalesce(max(o.zoneId), 0) FROM OrderData o where o.zoneCode = ?1")
-    Integer getNextZoneId(String zoneCode);
+    Integer getMaxZoneId(String zoneCode);
+
+    @Query("SELECT coalesce(max(o.orderSymbol), 'A') FROM OrderData o")
+    String getMaxOrderSymbol();
 }

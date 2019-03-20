@@ -93,7 +93,11 @@ public class InfoData {
     private void setLatitude(String latitude) {
         try {
             if (latitude != null && latitude.trim().length() > 0) {
-                this.latitude = Double.parseDouble(latitude);
+                double latitudeValue = Double.parseDouble(latitude);
+                if (latitudeValue < -90 || latitudeValue > 90) {
+                    throw new NumberFormatException();
+                }
+                this.latitude = latitudeValue;
             }
         } catch (NumberFormatException e) {
             this.errors.add(new FieldError("Latitude must be between -90 and +90 degrees", "latitude", latitude));
@@ -103,7 +107,11 @@ public class InfoData {
     private void setLongitude(String longitude) {
         try {
             if (longitude != null && longitude.trim().length() > 0) {
-                this.longitude = Double.parseDouble(longitude);
+                double longitudeValue = Double.parseDouble(longitude);
+                if (longitudeValue < -90 || longitudeValue > 90) {
+                    throw new NumberFormatException();
+                }
+                this.longitude = longitudeValue;
             }
         } catch (NumberFormatException e) {
             this.errors.add(new FieldError("Longitude must be between -180 and +180 degrees","longitude", longitude));

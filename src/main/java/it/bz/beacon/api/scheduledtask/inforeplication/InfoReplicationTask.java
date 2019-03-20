@@ -7,7 +7,6 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
@@ -22,11 +21,8 @@ import it.bz.beacon.api.scheduledtask.inforeplication.error.GeneralError;
 import it.bz.beacon.api.scheduledtask.inforeplication.error.ParseError;
 import it.bz.beacon.api.scheduledtask.inforeplication.error.RowError;
 import it.bz.beacon.api.scheduledtask.inforeplication.error.SheetError;
-import it.bz.beacon.api.scheduledtask.inforeplication.value.EddystoneValue;
-import it.bz.beacon.api.scheduledtask.inforeplication.value.EddystoneValueGenerator;
-import it.bz.beacon.api.scheduledtask.inforeplication.value.iBeaconValue;
+import it.bz.beacon.api.scheduledtask.inforeplication.value.*;
 import it.bz.beacon.api.service.beacon.BeaconService;
-import it.bz.beacon.api.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +60,10 @@ public class InfoReplicationTask {
     private JavaMailSender emailSender;
 
     @Autowired
-    private it.bz.beacon.api.scheduledtask.inforeplication.value.iBeaconValueGenerator iBeaconValueGenerator;
+    private BeaconIdGenerator beaconIdGenerator;
+
+    @Autowired
+    private IBeaconValueGenerator iBeaconValueGenerator;
 
     @Autowired
     private EddystoneValueGenerator eddystoneValueGenerator;
@@ -100,7 +99,6 @@ public class InfoReplicationTask {
     private void replicateGoogleSheet() {
         try {
             Sheets sheetService = getSheetsService();
-            Spreadsheet spreadsheet = sheetService.spreadsheets().get(importerConfiguration.getSpreadSheetId()).execute();
 
             List<Zone> zones = new ArrayList<>();
             List<SheetError> sheetErrors = new ArrayList<>();
@@ -114,13 +112,17 @@ public class InfoReplicationTask {
                 List<List<Object>> rows = valueRange.getValues();
                 if (rows.size() > 1) {
                     for (int i = 1; i < rows.size(); i++) {
-                        zones.add(new Zone((List<String>)(Object)rows.get(i)));
+                        try {
+                            zones.add(new Zone(rows.get(i)));
+                        } catch (InvalidZoneException e) {
+                            log.error(String.format("Zone [ %d ]: %s", i + 1, e.getMessage()));
+                        }
                     }
                 }
             }
 
             for (Zone zone : zones) {
-                SheetError sheetError = new SheetError(zone.getSheetName());
+                SheetError sheetError = new SheetError(zone);
                 BatchGetValuesResponse sheetResponse = sheetService.spreadsheets().values()
                         .batchGet(importerConfiguration.getSpreadSheetId()).setRanges(Collections.singletonList(zone.getSheetName()))
                         .execute();
@@ -139,7 +141,7 @@ public class InfoReplicationTask {
                             }
 
                             if (beaconId != null && beaconId.trim().length() > 0) {
-                                update(beaconId, infoData);
+                                update(beaconId, infoData, zone);
                             } else {
                                 create(sheetService, zone, i + 1,infoData);
                             }
@@ -166,9 +168,7 @@ public class InfoReplicationTask {
     }
 
     private void notfiyErrors(List<SheetError> sheetErrors) {
-
         if (sheetErrors.size() > 0) {
-
             for (SheetError sheetError : sheetErrors) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(String.format("There have been found invalid values in some sheet rows for sheet [ %s ].",
@@ -198,6 +198,7 @@ public class InfoReplicationTask {
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setFrom(beaconSuedtirolConfiguration.getIssueEmailFrom());
                 //TODO send to zone manager
+                //message.setTo(sheetError.getZone().getEmail());
                 message.setTo("dev@rolmail.net");
                 message.setSubject(String.format("Beacon Südtirol - Info sheet replication errors for [ %s ]",
                         sheetError.getTitle()));
@@ -224,7 +225,7 @@ public class InfoReplicationTask {
     }
 
     @Transactional(rollbackFor = DbWriteException.class)
-    private void update(String beaconId, InfoData infoData) {
+    private void update(String beaconId, InfoData infoData, Zone zone) {
         Info info;
         try {
             info = infoRepository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
@@ -236,10 +237,10 @@ public class InfoReplicationTask {
         applyRowData(info, infoData);
     }
 
-    @Transactional(rollbackFor = SheetWriteException.class)
+    @Transactional(rollbackFor = { SheetWriteException.class, DbWriteException.class })
     private void create(Sheets sheetService, Zone zone, int rowIndex, InfoData infoData) {
         Info info = new Info();
-        info.setId(generateBeaconId());
+        info.setId(beaconIdGenerator.randomValue());
         info.setNamespace(beaconSuedtirolConfiguration.getNamespace());
 
         iBeaconValue iBeaconValue = iBeaconValueGenerator.randomValue();
@@ -258,7 +259,7 @@ public class InfoReplicationTask {
             order.setId(info.getId());
             order.setInfo(info);
             order.setZoneCode(zone.getCode());
-            order.setZoneId(orderRepository.getNextZoneId(zone.getCode()));
+            order.setZoneId(orderRepository.getMaxZoneId(zone.getCode()) + 1);
             orderRepository.save(order);
         } catch (Exception e) {
             throw new DbWriteException(e);
@@ -289,18 +290,6 @@ public class InfoReplicationTask {
             infoRepository.save(info);
         } catch (Exception e) {
             throw new DbWriteException(e);
-        }
-    }
-
-    private String generateBeaconId() {
-        RandomString randomString = new RandomString(6, RandomString.ALPHANUMERIC);
-        String beaconId = randomString.nextString();
-
-        try {
-            infoRepository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
-            return generateBeaconId();
-        } catch (InfoNotFoundException e) {
-            return beaconId;
         }
     }
 }
