@@ -20,7 +20,7 @@ pipeline {
         INFO_TITLE = "Beacon Suedtirol API"
         INFO_DESCRIPTION = "The API for the Beacon Suedtirol project for configuring beacons and accessing beacon data."
         INFO_VERSION = "0.1"
-        INFO_TERMS_OF_SERVICE_URL = ""
+        INFO_TERMS_OF_SERVICE_URL = "https://opendatahub.readthedocs.io/en/latest/licenses.html"
         INFO_CONTACT_NAME = ""
         INFO_CONTACT_URL = ""
         INFO_CONTACT_EMAIL = ""
