@@ -17,6 +17,7 @@ public class RemoteBeacon {
     private String id;
     private String zone;
     private String zoneCode;
+    private String zoneId;
     private String name;
 
     private UUID uuid;
@@ -73,10 +74,17 @@ public class RemoteBeacon {
 
         setName(name);
 
-        String[] parts = name.split("#");
-        setZone(parts[0].substring(0, 4));
-        setZoneCode(parts[0].substring(4, 8));
-        setId(parts[1]);
+        if (ManufacturerNameValidator.isV1(name)) {
+            String[] parts = name.split("#");
+            setZone(parts[0].substring(0, 4));
+            setZoneCode(parts[0].substring(4, 8));
+            setId(parts[1]);
+        } else if (ManufacturerNameValidator.isV2(name)) {
+            String[] parts = name.split("#");
+            setZoneCode(parts[0].substring(0, 3));
+            setZoneId(parts[0].substring(3, 7));
+            setId(parts[1]);
+        }
     }
 
     public String getId() {
@@ -101,6 +109,14 @@ public class RemoteBeacon {
 
     public void setZoneCode(String zoneCode) {
         this.zoneCode = zoneCode;
+    }
+
+    public String getZoneId() {
+        return zoneId;
+    }
+
+    public void setZoneId(String zoneId) {
+        this.zoneId = zoneId;
     }
 
     public Manufacturer getManufacturer() {

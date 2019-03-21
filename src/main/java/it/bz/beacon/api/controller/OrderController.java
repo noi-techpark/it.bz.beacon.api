@@ -3,13 +3,11 @@ package it.bz.beacon.api.controller;
 import com.opencsv.CSVWriter;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
-import it.bz.beacon.api.db.model.OrderData;
 import it.bz.beacon.api.model.BeaconOrder;
 import it.bz.beacon.api.model.BeaconOrderData;
 import it.bz.beacon.api.service.order.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,13 +18,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 @RestController
 @RequestMapping("/v1/admin/orders")
@@ -69,7 +66,11 @@ public class OrderController {
             };
             writer.writeNext(header);
 
-            for (BeaconOrderData orderData : beaconOrder.getBeacons()) {
+            List<BeaconOrderData> beacons = beaconOrder.getBeacons();
+            beacons.sort(Comparator.comparing(orderData -> String.format("%s%s#%s", orderData.getZoneCode().substring(0, 3),
+                    String.format("%04d", orderData.getZoneId()), orderData.getBeaconId())));
+
+            for (BeaconOrderData orderData : beacons) {
                 String[] line = new String[] {
                         "iBeacon",
                         orderData.getUuid().toString(),
