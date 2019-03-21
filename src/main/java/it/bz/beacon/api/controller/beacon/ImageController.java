@@ -58,7 +58,7 @@ public class ImageController {
 
         BeaconImage beaconImage = service.find(id);
 
-        if (beaconImage.getBeaconId() != beaconData.getId()) {
+        if (beaconImage.getBeaconId().equals(beaconData.getId())) {
             throw new BeaconImageNotFoundException();
         }
 
