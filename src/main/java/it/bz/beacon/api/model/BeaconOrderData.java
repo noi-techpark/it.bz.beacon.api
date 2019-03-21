@@ -56,4 +56,12 @@ public class BeaconOrderData {
     public String getInstanceId() {
         return instanceId;
     }
+
+    public int getZoneId() {
+        return zoneId;
+    }
+
+    public String getZoneCode() {
+        return zoneCode;
+    }
 }
