@@ -26,7 +26,7 @@ public class OrderService implements IOrderService {
     public List<BeaconOrder> findAll() {
         Map<String, BeaconOrder> beaconOrderMap = new HashMap<>();
 
-        List<OrderData> orderDataList = repository.findAll();
+        List<OrderData> orderDataList = repository.findAllWithOrderSymbol();
 
         for (OrderData orderData : orderDataList) {
             if (!beaconOrderMap.containsKey(orderData.getOrderSymbol())) {
