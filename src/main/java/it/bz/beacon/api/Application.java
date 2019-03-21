@@ -7,19 +7,19 @@ import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.config.KontaktIOConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -43,6 +43,7 @@ import java.util.Map;
 @ComponentScan("it.bz.beacon.api")
 @EnableJpaAuditing
 @EnableScheduling
+@EnableTransactionManagement
 public class Application extends SpringBootServletInitializer {
 
     @Autowired
@@ -129,7 +130,7 @@ public class Application extends SpringBootServletInitializer {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/v1/**")
-                        .allowedOrigins(beaconSuedtirolConfiguration.getAllowedOrigins())
+                        .allowedOrigins(beaconSuedtirolConfiguration.getAllowedOrigins().split(","))
                         .allowedMethods(
                                 HttpMethod.GET.toString(),
                                 HttpMethod.POST.toString(),

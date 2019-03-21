@@ -49,12 +49,9 @@ public class InfoData {
                     setCap(field);
                     break;
                 case 9:
-                    setLatitude(field);
+                    setCoordinates(field);
                     break;
                 case 10:
-                    setLongitude(field);
-                    break;
-                case 11:
                     setFloor(field);
                     break;
             }
@@ -90,6 +87,17 @@ public class InfoData {
         }
     }
 
+    private void setCoordinates(String coordinatesField) {
+        String[] coordinates = coordinatesField.split(",");
+        if (coordinates.length != 2) {
+            this.errors.add(new FieldError("Coordinates have to be in the format lat,long (example: 46.123, 11.456)", "coordinates", coordinatesField));
+            return;
+        }
+
+        setLatitude(coordinates[0].trim());
+        setLongitude(coordinates[1].trim());
+    }
+
     private void setLatitude(String latitude) {
         try {
             if (latitude != null && latitude.trim().length() > 0) {
@@ -100,7 +108,7 @@ public class InfoData {
                 this.latitude = latitudeValue;
             }
         } catch (NumberFormatException e) {
-            this.errors.add(new FieldError("Latitude must be between -90 and +90 degrees", "latitude", latitude));
+            this.errors.add(new FieldError("Latitude must be between -90 and +90 degrees", "coordinates[latitude]", latitude));
         }
     }
 
@@ -114,7 +122,7 @@ public class InfoData {
                 this.longitude = longitudeValue;
             }
         } catch (NumberFormatException e) {
-            this.errors.add(new FieldError("Longitude must be between -180 and +180 degrees","longitude", longitude));
+            this.errors.add(new FieldError("Longitude must be between -180 and +180 degrees","coordinates[longitude]", longitude));
         }
     }
 
