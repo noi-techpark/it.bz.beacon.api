@@ -212,9 +212,7 @@ public class InfoReplicationTask {
 
                 SimpleMailMessage message = new SimpleMailMessage();
                 message.setFrom(beaconSuedtirolConfiguration.getIssueEmailFrom());
-                //TODO send to zone manager
-                //message.setTo(sheetError.getZone().getEmail());
-                message.setTo("dev@rolmail.net");
+                message.setTo(sheetError.getZone().getEmail());
                 message.setSubject(String.format("Beacon Südtirol - Info sheet replication errors for [ %s ]",
                         sheetError.getTitle()));
                 message.setText(sb.toString());
