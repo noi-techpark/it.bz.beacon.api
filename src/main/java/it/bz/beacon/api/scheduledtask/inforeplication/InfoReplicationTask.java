@@ -60,11 +60,16 @@ public class InfoReplicationTask {
 
     private static final Logger log = LoggerFactory.getLogger(InfoReplicationTask.class);
 
-    @Scheduled(fixedDelay = 30 * 60 * 1000)
+    @Scheduled(fixedDelayString = "${it.bz.beacon.task.infoimport.delay:10800000}")
     public void startImport() {
         if (importerConfiguration.isEnabled()) {
-            replicateGoogleSheet();
-            updateBeaconPackageData();
+            log.info("Starting sheet import...");
+            try {
+                replicateGoogleSheet();
+                updateBeaconPackageData();
+            } catch (Exception e) {
+                log.error("An unexcpected error occurred: " + e.getMessage());
+            }
         }
     }
 

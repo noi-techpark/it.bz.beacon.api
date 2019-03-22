@@ -82,3 +82,4 @@ it.bz.beacon.namespace =
 # Info import
 it.bz.beacon.task.infoimport.enabled =
 it.bz.beacon.task.infoimport.spreadSheetId =
+it.bz.beacon.task.infoimport.delay =
