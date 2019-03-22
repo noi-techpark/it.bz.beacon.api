@@ -33,9 +33,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Service
@@ -91,7 +90,7 @@ public class InfoReplicationTask {
         try {
             Sheets sheetService = getSheetsService();
 
-            List<Zone> zones = new ArrayList<>();
+            Map<String, Zone> zones = new HashMap<>();
             List<SheetError> sheetErrors = new ArrayList<>();
 
             BatchGetValuesResponse zoneResponse = sheetService.spreadsheets().values()
@@ -104,7 +103,8 @@ public class InfoReplicationTask {
                 if (rows.size() > 1) {
                     for (int i = 1; i < rows.size(); i++) {
                         try {
-                            zones.add(new Zone(rows.get(i)));
+                            Zone zone = new Zone(rows.get(i));
+                            zones.put(zone.getSheetName(), zone);
                         } catch (InvalidZoneException e) {
                             log.error(String.format("Zone [ %d ]: %s", i + 1, e.getMessage()));
                         }
@@ -112,61 +112,69 @@ public class InfoReplicationTask {
                 }
             }
 
-            for (Zone zone : zones) {
-                SheetError sheetError = new SheetError(zone);
-                BatchGetValuesResponse sheetResponse = sheetService.spreadsheets().values()
-                        .batchGet(importerConfiguration.getSpreadSheetId()).setRanges(Collections.singletonList(zone.getSheetName()))
-                        .execute();
+            List<String> ranges = new ArrayList<>(zones.keySet());
+            BatchGetValuesResponse rangesResponse = sheetService.spreadsheets().values()
+                    .batchGet(importerConfiguration.getSpreadSheetId()).setRanges(ranges)
+                    .execute();
 
-                for (ValueRange valueRange : sheetResponse.getValueRanges()) {
-                    List<List<Object>> rows = valueRange.getValues();
-                    for (int i = 1; i < rows.size(); i++) {
-                        List<Object> row = rows.get(i);
-                        if (row.size() <= 0) {
-                            continue;
+            List<ValueRange> zoneRanges = rangesResponse.getValueRanges();
+            zoneRanges.sort(Comparator.comparing(ValueRange::getRange));
+            for (ValueRange zoneRange : zoneRanges) {
+                String sheetName = zoneRange.getRange().split("'")[1];
+                Zone zone = zones.get(sheetName);
+                if (zone == null) {
+                    continue;
+                }
+
+                SheetError sheetError = new SheetError(zone);
+
+                List<List<Object>> rows = zoneRange.getValues();
+                for (int i = 1; i < rows.size(); i++) {
+                    List<Object> row = rows.get(i);
+                    if (row.size() <= 0) {
+                        continue;
+                    }
+
+                    String beaconId = (String) row.get(0);
+                    RowError rowError = new RowError(i + 1);
+
+                    try {
+                        InfoData infoData = new InfoData(row);
+                        if (!infoData.isValid()) {
+                            rowError.setErrors(infoData.getErrors());
                         }
 
-                        String beaconId = (String) row.get(0);
-                        RowError rowError = new RowError(i + 1);
-
-                        try {
-                            InfoData infoData = new InfoData(row);
-                            if (!infoData.isValid()) {
-                                rowError.setErrors(infoData.getErrors());
-                            }
-
-                            if (beaconId != null && beaconId.trim().length() > 0) {
-                                replicationService.update(beaconId, infoData, zone);
-                            } else {
-                                try {
-                                    replicationService.create(sheetService, zone, i + 1, infoData);
-                                } catch (SheetWriteException e) {
-                                    if (e.getCause() instanceof GoogleJsonResponseException) {
-                                        GoogleJsonResponseException gex = (GoogleJsonResponseException)e.getCause();
-                                        if (gex.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS.value()) {
-                                            try {
-                                                //Sleep for 200 seconds to avoid to exceed free Google sheet quota
-                                                log.warn("Google sheet quota exceeded, sleeping for 200 seconds before retry...");
-                                                Thread.sleep(200 * 1000);
-                                                replicationService.create(sheetService, zone, i + 1, infoData);
-                                            } catch (InterruptedException ie) {
-                                                throw new SheetWriteException(ie);
-                                            }
-                                        } else {
-                                            throw e;
+                        if (beaconId != null && beaconId.trim().length() > 0) {
+                            replicationService.update(beaconId, infoData, zone);
+                        } else {
+                            try {
+                                replicationService.create(sheetService, zone, i + 1, infoData);
+                            } catch (SheetWriteException e) {
+                                if (e.getCause() instanceof GoogleJsonResponseException) {
+                                    GoogleJsonResponseException gex = (GoogleJsonResponseException)e.getCause();
+                                    if (gex.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS.value()) {
+                                        try {
+                                            //Sleep for 200 seconds to avoid to exceed free Google sheet quota
+                                            log.warn("Google sheet quota exceeded, sleeping for 200 seconds before retry...");
+                                            Thread.sleep(200 * 1000);
+                                            replicationService.create(sheetService, zone, i + 1, infoData);
+                                        } catch (InterruptedException ie) {
+                                            throw new SheetWriteException(ie);
                                         }
                                     } else {
                                         throw e;
                                     }
+                                } else {
+                                    throw e;
                                 }
                             }
-                        } catch (Exception e) {
-                            rowError.addError(new GeneralError(String.format("An exception occurred: %s", e.getMessage())));
                         }
+                    } catch (Exception e) {
+                        rowError.addError(new GeneralError(String.format("An exception occurred: %s", e.getMessage())));
+                    }
 
-                        if (rowError.hasErrors()) {
-                            sheetError.addError(rowError);
-                        }
+                    if (rowError.hasErrors()) {
+                        sheetError.addError(rowError);
                     }
                 }
 
