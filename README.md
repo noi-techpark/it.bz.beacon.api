@@ -105,6 +105,10 @@ Make a copy of the src/resources/application.properties.dist file and name it "a
 *Google spread sheet id to import*
 
 
+* it.bz.beacon.task.infoimport.delay
+*Replication delay in milliseconds after last run*  
+
+
 * it.bz.beacon.trusted.user  
 *The username for the basic authorization for the trusted api*
 
