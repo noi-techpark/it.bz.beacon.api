@@ -20,6 +20,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.WebRequest;
@@ -72,7 +73,7 @@ public class Application extends SpringBootServletInitializer {
                 .build()
                 .apiInfo(apiInfo())
                 .securityContexts(Lists.newArrayList(securityContext()))
-                .securitySchemes(Lists.newArrayList(apiKey()));
+                .securitySchemes(Lists.newArrayList(bearerApiKey(), basicApiKey()));
     }
 
     private ApiInfo apiInfo() {
@@ -88,8 +89,12 @@ public class Application extends SpringBootServletInitializer {
         );
     }
 
-    private ApiKey apiKey() {
+    private ApiKey bearerApiKey() {
         return new ApiKey("JWT", "Authorization", "header");
+    }
+
+    private ApiKey basicApiKey() {
+        return new ApiKey("Basic", "Authorization", "header");
     }
 
     private SecurityContext securityContext() {
@@ -144,6 +149,11 @@ public class Application extends SpringBootServletInitializer {
                         );
             }
         };
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

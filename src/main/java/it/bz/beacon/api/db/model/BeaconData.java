@@ -40,6 +40,8 @@ public class BeaconData extends AuditModel {
     @Type(type="org.hibernate.type.StringType")
     private String locationDescription;
 
+    private Integer batteryLevel;
+
     @OneToMany(mappedBy = "beaconData", fetch = FetchType.EAGER)
     private List<Issue> issues = new ArrayList<>();
 
@@ -136,5 +138,13 @@ public class BeaconData extends AuditModel {
 
     public void setIssues(List<Issue> issues) {
         this.issues = issues;
+    }
+
+    public int getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public void setBatteryLevel(int batteryLevel) {
+        this.batteryLevel = batteryLevel;
     }
 }

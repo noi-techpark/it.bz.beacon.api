@@ -1,4 +1,4 @@
-package it.bz.beacon.api.controller;
+package it.bz.beacon.api.controller.admin;
 
 import com.opencsv.CSVWriter;
 import io.swagger.annotations.ApiOperation;

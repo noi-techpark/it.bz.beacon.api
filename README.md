@@ -41,22 +41,78 @@ cd beacon-suedtirol-api/
 
 Make a copy of the src/resources/application.properties.dist file and name it "application.properties". Fill in the required values:
 
-* spring.datasource.url
-* spring.datasource.username
-* spring.datasource.password
-* spring.jpa.properties.hibernate.dialect
-* security.jwt.token.secret
-* it.bz.beacon.allowedOrigins
-* kontakt.io.apiKey
-* file.upload-dir
-* api.info.*
-* it.bz.beacon.issueEmailTo
-* it.bz.beacon.issueEmailFrom
-* spring.mail.*
-* it.bz.beacon.uuid
-* it.bz.beacon.namespace
-* it.bz.beacon.task.infoimport.enabled
-* it.bz.beacon.task.infoimport.spreadSheetId
+* spring.datasource.url  
+*Database connection url*
+
+
+* spring.datasource.username  
+*Database connection username*
+
+
+* spring.datasource.password  
+*Database connection password*
+
+
+* spring.jpa.properties.hibernate.dialect  
+*Database dialect*
+  
+
+* security.jwt.token.secret  
+*JWT token secret hash*
+
+
+* it.bz.beacon.allowedOrigins  
+*Comma separated list of allowed origins for CORS requests*
+
+
+* kontakt.io.apiKey  
+*API key for the manufacturer Kontakt.IO*
+
+
+* file.upload-dir  
+*The directory where file uploads shall be saved to*
+
+
+* api.info.*  
+*API information values*
+
+
+* it.bz.beacon.issueEmailTo  
+*The address where notifications about new beacon issues should be send to*
+
+
+* it.bz.beacon.issueEmailFrom  
+*The address where notifications about new beacon issues should be send from*
+
+
+* spring.mail.*  
+*Mail host configuration, so that notification mails can be send by the server*
+
+
+* it.bz.beacon.uuid  
+*iBeacon UUID*
+
+
+* it.bz.beacon.namespace  
+*Eddystone namespace*
+
+
+* it.bz.beacon.task.infoimport.enabled  
+*Defines whether the info replication through Google spread sheet should be enabled or not*
+
+
+* it.bz.beacon.task.infoimport.spreadSheetId  
+*Google spread sheet id to import*
+
+
+* it.bz.beacon.trusted.user  
+*The username for the basic authorization for the trusted api*
+
+
+* it.bz.beacon.trusted.password  
+*The bcrypted password for the basic authorization for the trusted api*
+
+
 
 If you enable info import, you have to create a Google service account which is able to use the Google Sheet API and move the resulting client-secret.json file to /src/main/resources/google-api-service-account.json.
 For more information on generating this json file, have a look at the Google documentation for [Using OAuth 2.0 for Server to Server Applications](https://developers.google.com/identity/protocols/OAuth2ServiceAccount) 

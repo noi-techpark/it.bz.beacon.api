@@ -75,6 +75,7 @@ public class Beacon {
         setLocationType(beaconData.getLocationType());
         setLocationDescription(beaconData.getLocationDescription());
         setIssues(beaconData.getIssues());
+        setBatteryLevel(beaconData.getBatteryLevel());
     }
 
     @JsonIgnore
@@ -88,7 +89,9 @@ public class Beacon {
             setInstanceId(remoteBeacon.getInstanceId());
             setInterval(remoteBeacon.getInterval());
             setTxPower(remoteBeacon.getTxPower());
-            setBatteryLevel(remoteBeacon.getBatteryLevel());
+            if (getBatteryLevel() == null) {
+                setBatteryLevel(remoteBeacon.getBatteryLevel());
+            }
 
             setLastSeen(remoteBeacon.getLastSeen() * 1000);
             setiBeacon(remoteBeacon.isiBeacon());

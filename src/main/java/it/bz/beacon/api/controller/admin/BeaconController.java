@@ -1,8 +1,9 @@
-package it.bz.beacon.api.controller;
+package it.bz.beacon.api.controller.admin;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.model.Beacon;
+import it.bz.beacon.api.model.BeaconBatteryLevelUpdate;
 import it.bz.beacon.api.model.BeaconUpdate;
 import it.bz.beacon.api.model.ManufacturerOrder;
 import it.bz.beacon.api.service.beacon.IBeaconService;
@@ -41,5 +42,11 @@ public class BeaconController {
     @RequestMapping(method = RequestMethod.PATCH, value = "/{id}", produces = "application/json")
     public Beacon update(@PathVariable String id, @Valid @RequestBody BeaconUpdate beaconUpdate) {
         return service.update(id, beaconUpdate);
+    }
+
+    @ApiOperation(value = "Update a beacon", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}/batteryLevel", produces = "application/json")
+    public Beacon update(@PathVariable String id, @Valid @RequestBody BeaconBatteryLevelUpdate batteryLevelUpdate) {
+        return service.updateBatteryLevel(id, batteryLevelUpdate);
     }
 }
