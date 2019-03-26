@@ -70,9 +70,9 @@ public class Application extends SpringBootServletInitializer {
                 .pathProvider(new RelativePathProvider(servletContext) {
                     @Override
                     public String getApplicationBasePath() {
-                        return "/";
+                        return "";
                     }
-                });
+                })
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("it.bz.beacon.api.controller"))
                 .build()
