@@ -1,5 +1,3 @@
-server.servlet.context-path=/
-
 # DB configuration (e.g. jdbc:postgresql://<host>:<port>/<database>)
 spring.datasource.url =
 spring.datasource.username =
