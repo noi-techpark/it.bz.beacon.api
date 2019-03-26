@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import it.bz.beacon.api.config.ApiInfoConfiguration;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.config.KontaktIOConfiguration;
+import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
