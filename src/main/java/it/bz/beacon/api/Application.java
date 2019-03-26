@@ -59,6 +59,9 @@ public class Application extends SpringBootServletInitializer {
     @Autowired
     private ApiInfoConfiguration apiInfoConfiguration;
 
+    @Autowired
+    ServletContext servletContext;
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
