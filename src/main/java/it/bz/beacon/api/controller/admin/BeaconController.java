@@ -43,10 +43,4 @@ public class BeaconController {
     public Beacon update(@PathVariable String id, @Valid @RequestBody BeaconUpdate beaconUpdate) {
         return service.update(id, beaconUpdate);
     }
-
-    @ApiOperation(value = "Update a beacon", authorizations = {@Authorization(value = "JWT")})
-    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}/batteryLevel", produces = "application/json")
-    public Beacon update(@PathVariable String id, @Valid @RequestBody BeaconBatteryLevelUpdate batteryLevelUpdate) {
-        return service.updateBatteryLevel(id, batteryLevelUpdate);
-    }
 }
