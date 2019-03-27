@@ -17,7 +17,7 @@ public class TrustedBeaconController {
     @Autowired
     private IBeaconService service;
 
-    @ApiOperation(value = "Update battery level of beacon", authorizations = {@Authorization(value = "Basic")})
+    @ApiOperation(value = "Update battery level of beacon", authorizations = {@Authorization(value = "TrustedAuth")})
     @RequestMapping(method = RequestMethod.PATCH, value = "/{id}/batteryLevel", produces = "application/json")
     public Beacon update(@PathVariable String id, @Valid @RequestBody BeaconBatteryLevelUpdate batteryLevelUpdate) {
         return service.updateBatteryLevel(id, batteryLevelUpdate);
