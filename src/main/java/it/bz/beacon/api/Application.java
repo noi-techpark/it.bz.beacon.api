@@ -93,8 +93,8 @@ public class Application extends SpringBootServletInitializer {
         return new ApiKey("JWT", "Authorization", "header");
     }
 
-    private ApiKey basicApiKey() {
-        return new ApiKey("Basic", "Authorization", "header");
+    private BasicAuth basicApiKey() {
+        return new BasicAuth("TrustedAuth");
     }
 
     private SecurityContext securityContext() {
