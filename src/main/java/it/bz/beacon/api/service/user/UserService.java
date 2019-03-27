@@ -11,7 +11,7 @@ import it.bz.beacon.api.model.UserUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class UserService implements IUserService {
     private UserRepository repository;
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> findAll() {
@@ -38,7 +38,7 @@ public class UserService implements IUserService {
     @Override
     public User create(UserCreation userCreation) {
         try {
-            userCreation.setPassword(bCryptPasswordEncoder.encode(userCreation.getPassword()));
+            userCreation.setPassword(passwordEncoder.encode(userCreation.getPassword()));
             return repository.save(User.create(userCreation));
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateEntryException();
@@ -49,7 +49,7 @@ public class UserService implements IUserService {
     public User update(long id, UserUpdate userUpdate) throws UserNotFoundException {
         return repository.findById(id).map(user -> {
             if (userUpdate.getPassword() != null) {
-                userUpdate.setPassword(bCryptPasswordEncoder.encode(userUpdate.getPassword()));
+                userUpdate.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
             }
             user.applyUpdate(userUpdate);
 

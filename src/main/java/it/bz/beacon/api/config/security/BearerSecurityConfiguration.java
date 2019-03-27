@@ -1,4 +1,4 @@
-package it.bz.beacon.api.config;
+package it.bz.beacon.api.config.security;
 
 import it.bz.beacon.api.security.JwtConfigurer;
 import it.bz.beacon.api.security.filter.JwtExceptionFilter;
@@ -6,15 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+@Order(2)
+public class BearerSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtConfigurer jwtConfigurer;
@@ -45,11 +46,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v1/admin/**").authenticated()
                 .and()
                 .apply(jwtConfigurer);
-    }
-
-    @Bean
-    public BCryptPasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
     }
 
     public long getTokenExpireLength() {

@@ -1,0 +1,1 @@
+alter table beacon_data add column if not exists battery_level int4;

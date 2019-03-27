@@ -3,6 +3,7 @@ package it.bz.beacon.api.service.beacon;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.exception.db.BeaconDataNotFoundException;
+import it.bz.beacon.api.model.BeaconBatteryLevelUpdate;
 import it.bz.beacon.api.model.BeaconUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,16 @@ public class BeaconDataService implements IBeaconDataService {
             beaconData.setLng(beaconUpdate.getLng());
             beaconData.setLocationDescription(beaconUpdate.getLocationDescription());
             beaconData.setLocationType(beaconUpdate.getLocationType());
+
+            return repository.save(beaconData);
+        }).orElseThrow(BeaconDataNotFoundException::new);
+    }
+
+    @Override
+    public BeaconData updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate)
+            throws BeaconDataNotFoundException {
+        return repository.findById(id).map(beaconData -> {
+            beaconData.setBatteryLevel(batteryLevelUpdate.getBatteryLevel());
 
             return repository.save(beaconData);
         }).orElseThrow(BeaconDataNotFoundException::new);

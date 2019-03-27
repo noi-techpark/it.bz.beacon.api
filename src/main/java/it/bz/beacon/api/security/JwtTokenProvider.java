@@ -2,7 +2,7 @@ package it.bz.beacon.api.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import it.bz.beacon.api.config.SecurityConfiguration;
+import it.bz.beacon.api.config.security.BearerSecurityConfiguration;
 import it.bz.beacon.api.exception.auth.InvalidJwtAuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +23,7 @@ import java.util.List;
 public class JwtTokenProvider {
 
     @Autowired
-    private SecurityConfiguration securityConfiguration;
+    private BearerSecurityConfiguration securityConfiguration;
 
     @Autowired
     private UserDetailsService userDetailsService;

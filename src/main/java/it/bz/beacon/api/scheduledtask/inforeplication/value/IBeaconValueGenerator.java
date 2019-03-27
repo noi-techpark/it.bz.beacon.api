@@ -2,6 +2,7 @@ package it.bz.beacon.api.scheduledtask.inforeplication.value;
 
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.repository.InfoRepository;
+import it.bz.beacon.api.exception.db.InfoNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,13 @@ public class IBeaconValueGenerator extends BaseValueGenerator<iBeaconValue> {
 
     @Override
     protected boolean alreadyExists(iBeaconValue value) {
-        return false;
+        try {
+            infoRepository.findByUuidAndMajorAndMinor(beaconSuedtirolConfiguration.getUuid(), value.getMajor(), value.getMinor())
+                    .orElseThrow(InfoNotFoundException::new);
+            return true;
+        } catch (InfoNotFoundException e) {
+            return false;
+        }
     }
 
     private int randomUnsignedShort() {

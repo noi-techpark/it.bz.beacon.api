@@ -26,7 +26,7 @@ public class OrderService implements IOrderService {
     public List<BeaconOrder> findAll() {
         Map<String, BeaconOrder> beaconOrderMap = new HashMap<>();
 
-        List<OrderData> orderDataList = repository.findAll();
+        List<OrderData> orderDataList = repository.findAllWithOrderSymbol();
 
         for (OrderData orderData : orderDataList) {
             if (!beaconOrderMap.containsKey(orderData.getOrderSymbol())) {
@@ -42,7 +42,7 @@ public class OrderService implements IOrderService {
     @Override
     @Transactional
     public BeaconOrder find(String orderSymbol) {
-        List<OrderData> orderDataList = repository.findAllByOrderSymbol(orderSymbol);
+        List<OrderData> orderDataList = repository.findAllByOrderSymbolOrderByZoneCodeAscZoneIdAsc(orderSymbol);
 
         if (orderDataList.size() <= 0) {
             throw new OrderSymbolNotFoundException();
@@ -59,7 +59,7 @@ public class OrderService implements IOrderService {
     @Override
     @Transactional
     public BeaconOrder create() {
-        List<OrderData> orderDataList = repository.findAllByOrderSymbol(null);
+        List<OrderData> orderDataList = repository.findAllByOrderSymbolOrderByZoneCodeAscZoneIdAsc(null);
 
         if (orderDataList.size() <= 0) {
             throw new NoBeaconsToOrderException();

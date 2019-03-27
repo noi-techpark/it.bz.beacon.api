@@ -1,4 +1,4 @@
-package it.bz.beacon.api.controller.beacon;
+package it.bz.beacon.api.controller.admin.beacon;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;

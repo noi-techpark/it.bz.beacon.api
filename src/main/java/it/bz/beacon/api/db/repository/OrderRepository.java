@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<OrderData, String> {
-    List<OrderData> findAllByOrderSymbol(String orderSymbol);
+    @Query("SELECT o FROM OrderData o WHERE o.orderSymbol IS NOT NULL ORDER BY zoneCode, zoneId")
+    List<OrderData> findAllWithOrderSymbol();
 
-    @Query("SELECT coalesce(max(o.zoneId), 0) FROM OrderData o where o.zoneCode = ?1")
+    List<OrderData> findAllByOrderSymbolOrderByZoneCodeAscZoneIdAsc(String orderSymbol);
+
+    @Query("SELECT coalesce(max(o.zoneId), 0) FROM OrderData o WHERE o.zoneCode = ?1")
     Integer getMaxZoneId(String zoneCode);
 
     @Query("SELECT coalesce(max(o.orderSymbol), 'A') FROM OrderData o")

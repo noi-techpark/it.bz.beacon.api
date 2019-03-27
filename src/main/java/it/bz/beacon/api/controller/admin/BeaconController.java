@@ -1,8 +1,9 @@
-package it.bz.beacon.api.controller;
+package it.bz.beacon.api.controller.admin;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.model.Beacon;
+import it.bz.beacon.api.model.BeaconBatteryLevelUpdate;
 import it.bz.beacon.api.model.BeaconUpdate;
 import it.bz.beacon.api.model.ManufacturerOrder;
 import it.bz.beacon.api.service.beacon.IBeaconService;

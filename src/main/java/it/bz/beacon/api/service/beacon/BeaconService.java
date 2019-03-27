@@ -144,6 +144,14 @@ public class BeaconService implements IBeaconService {
         }
     }
 
+    @Override
+    public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate) throws BeaconNotFoundException {
+        Beacon beacon = find(id);
+        beacon.applyBeaconData(beaconDataService.updateBatteryLevel(id, batteryLevelUpdate));
+
+        return beacon;
+    }
+
     private boolean isNewConfig(TagBeaconConfig tagBeaconConfig, Beacon beacon) {
         return !tagBeaconConfig.getProximity().equals(beacon.getUuid())
                 || tagBeaconConfig.getMajor() != beacon.getMajor()
