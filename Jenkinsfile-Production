@@ -44,7 +44,6 @@ pipeline {
         BEACON_TASK_IMPORT_ENABLED = "true"
         BEACON_TASK_IMPORT_SPREADSHEET = "a9d5f82e39a991f899185cd795a1c5ee6aee40a0"
         BEACON_TASK_IMPORT_DELAY = "21600000"
-        BEACON_SPREADSHEET_CREDENTIALS =
         BEACON_TRUSTED_USERNAME = credentials('beacon-api-trusted-username')
         BEACON_TRUSTED_PASSWORD = credentials('beacon-api-trusted-password')
     }
