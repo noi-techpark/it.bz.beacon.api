@@ -7,6 +7,8 @@ pipeline {
     }
 
     environment {
+        GOOGLE_SERVICE_ACCOUNT = credentials('beacon-api-google-service-account')
+
         DB_URL = "jdbc:postgresql://postgres-prod.co90ybcr8iim.eu-west-1.rds.amazonaws.com:5432/beacon"
         DB_USERNAME = credentials('beacon-api-db-username')
         DB_PASSWORD = credentials('beacon-api-db-password')
@@ -39,7 +41,10 @@ pipeline {
 
         BEACON_UUID = "6a84c716-0f2a-1ce9-f210-6a63bd873dd9"
         BEACON_NAMESPACE = "6a84c7166a63bd873dd9"
+        BEACON_TASK_IMPORT_ENABLED = "true"
+        BEACON_TASK_IMPORT_SPREADSHEET = "a9d5f82e39a991f899185cd795a1c5ee6aee40a0"
         BEACON_TASK_IMPORT_DELAY = "21600000"
+        BEACON_SPREADSHEET_CREDENTIALS =
         BEACON_TRUSTED_USERNAME = credentials('beacon-api-trusted-username')
         BEACON_TRUSTED_PASSWORD = credentials('beacon-api-trusted-password')
     }
@@ -80,9 +85,13 @@ pipeline {
 
                 sh 'sed -i -e "s%\\(it.bz.beacon.uuid\\s*=\\).*\\$%\\1${BEACON_UUID}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(it.bz.beacon.namespace\\s*=\\).*\\$%\\1${BEACON_NAMESPACE}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(it.bz.beacon.task.infoimport.enabled\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_ENABLED}%" src/main/resources/application.properties'
+                sh 'sed -i -e "s%\\(it.bz.beacon.task.infoimport.spreadSheetId\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_SPREADSHEET}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(it.bz.beacon.task.infoimport.delay\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_DELAY}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(it.bz.beacon.trusted.user\\s*=\\).*\\$%\\1${BEACON_TRUSTED_USERNAME}%" src/main/resources/application.properties'
                 sh 'sed -i -e "s%\\(it.bz.beacon.trusted.password\\s*=\\).*\\$%\\1${BEACON_TRUSTED_PASSWORD}%" src/main/resources/application.properties'
+
+                sh 'cat "${GOOGLE_SERVICE_ACCOUNT}" > src/main/resources/google-api-service-account.json'
             }
         }
         stage('Test') {
