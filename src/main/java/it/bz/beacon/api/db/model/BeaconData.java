@@ -140,11 +140,11 @@ public class BeaconData extends AuditModel {
         this.issues = issues;
     }
 
-    public int getBatteryLevel() {
+    public Integer getBatteryLevel() {
         return batteryLevel;
     }
 
-    public void setBatteryLevel(int batteryLevel) {
+    public void setBatteryLevel(Integer batteryLevel) {
         this.batteryLevel = batteryLevel;
     }
 }
