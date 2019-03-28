@@ -1,6 +1,5 @@
 package it.bz.beacon.api.config.security;
 
-import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.config.TrustetApiConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +8,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @Order(1)
@@ -17,9 +15,6 @@ public class BasicSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private TrustetApiConfiguration trustetApiConfiguration;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

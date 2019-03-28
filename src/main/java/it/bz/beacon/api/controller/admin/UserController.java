@@ -3,9 +3,7 @@ package it.bz.beacon.api.controller.admin;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.db.model.User;
-import it.bz.beacon.api.model.BaseMessage;
-import it.bz.beacon.api.model.UserCreation;
-import it.bz.beacon.api.model.UserUpdate;
+import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -48,5 +46,17 @@ public class UserController {
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}", produces = "application/json")
     public BaseMessage delete(@PathVariable long id) {
         return service.delete(id);
+    }
+
+    @ApiOperation(value = "Update a user", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}/change-password", produces = "application/json")
+    public BaseMessage changePassword(@PathVariable long id, @Valid @RequestBody PasswordChange passwordChange) {
+        return service.changePassword(id, passwordChange);
+    }
+
+    @ApiOperation(value = "Update a user", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}/reset-password", produces = "application/json")
+    public BaseMessage resetPassword(@PathVariable long id, @Valid @RequestBody PasswordReset passwordReset) {
+        return service.resetPassword(id, passwordReset);
     }
 }
