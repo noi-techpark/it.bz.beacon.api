@@ -54,7 +54,7 @@ public class UserService implements IUserService {
         User authUser = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return repository.findById(id).map(user -> {
-            if (!isAdmin() || !authUser.getUsername().equals(user.getUsername())) {
+            if (!isAdmin() && !authUser.getUsername().equals(user.getUsername())) {
                 throw new InsufficientRightsException();
             }
 
