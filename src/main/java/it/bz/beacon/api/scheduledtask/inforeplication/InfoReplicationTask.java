@@ -160,8 +160,8 @@ public class InfoReplicationTask {
                                     if (gex.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS.value()) {
                                         try {
                                             //Sleep for 200 seconds to avoid to exceed free Google sheet quota
-                                            log.warn("Google sheet quota exceeded, sleeping for 200 seconds before retry...");
-                                            Thread.sleep(200 * 1000);
+                                            log.warn("Google sheet quota exceeded, sleeping for 300 seconds before retry...");
+                                            Thread.sleep(300 * 1000);
                                             replicationService.create(sheetService, zone, i + 1, infoData);
                                         } catch (InterruptedException ie) {
                                             throw new SheetWriteException(ie);
