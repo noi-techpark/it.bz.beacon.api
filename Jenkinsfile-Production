@@ -15,7 +15,7 @@ pipeline {
         DB_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
         JWT_SECRET = credentials('beacon-api-jwt-secret')
         UPLOAD_DIR = "/data/beacon-api"
-        CORS_ORIGINS = "https://admin.beacon.bz.it"
+        CORS_ORIGINS = "https://admin.beacon.bz.it,https://api.beacon.bz.it"
         KONTAKT_IO_API_KEY = credentials('beacon-api-kontakt-io-api-key')
 
         INFO_HOST = "api.beacon.bz.it"
