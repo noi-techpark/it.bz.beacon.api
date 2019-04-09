@@ -128,7 +128,7 @@ Make sure your webserver is configured to handle file uploads for at least 10MB 
 
 The schema of the database will be automatically generated when starting the application based on the SQL files located in `src/main/resources/db/migration`.
 
-Also an admin user will be inserted with username "admin" and password "password".
+Also an admin user will be inserted with username "admin" and password "password". The admin will be the only user be able to create and delete users and reset their passwords.
 
 ### Build
 
