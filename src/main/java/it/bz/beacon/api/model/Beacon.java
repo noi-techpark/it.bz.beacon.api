@@ -75,7 +75,9 @@ public class Beacon {
         setLocationType(beaconData.getLocationType());
         setLocationDescription(beaconData.getLocationDescription());
         setIssues(beaconData.getIssues());
-        setBatteryLevel(beaconData.getBatteryLevel());
+        if (beaconData.getBatteryLevel() != null) {
+            setBatteryLevel(beaconData.getBatteryLevel());
+        }
     }
 
     @JsonIgnore
