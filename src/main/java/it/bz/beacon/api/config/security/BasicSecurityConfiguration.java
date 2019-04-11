@@ -9,8 +9,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-@Configuration
 @Order(1)
+@Configuration
 public class BasicSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -29,10 +29,12 @@ public class BasicSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/v1/trusted/**").authenticated()
-                .and()
-                .httpBasic();
+            .and()
+            .antMatcher("/v1/trusted/**")
+            .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+            .and()
+            .httpBasic();
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Configuration
-@Order(2)
 public class BearerSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
