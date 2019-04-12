@@ -200,6 +200,36 @@ While running the last command, you can access the website at http://localhost:8
 
 ## Information
 
+### Using the API
+
+The authentication layer of the API is divided in the following 3 parts:
+
+1. No auth - /v1/info/**, /v1/signin, /v1/checkToken
+2. JWT token - /v1/admin/**
+3. Basic auth - /v1/trusted/**
+
+As a matter of fact, using the API, you have to choose which type of authentication has to be attached to the request (one of the 3 options above).
+
+#### Open endpoint calls
+If you desire to access to an open API, no authentication has to be passed with the request.
+
+#### JWT token protected endpoint calls
+1. Make a request to /v1/signin using your credentials of the web application or android app
+2. If your credentials were correct, a JWT token will be present in the response
+3. In SwaggerUI, click on the "Authorize" button on the top of the page and insert "Bearer [token]" in the JWT token field by replacing [token] with the acutal token received in the response
+4. Click on "Authorize" in the JWT token section
+5. The padlocks on the right side of the JWT token protected API endpoints will turn black and closed
+6. You are now able to call JWT token protected APIs
+
+#### Basic auth protected endpoint calls
+1. In SwaggerUI, click on the "Authorize" button on the top of the page and insert the credentials of the page in the username and password fields of the Basic auth section. These credentials were configured in your application.properties file.
+2. Click on "Authorize" in the Basic auth section
+3. The padlocks on the right side of the Basic auth protected API endpoints will turn black and closed
+4. You are now able to call Basic auth protected APIs
+
+CAUTION!  
+In case you set a wrong authorization header either for the JWT token or the Basic auth, some API endpoints may not work properly.
+
 ### Support
 
 For support, please contact [info@beacon.bz.it](mailto:info@beacon.bz.it).
