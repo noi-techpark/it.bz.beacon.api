@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 public class IssueCreation {
 
     @NotNull
-    @Min(1)
     private String beaconId;
 
     @NotEmpty
