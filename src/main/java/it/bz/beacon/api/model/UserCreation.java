@@ -1,8 +1,6 @@
 package it.bz.beacon.api.model;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
 public class UserCreation {
 
@@ -12,6 +10,8 @@ public class UserCreation {
 
     @NotEmpty
     @NotNull
+    @Size(min = 8, max = 32)
+    @Pattern(regexp = ".*[$&+,:;=\\\\?@#|/'<>.^*()%!-].*")
     private String password;
 
     @NotEmpty
