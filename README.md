@@ -252,6 +252,6 @@ More documentation can be found at [https://opendatahub.readthedocs.io/en/latest
 
 ### License
 
-The code in this project is licensed under the Mozilla Public License 2.0 license.
+The code in this project is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE 3.0 or later license.
 See the LICENSE.md file for more information.
 
