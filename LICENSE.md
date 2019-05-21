@@ -1,4 +1,4 @@
-Valid-License-Identifier: AGPL 3.0
+Valid-License-Identifier: AGPL-3.0-or-later
 License-Text: 
 
 GNU AFFERO GENERAL PUBLIC LICENSE
