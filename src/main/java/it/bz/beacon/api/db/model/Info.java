@@ -1,8 +1,11 @@
 package it.bz.beacon.api.db.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -142,5 +145,11 @@ public class Info extends AuditModel {
 
     public void setInstanceId(String instanceId) {
         this.instanceId = instanceId;
+    }
+
+    @Override
+    @JsonProperty
+    public Date getUpdatedAt() {
+        return super.getUpdatedAt();
     }
 }
