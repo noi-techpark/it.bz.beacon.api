@@ -90,10 +90,10 @@ public class BeaconService implements IBeaconService {
             throw new NoDeviceAddedException();
         }
 
-        List<Beacon> beacons = new ArrayList<>();
+        List<Beacon> beacons = Lists.newArrayList();
 
-        for (String uniqueId : uniqueIds) {
-            beacons.addAll(apiService.getBeacons(Arrays.asList(uniqueId)).getDevices().stream().map(tagBeaconDevice -> {
+        Lists.partition(Lists.newArrayList(uniqueIds), 200).forEach(block -> {
+            beacons.addAll(apiService.getBeacons(block).getDevices().stream().map(tagBeaconDevice -> {
                 try {
                     RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
                     BeaconData beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
@@ -103,7 +103,7 @@ public class BeaconService implements IBeaconService {
                     return null;
                 }
             }).collect(Collectors.toList()));
-        }
+        });
 
         return beacons;
     }
@@ -188,11 +188,16 @@ public class BeaconService implements IBeaconService {
     }
 
     private Map<String, RemoteBeacon> getRemoteBeacons(List<BeaconData> beaconDatas) {
-        BeaconListResponse response = apiService.getBeacons(beaconDatas.stream()
-                .map(BeaconData::getManufacturerId)
-                .collect(Collectors.toList()));
+        Map<String, RemoteBeacon> remoteBeaconMap = Maps.newHashMap();
 
-        return getBeaconsWithStatuses(response);
+        List<List<String>> partitions = Lists.partition(beaconDatas.stream().map(BeaconData::getManufacturerId)
+                .collect(Collectors.toList()), 200);
+        for(List<String> block : partitions) {
+            BeaconListResponse response = apiService.getBeacons(block);
+            remoteBeaconMap.putAll(getBeaconsWithStatuses(response));
+        }
+
+        return remoteBeaconMap;
     }
 
     private Map<String, RemoteBeacon> getBeaconsWithStatuses(BeaconListResponse response) {
