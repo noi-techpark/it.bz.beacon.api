@@ -190,12 +190,11 @@ public class BeaconService implements IBeaconService {
     private Map<String, RemoteBeacon> getRemoteBeacons(List<BeaconData> beaconDatas) {
         Map<String, RemoteBeacon> remoteBeaconMap = Maps.newHashMap();
 
-        List<List<String>> partitions = Lists.partition(beaconDatas.stream().map(BeaconData::getManufacturerId)
-                .collect(Collectors.toList()), 200);
-        for(List<String> block : partitions) {
+        Lists.partition(beaconDatas.stream().map(BeaconData::getManufacturerId)
+                .collect(Collectors.toList()), 20).forEach(block -> {
             BeaconListResponse response = apiService.getBeacons(block);
             remoteBeaconMap.putAll(getBeaconsWithStatuses(response));
-        }
+        });
 
         return remoteBeaconMap;
     }
