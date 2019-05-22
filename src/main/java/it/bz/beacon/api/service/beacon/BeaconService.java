@@ -27,6 +27,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -89,17 +90,22 @@ public class BeaconService implements IBeaconService {
             throw new NoDeviceAddedException();
         }
 
-        return apiService.getBeacons(uniqueIds).getDevices().stream().map(tagBeaconDevice -> {
+        List<Beacon> beacons = new ArrayList<>();
 
-            try {
-                RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
-                BeaconData beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
+        for (String uniqueId : uniqueIds) {
+            beacons.addAll(apiService.getBeacons(Arrays.asList(uniqueId)).getDevices().stream().map(tagBeaconDevice -> {
+                try {
+                    RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
+                    BeaconData beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
 
-                return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
-            } catch (InvalidBeaconIdentifierException e) {
-                return null;
-            }
-        }).collect(Collectors.toList());
+                    return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
+                } catch (InvalidBeaconIdentifierException e) {
+                    return null;
+                }
+            }).collect(Collectors.toList()));
+        }
+
+        return beacons;
     }
 
     @Override
