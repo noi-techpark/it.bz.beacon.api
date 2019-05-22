@@ -2,6 +2,7 @@ package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -149,6 +150,7 @@ public class Info extends AuditModel {
 
     @Override
     @JsonProperty
+    @ApiModelProperty(dataType = "java.lang.Long")
     public Date getUpdatedAt() {
         return super.getUpdatedAt();
     }
