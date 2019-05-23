@@ -7,6 +7,7 @@ import it.bz.beacon.api.exception.db.InfoNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -21,6 +22,11 @@ public class InfoService implements IInfoService {
     @Override
     public List<Info> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    public List<Info> findAllAfter(Date date) {
+        return repository.findAllByUpdatedAtAfter(date);
     }
 
     @Override

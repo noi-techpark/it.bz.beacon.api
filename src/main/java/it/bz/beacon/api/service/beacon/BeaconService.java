@@ -27,6 +27,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -89,17 +90,22 @@ public class BeaconService implements IBeaconService {
             throw new NoDeviceAddedException();
         }
 
-        return apiService.getBeacons(uniqueIds).getDevices().stream().map(tagBeaconDevice -> {
+        List<Beacon> beacons = Lists.newArrayList();
 
-            try {
-                RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
-                BeaconData beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
+        Lists.partition(Lists.newArrayList(uniqueIds), 200).forEach(block -> {
+            beacons.addAll(apiService.getBeacons(block).getDevices().stream().map(tagBeaconDevice -> {
+                try {
+                    RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
+                    BeaconData beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
 
-                return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
-            } catch (InvalidBeaconIdentifierException e) {
-                return null;
-            }
-        }).collect(Collectors.toList());
+                    return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
+                } catch (InvalidBeaconIdentifierException e) {
+                    return null;
+                }
+            }).collect(Collectors.toList()));
+        });
+
+        return beacons;
     }
 
     @Override
@@ -182,11 +188,15 @@ public class BeaconService implements IBeaconService {
     }
 
     private Map<String, RemoteBeacon> getRemoteBeacons(List<BeaconData> beaconDatas) {
-        BeaconListResponse response = apiService.getBeacons(beaconDatas.stream()
-                .map(BeaconData::getManufacturerId)
-                .collect(Collectors.toList()));
+        Map<String, RemoteBeacon> remoteBeaconMap = Maps.newHashMap();
 
-        return getBeaconsWithStatuses(response);
+        Lists.partition(beaconDatas.stream().map(BeaconData::getManufacturerId)
+                .collect(Collectors.toList()), 200).forEach(block -> {
+            BeaconListResponse response = apiService.getBeacons(block);
+            remoteBeaconMap.putAll(getBeaconsWithStatuses(response));
+        });
+
+        return remoteBeaconMap;
     }
 
     private Map<String, RemoteBeacon> getBeaconsWithStatuses(BeaconListResponse response) {

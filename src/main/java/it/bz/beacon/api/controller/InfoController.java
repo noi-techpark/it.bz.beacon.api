@@ -1,15 +1,12 @@
 package it.bz.beacon.api.controller;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.db.model.Info;
-import it.bz.beacon.api.model.InfoCreation;
-import it.bz.beacon.api.model.InfoUpdate;
 import it.bz.beacon.api.service.info.IInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -21,7 +18,10 @@ public class InfoController {
 
     @ApiOperation(value = "View a list of all infos")
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    public List<Info> getList() {
+    public List<Info> getList(@RequestParam(value = "updatedAfter", required = false) Long updatedAfter) {
+        if (updatedAfter != null) {
+            return service.findAllAfter(new Date(updatedAfter));
+        }
         return service.findAll();
     }
 

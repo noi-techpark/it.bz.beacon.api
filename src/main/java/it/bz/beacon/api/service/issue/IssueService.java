@@ -14,9 +14,11 @@ import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -102,17 +104,19 @@ public class IssueService implements IIssueService {
     }
 
     private void notifyNewBeaconIssue(BeaconIssue beaconIssue) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(beaconSuedtirolConfiguration.getIssueEmailFrom());
-        message.setTo(beaconSuedtirolConfiguration.getIssueEmailTo());
-        message.setSubject("New issue for beacon " + beaconIssue.getBeacon().getName());
-        message.setText(String.format(
-                "A new issue has been reported by '%s' for beacon '%s'",
-                beaconIssue.getReporter(),
-                beaconIssue.getBeacon().getName()
-        ));
-
         try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setSubject("New issue for beacon " + beaconIssue.getBeacon().getName());
+            helper.setFrom(beaconSuedtirolConfiguration.getIssueEmailFrom());
+            helper.setTo(beaconSuedtirolConfiguration.getIssueEmailTo());
+            helper.setText(String.format(
+                    "A new issue has been reported by '%s' for beacon '%s':<br/><br/>%s<br/><br/>%s",
+                    beaconIssue.getReporter(),
+                    beaconIssue.getBeacon().getName(),
+                    beaconIssue.getProblem(),
+                    beaconIssue.getProblemDescription()
+            ), true);
             emailSender.send(message);
         } catch (Exception e) { }
     }
