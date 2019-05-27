@@ -64,7 +64,7 @@ Make a copy of the `src/resources/application.properties.dist` file and name it 
 
 
 If you enable info import, you have to create a Google service account which is able to use the Google Sheet API and move the resulting client-secret.json file to /src/main/resources/google-api-service-account.json.
-For more information on generating this json file, have a look at the Google documentation for [Using OAuth 2.0 for Server to Server Applications](https://developers.google.com/identity/protocols/OAuth2ServiceAccount) 
+For more information on generating this json file, have a look at the Google documentation for [Using OAuth 2.0 for Server to Server Applications](https://developers.google.com/identity/protocols/OAuth2ServiceAccount)
 
 You may also change other values in the application.properties file on your own risk.
 Make sure your webserver is configured to handle file uploads for at least 10MB of size.
@@ -172,7 +172,7 @@ If you desire to access to an open API, no authentication has to be passed with 
 3. The padlocks on the right side of the Basic auth protected API endpoints will turn black and closed
 4. You are now able to call Basic auth protected APIs
 
-CAUTION!  
+CAUTION!
 In case you set a wrong authorization header either for the JWT token or the Basic auth, some API endpoints may not work properly.
 
 ### Support
