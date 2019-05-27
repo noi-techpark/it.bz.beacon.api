@@ -61,6 +61,10 @@ Make a copy of the src/resources/application.properties.dist file and name it "a
 *JWT token secret hash*
 
 
+* security.jwt.token.expire-length
+*JWT token expiration to invalidate the authentication after n milliseconds*
+
+
 * it.bz.beacon.allowedOrigins  
 *Comma separated list of allowed origins for CORS requests*
 
