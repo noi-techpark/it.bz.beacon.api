@@ -3,16 +3,12 @@ package it.bz.beacon.api.service.beacon;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.bz.beacon.api.db.model.BeaconData;
-import it.bz.beacon.api.exception.db.BeaconConfigurationNotCreatedException;
-import it.bz.beacon.api.exception.db.BeaconConfigurationNotDeletedException;
-import it.bz.beacon.api.exception.db.BeaconNotFoundException;
-import it.bz.beacon.api.exception.db.InvalidBeaconIdentifierException;
-import it.bz.beacon.api.exception.kontakt.io.InvalidOrderIdException;
-import it.bz.beacon.api.exception.kontakt.io.NoDeviceAddedException;
+import it.bz.beacon.api.exception.db.*;
 import it.bz.beacon.api.kontakt.io.ApiService;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
+import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
@@ -25,11 +21,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -78,32 +72,49 @@ public class BeaconService implements IBeaconService {
 
     @Override
     public List<Beacon> createByOrder(ManufacturerOrder order) {
-        List<String> uniqueIds = apiService.checkOrder(order.getId());
-        if (uniqueIds.size() <= 0) {
-            throw new InvalidOrderIdException();
+        try {
+            apiService.assignOrder(order.getId());
+        } catch (HttpClientErrorException e) {
+
         }
 
-        long addedDevices = apiService.assignOrder(order.getId()).getAddedDevices();
-
-        if (addedDevices <= 0) {
-
-            throw new NoDeviceAddedException();
-        }
-
-        List<Beacon> beacons = Lists.newArrayList();
-
-        Lists.partition(Lists.newArrayList(uniqueIds), 200).forEach(block -> {
-            beacons.addAll(apiService.getBeacons(block).getDevices().stream().map(tagBeaconDevice -> {
+        return fetchBeaconsFromManufacturer(order.getId()).stream().map(tagBeaconDevice -> {
                 try {
                     RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
-                    BeaconData beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
+                    BeaconData beaconData;
+                    try {
+                        beaconData = beaconDataService.find(remoteBeacon.getId());
+                    } catch (BeaconDataNotFoundException e) {
+                        beaconData = null;
+                    }
+                    if (beaconData != null) {
+                        return null;
+                    }
+
+                    beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
 
                     return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
                 } catch (InvalidBeaconIdentifierException e) {
                     return null;
                 }
-            }).collect(Collectors.toList()));
-        });
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    private List<TagBeaconDevice> fetchBeaconsFromManufacturer(String orderId) {
+        return fetchBeaconsFromManufacturer(orderId, 0);
+    }
+
+    private List<TagBeaconDevice> fetchBeaconsFromManufacturer(String orderId, int startIndex) {
+        BeaconListResponse response = apiService.getBeacons(startIndex);
+
+        List<TagBeaconDevice> beacons = Lists.newArrayList();
+
+        if (response.getSearchMeta().getNextResults() != null && !response.getSearchMeta().getNextResults().toString().trim().equals("")) {
+            beacons.addAll(fetchBeaconsFromManufacturer(orderId, startIndex + response.getSearchMeta().getMaxResult()));
+        }
+
+        beacons.addAll(response.getDevices().stream().filter(tagBeaconDevice -> tagBeaconDevice.getOrderId().equals(orderId))
+                .collect(Collectors.toList()));
 
         return beacons;
     }
@@ -190,10 +201,26 @@ public class BeaconService implements IBeaconService {
     private Map<String, RemoteBeacon> getRemoteBeacons(List<BeaconData> beaconDatas) {
         Map<String, RemoteBeacon> remoteBeaconMap = Maps.newHashMap();
 
+        List<CompletableFuture<BeaconListResponse>> completableFutures = Lists.newArrayList();
+
         Lists.partition(beaconDatas.stream().map(BeaconData::getManufacturerId)
                 .collect(Collectors.toList()), 200).forEach(block -> {
-            BeaconListResponse response = apiService.getBeacons(block);
-            remoteBeaconMap.putAll(getBeaconsWithStatuses(response));
+                    completableFutures.add(CompletableFuture.completedFuture(apiService.getBeacons(block)));
+        });
+
+        CompletableFuture<Void> allFutures =
+                CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]));
+
+        CompletableFuture<List<BeaconListResponse>> allCompletableFuture = allFutures
+                .thenApply(future -> completableFutures.stream().map(CompletableFuture::join)
+                    .collect(Collectors.toList())
+        );
+
+        allCompletableFuture.thenApply(beaconListResponses -> {
+           beaconListResponses.forEach(beaconListResponse -> {
+               remoteBeaconMap.putAll(getBeaconsWithStatuses(beaconListResponse));
+           });
+           return null;
         });
 
         return remoteBeaconMap;
@@ -209,25 +236,38 @@ public class BeaconService implements IBeaconService {
                 .map(RemoteBeacon::fromTagBeaconDevice)
                 .collect(Collectors.toMap(RemoteBeacon::getManufacturerId, Function.identity()));
 
-        DeviceStatusListResponse statusListResponse = apiService.getDeviceStatuses(new ArrayList<>(remoteBeacons.keySet()));
-        if (statusListResponse != null && statusListResponse.getStatuses() != null) {
-            statusListResponse.getStatuses().forEach(status -> {
-                RemoteBeacon remoteBeacon = remoteBeacons.get(status.getUniqueId());
-                if (remoteBeacon != null) {
-                    remoteBeacon.setBatteryLevel(status.getBatteryLevel());
-                    remoteBeacon.setLastSeen(status.getLastEventTimestamp());
-                }
-            });
-        }
+        CompletableFuture<DeviceStatusListResponse> statusListResponseFuture = CompletableFuture
+                .completedFuture(apiService.getDeviceStatuses(new ArrayList<>(remoteBeacons.keySet())));
+        CompletableFuture<ConfigurationListResponse> configListResponseFuture = CompletableFuture
+                .completedFuture(apiService.getConfigurations(new ArrayList<>(remoteBeacons.keySet())));
 
-        ConfigurationListResponse configListResponse = apiService.getConfigurations(new ArrayList<>(remoteBeacons.keySet()));
-        if (configListResponse != null && configListResponse.getConfigs() != null) {
-            configListResponse.getConfigs().forEach(configuration -> {
-                RemoteBeacon remoteBeacon = remoteBeacons.get(configuration.getUniqueId());
-                if (remoteBeacon != null) {
-                    remoteBeacon.setPendingConfiguration(PendingConfiguration.fromBeaconConfiguration(configuration, remoteBeacon));
-                }
-            });
+        CompletableFuture.allOf(statusListResponseFuture, configListResponseFuture).join();
+
+
+        try {
+            DeviceStatusListResponse statusListResponse = statusListResponseFuture.get();
+            ConfigurationListResponse configListResponse = configListResponseFuture.get();
+
+            if (statusListResponse != null && statusListResponse.getStatuses() != null) {
+                statusListResponse.getStatuses().forEach(status -> {
+                    RemoteBeacon remoteBeacon = remoteBeacons.get(status.getUniqueId());
+                    if (remoteBeacon != null) {
+                        remoteBeacon.setBatteryLevel(status.getBatteryLevel());
+                        remoteBeacon.setLastSeen(status.getLastEventTimestamp());
+                    }
+                });
+            }
+
+            if (configListResponse != null && configListResponse.getConfigs() != null) {
+                configListResponse.getConfigs().forEach(configuration -> {
+                    RemoteBeacon remoteBeacon = remoteBeacons.get(configuration.getUniqueId());
+                    if (remoteBeacon != null) {
+                        remoteBeacon.setPendingConfiguration(PendingConfiguration.fromBeaconConfiguration(configuration, remoteBeacon));
+                    }
+                });
+            }
+        } catch (InterruptedException | ExecutionException e) {
+
         }
         return remoteBeacons;
     }
