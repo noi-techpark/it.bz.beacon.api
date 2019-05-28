@@ -26,7 +26,6 @@ abstract public class BeaconDevice extends Device {
     private Set<Integer> rss1m;
     private Set<Integer> rss0m;
     private Object customConfiguration;
-    //TODO ask kontakt.IO about api docs
     private long lastSeen;
 
     public String getName() {
