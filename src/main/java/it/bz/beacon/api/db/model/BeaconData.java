@@ -42,7 +42,7 @@ public class BeaconData extends AuditModel {
 
     private Integer batteryLevel;
 
-    @OneToMany(mappedBy = "beaconData", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "beaconData", fetch = FetchType.LAZY)
     private List<Issue> issues = new ArrayList<>();
 
     public static BeaconData fromRemoteBeacon(RemoteBeacon remoteBeacon) {

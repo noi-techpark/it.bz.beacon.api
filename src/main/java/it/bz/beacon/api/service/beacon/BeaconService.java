@@ -2,7 +2,10 @@ package it.bz.beacon.api.service.beacon;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.db.model.BeaconData;
+import it.bz.beacon.api.db.model.Issue;
+import it.bz.beacon.api.db.repository.IssueRepository;
 import it.bz.beacon.api.exception.db.*;
 import it.bz.beacon.api.kontakt.io.ApiService;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
@@ -38,6 +41,12 @@ public class BeaconService implements IBeaconService {
     @Autowired
     private IBeaconDataService beaconDataService;
 
+    @Autowired
+    private IssueRepository issueRepository;
+
+    @Autowired
+    private RemoteBeaconCache remoteBeaconCache;
+
     @Override
     public List<Beacon> findAll() {
         List<BeaconData> beaconDatas = beaconDataService.findAll();
@@ -45,6 +54,31 @@ public class BeaconService implements IBeaconService {
 
         return beaconDatas.stream()
                 .map(beaconData -> Beacon.fromRemoteBeacon(beaconData, remoteBeacons.get(beaconData.getManufacturerId())))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Beacon> findAllWithRemoteCache() {
+        List<BeaconData> beaconDatas = beaconDataService.findAll();
+
+        List<Issue> issues = issueRepository.findAll();
+
+        Map<String, List<Issue>> issueMap = new HashMap<>();
+
+        issues.forEach(issue -> {
+            if (!issueMap.containsKey(issue.getBeaconData().getId())) {
+                issueMap.put(issue.getBeaconData().getId(), Lists.newArrayList());
+            }
+
+            issueMap.get(issue.getBeaconData().getId()).add(issue);
+        });
+
+        beaconDatas.forEach(beaconData -> {
+            beaconData.setIssues(issueMap.get(beaconData.getId()));
+        });
+
+        return beaconDatas.stream()
+                .map(beaconData -> Beacon.fromRemoteBeacon(beaconData, remoteBeaconCache.get(beaconData.getId())))
                 .collect(Collectors.toList());
     }
 
@@ -67,7 +101,10 @@ public class BeaconService implements IBeaconService {
         BeaconData beaconData = beaconDataService.find(id);
         Map<String, RemoteBeacon> remoteBeacons = getRemoteBeacons(Lists.newArrayList(beaconData));
 
-        return Beacon.fromRemoteBeacon(beaconData, remoteBeacons.get(beaconData.getManufacturerId()));
+        RemoteBeacon remoteBeacon = remoteBeacons.get(beaconData.getManufacturerId());
+        remoteBeaconCache.add(getBeaconWithStatus(remoteBeacon));
+
+        return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
     }
 
     @Override
@@ -80,7 +117,7 @@ public class BeaconService implements IBeaconService {
 
         return fetchBeaconsFromManufacturer(order.getId()).stream().map(tagBeaconDevice -> {
                 try {
-                    RemoteBeacon remoteBeacon = RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice);
+                    RemoteBeacon remoteBeacon = getBeaconWithStatus(RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice));
                     BeaconData beaconData;
                     try {
                         beaconData = beaconDataService.find(remoteBeacon.getId());
@@ -93,6 +130,7 @@ public class BeaconService implements IBeaconService {
 
                     beaconData = beaconDataService.create(BeaconData.fromRemoteBeacon(remoteBeacon));
 
+                    remoteBeaconCache.add(remoteBeacon);
                     return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
                 } catch (InvalidBeaconIdentifierException e) {
                     return null;
@@ -201,29 +239,62 @@ public class BeaconService implements IBeaconService {
     private Map<String, RemoteBeacon> getRemoteBeacons(List<BeaconData> beaconDatas) {
         Map<String, RemoteBeacon> remoteBeaconMap = Maps.newHashMap();
 
-        List<CompletableFuture<BeaconListResponse>> completableFutures = Lists.newArrayList();
+        List<CompletableFuture<Map<String, RemoteBeacon>>> completableFutures = Lists.newArrayList();
 
         Lists.partition(beaconDatas.stream().map(BeaconData::getManufacturerId)
                 .collect(Collectors.toList()), 200).forEach(block -> {
-                    completableFutures.add(CompletableFuture.completedFuture(apiService.getBeacons(block)));
+                    completableFutures.add(CompletableFuture.completedFuture(getBeaconsWithStatuses(apiService.getBeacons(block))));
         });
 
         CompletableFuture<Void> allFutures =
                 CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]));
 
-        CompletableFuture<List<BeaconListResponse>> allCompletableFuture = allFutures
+        CompletableFuture<List<Map<String, RemoteBeacon>>> allCompletableFuture = allFutures
                 .thenApply(future -> completableFutures.stream().map(CompletableFuture::join)
                     .collect(Collectors.toList())
         );
 
-        allCompletableFuture.thenApply(beaconListResponses -> {
-           beaconListResponses.forEach(beaconListResponse -> {
-               remoteBeaconMap.putAll(getBeaconsWithStatuses(beaconListResponse));
-           });
-           return null;
+        allCompletableFuture.thenApply(maps -> {
+            maps.forEach(map -> remoteBeaconMap.putAll(map));
+            return null;
         });
 
         return remoteBeaconMap;
+    }
+
+    private RemoteBeacon getBeaconWithStatus(RemoteBeacon remoteBeacon) {
+        CompletableFuture<DeviceStatusListResponse> statusListResponseFuture = CompletableFuture
+                .completedFuture(apiService.getDeviceStatuses(Lists.newArrayList(remoteBeacon.getManufacturerId())));
+        CompletableFuture<ConfigurationListResponse> configListResponseFuture = CompletableFuture
+                .completedFuture(apiService.getConfigurations(Lists.newArrayList(remoteBeacon.getManufacturerId())));
+
+        CompletableFuture.allOf(statusListResponseFuture, configListResponseFuture).join();
+
+
+        try {
+            DeviceStatusListResponse statusListResponse = statusListResponseFuture.get();
+            ConfigurationListResponse configListResponse = configListResponseFuture.get();
+
+            if (statusListResponse != null && statusListResponse.getStatuses() != null) {
+                statusListResponse.getStatuses().forEach(status -> {
+                    if (remoteBeacon != null) {
+                        remoteBeacon.setBatteryLevel(status.getBatteryLevel());
+                        remoteBeacon.setLastSeen(status.getLastEventTimestamp());
+                    }
+                });
+            }
+
+            if (configListResponse != null && configListResponse.getConfigs() != null) {
+                configListResponse.getConfigs().forEach(configuration -> {
+                    if (remoteBeacon != null) {
+                        remoteBeacon.setPendingConfiguration(PendingConfiguration.fromBeaconConfiguration(configuration, remoteBeacon));
+                    }
+                });
+            }
+        } catch (InterruptedException | ExecutionException e) {
+
+        }
+        return remoteBeacon;
     }
 
     private Map<String, RemoteBeacon> getBeaconsWithStatuses(BeaconListResponse response) {

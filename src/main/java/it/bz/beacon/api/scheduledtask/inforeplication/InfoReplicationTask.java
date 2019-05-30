@@ -60,7 +60,7 @@ public class InfoReplicationTask {
 
     private static final Logger log = LoggerFactory.getLogger(InfoReplicationTask.class);
 
-    @Scheduled(fixedDelayString = "${it.bz.beacon.task.infoimport.delay:10800000}")
+    @Scheduled(initialDelay = 5 * 60 * 1000, fixedDelayString = "${it.bz.beacon.task.infoimport.delay:10800000}")
     public void startImport() {
         if (importerConfiguration.isEnabled()) {
             log.info("Starting sheet import...");
