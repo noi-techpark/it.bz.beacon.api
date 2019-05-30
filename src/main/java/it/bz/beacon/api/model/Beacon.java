@@ -284,7 +284,7 @@ public class Beacon {
         Calendar checkDate = Calendar.getInstance();
         checkDate.add(Calendar.MONTH, -12);
 
-        Date date = new Date(lastSeen * 1000);
+        Date date = new Date(lastSeen);
         if (date.before(checkDate.getTime())) {
             return Status.NO_SIGNAL;
         }
