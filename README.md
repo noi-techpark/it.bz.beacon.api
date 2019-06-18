@@ -145,6 +145,9 @@ While running the last command, you can access the website at http://localhost:8
 
 ## Information
 
+### User management
+We have only a single user, namely `admin`, that can manage new users. Just login with that user and go to the user list to create, update or delete user information.
+
 ### Using the API
 
 The authentication layer of the API is divided in the following 3 parts:
