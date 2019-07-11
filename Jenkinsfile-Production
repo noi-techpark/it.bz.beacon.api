@@ -16,7 +16,7 @@ pipeline {
         JWT_SECRET = credentials('beacon-api-jwt-secret')
         JWT_EXPIRE_LENGTH = "3600000"
         UPLOAD_DIR = "/data/beacon-api"
-        CORS_ORIGINS = "https://admin.beacon.bz.it,https://api.beacon.bz.it"
+        CORS_ORIGINS = "*"
         KONTAKT_IO_API_KEY = credentials('beacon-api-kontakt-io-api-key')
 
         INFO_HOST = "api.beacon.bz.it"
