@@ -1,8 +1,12 @@
 package it.bz.beacon.api.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import it.bz.beacon.api.config.security.BearerSecurityConfiguration;
+import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.exception.auth.InvalidJwtAuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +21,6 @@ import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class JwtTokenProvider {
@@ -35,9 +38,11 @@ public class JwtTokenProvider {
         secretKey = Keys.hmacShaKeyFor(securityConfiguration.getJwtSecret());
     }
 
-    public String createToken(String username, List<String> roles) {
-        Claims claims = Jwts.claims().setSubject(username);
-        claims.put("roles", roles);
+    public String createToken(User user) {
+        Claims claims = Jwts.claims().setSubject(user.getUsername());
+        claims.put("roles", user.getRoles());
+        claims.put("groups", user.getGroups());
+        claims.put("admin", user.isAdmin());
         Date now = new Date();
         Date expiration = new Date(now.getTime() + securityConfiguration.getTokenExpireLength());
 
