@@ -35,6 +35,8 @@ public class User extends AuditModel implements UserDetails {
 
     private String email;
 
+    private Boolean admin;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserRoleGroup> groups = new ArrayList<>();
 
@@ -145,7 +147,7 @@ public class User extends AuditModel implements UserDetails {
     }
 
     public boolean isAdmin() {
-        return username.equals("admin");
+        return admin;
     }
 
     public List<UserRoleGroup> getGroups() {
