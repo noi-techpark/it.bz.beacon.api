@@ -7,6 +7,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -48,6 +49,9 @@ public class BeaconData extends AuditModel {
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = true, updatable = true)
     private Group group;
+
+    @Column(name = "trusted_updated_at")
+    private Date trustedUpdatedAt;
 
     public static BeaconData fromRemoteBeacon(RemoteBeacon remoteBeacon) {
 
@@ -158,5 +162,13 @@ public class BeaconData extends AuditModel {
 
     public void setGroup(Group group) {
         this.group = group;
+    }
+
+    public Date getTrustedUpdatedAt() {
+        return trustedUpdatedAt;
+    }
+
+    public void setTrustedUpdatedAt(Date trustedUpdatedAt) {
+        this.trustedUpdatedAt = trustedUpdatedAt;
     }
 }

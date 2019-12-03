@@ -1,0 +1,1 @@
+alter table beacon_data ADD COLUMN trusted_updated_at timestamp;

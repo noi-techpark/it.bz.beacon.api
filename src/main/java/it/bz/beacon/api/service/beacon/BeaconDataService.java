@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -68,6 +69,7 @@ public class BeaconDataService implements IBeaconDataService {
             throws BeaconDataNotFoundException {
         return repository.findById(id).map(beaconData -> {
             beaconData.setBatteryLevel(batteryLevelUpdate.getBatteryLevel());
+            beaconData.setTrustedUpdatedAt(new Date());
 
             return repository.save(beaconData);
         }).orElseThrow(BeaconDataNotFoundException::new);

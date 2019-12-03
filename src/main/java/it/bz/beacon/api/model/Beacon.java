@@ -27,6 +27,7 @@ public class Beacon {
     private LocationType locationType;
     private String locationDescription;
     private long lastSeen;
+    private Date trustedUpdatedAt;
 
     private boolean iBeacon;
     private boolean telemetry;
@@ -82,6 +83,7 @@ public class Beacon {
         if (beaconData.getBatteryLevel() != null) {
             setBatteryLevel(beaconData.getBatteryLevel());
         }
+        setTrustedUpdatedAt(beaconData.getTrustedUpdatedAt());
     }
 
     @JsonIgnore
@@ -288,8 +290,7 @@ public class Beacon {
         Calendar checkDate = Calendar.getInstance();
         checkDate.add(Calendar.MONTH, -12);
 
-        Date date = new Date(lastSeen);
-        if (date.before(checkDate.getTime())) {
+        if (hasRecentlySeen()) {
             return Status.NO_SIGNAL;
         }
 
@@ -314,6 +315,14 @@ public class Beacon {
 
     public void setLastSeen(long lastSeen) {
         this.lastSeen = lastSeen;
+    }
+
+    public Date getTrustedUpdatedAt() {
+        return trustedUpdatedAt;
+    }
+
+    public void setTrustedUpdatedAt(Date trustedUpdatedAt) {
+        this.trustedUpdatedAt = trustedUpdatedAt;
     }
 
     public boolean isiBeacon() {
@@ -384,6 +393,18 @@ public class Beacon {
         return issues;
     }
 
+    @JsonIgnore
+    public boolean hasIssues() {
+        if (getIssues() != null) {
+            for (Issue issue : getIssues()) {
+                if (issue.getSolution() == null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void setIssues(List<Issue> issues) {
         this.issues = issues;
     }
@@ -404,4 +425,18 @@ public class Beacon {
         return this.group;
     }
 
+    public boolean hasRecentlySeen() {
+        Calendar checkDate = Calendar.getInstance();
+        checkDate.add(Calendar.MONTH, -12);
+
+        Date date = new Date(lastSeen);
+        return date.after(checkDate.getTime());
+    }
+
+    public boolean hasRecentlyTrustedUpdated() {
+        Calendar checkDate = Calendar.getInstance();
+        checkDate.add(Calendar.MONTH, -12);
+
+        return trustedUpdatedAt != null && trustedUpdatedAt.after(checkDate.getTime());
+    }
 }
