@@ -45,6 +45,10 @@ public class BeaconData extends AuditModel {
     @OneToMany(mappedBy = "beaconData", fetch = FetchType.LAZY)
     private List<Issue> issues = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = true, updatable = true)
+    private Group group;
+
     public static BeaconData fromRemoteBeacon(RemoteBeacon remoteBeacon) {
 
         BeaconData beaconData = new BeaconData();
@@ -146,5 +150,13 @@ public class BeaconData extends AuditModel {
 
     public void setBatteryLevel(Integer batteryLevel) {
         this.batteryLevel = batteryLevel;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }

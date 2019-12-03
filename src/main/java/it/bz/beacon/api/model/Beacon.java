@@ -3,6 +3,7 @@ package it.bz.beacon.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.bz.beacon.api.db.model.BeaconData;
+import it.bz.beacon.api.db.model.Group;
 import it.bz.beacon.api.db.model.Issue;
 import it.bz.beacon.api.model.enumeration.LocationType;
 import it.bz.beacon.api.model.enumeration.Status;
@@ -52,6 +53,8 @@ public class Beacon {
 
     private String internalName;
 
+    private Group group;
+
     @JsonIgnore
     private List<Issue> issues;
 
@@ -75,6 +78,7 @@ public class Beacon {
         setLocationType(beaconData.getLocationType());
         setLocationDescription(beaconData.getLocationDescription());
         setIssues(beaconData.getIssues());
+        setGroup(beaconData.getGroup());
         if (beaconData.getBatteryLevel() != null) {
             setBatteryLevel(beaconData.getBatteryLevel());
         }
@@ -391,4 +395,13 @@ public class Beacon {
     public void setInternalName(String internalName) {
         this.internalName = internalName;
     }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Group getGroup() {
+        return this.group;
+    }
+
 }
