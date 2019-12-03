@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        TESTSERVER_TOMCAT_ENDPOINT = "http://alpinebits-server.tomcat02.testingmachine.eu:8080/manager/text"
+        TESTSERVER_TOMCAT_ENDPOINT = "http://api.beacon.tomcat02.testingmachine.eu:8080/manager/text"
         TESTSERVER_TOMCAT_CREDENTIALS = credentials('testserver-tomcat8-credentials')
 
         GOOGLE_SERVICE_ACCOUNT = credentials('beacon-api-google-service-account')
