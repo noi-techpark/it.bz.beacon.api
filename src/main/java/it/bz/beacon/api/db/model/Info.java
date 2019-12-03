@@ -1,9 +1,9 @@
 package it.bz.beacon.api.db.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import it.bz.beacon.api.model.Beacon;
+import it.bz.beacon.api.model.enumeration.InfoStatus;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -36,6 +36,10 @@ public class Info extends AuditModel {
     private double latitude;
     private double longitude;
     private String floor;
+
+    @JsonIgnore
+    @Transient
+    private Beacon beacon;
 
     public String getId() {
         return id;
@@ -149,10 +153,45 @@ public class Info extends AuditModel {
         this.instanceId = instanceId;
     }
 
-    @Override
-    @JsonProperty
+
+    public boolean isOnline() {
+        // TODO add issue condition
+        if (beacon == null)
+            return false;
+
+        Integer batteryLevel = beacon.getBatteryLevel();
+        return !beacon.hasIssues()
+                && beacon.hasRecentlyTrustedUpdated()
+                && batteryLevel != null && batteryLevel >= 5;
+    }
+
+    public InfoStatus getStatus() {
+
+        if (beacon == null)
+            return null;
+
+        if (beacon.getPendingConfiguration() != null) {
+            return InfoStatus.PLANED;
+        }
+
+        return InfoStatus.INSTALLED;
+    }
+
+    public Integer getTxPower() {
+        return beacon != null ? beacon.getTxPower() : null;
+    }
+
+    public void setBeacon(Beacon beacon) {
+        this.beacon = beacon;
+    }
+
+    public Beacon getBeacon() {
+        return beacon;
+    }
+
+
     @ApiModelProperty(dataType = "java.lang.Long")
-    public Date getUpdatedAt() {
-        return super.getUpdatedAt();
+    public Date getTrustedUpdatedAt() {
+        return beacon != null ? beacon.getTrustedUpdatedAt() : null;
     }
 }

@@ -4,6 +4,7 @@ import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.Info;
 import it.bz.beacon.api.db.repository.InfoRepository;
 import it.bz.beacon.api.exception.db.InfoNotFoundException;
+import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,10 @@ import java.util.List;
 @Component
 public class InfoService implements IInfoService {
 
+
+    @Autowired
+    private IBeaconService beaconService;
+
     @Autowired
     private InfoRepository repository;
 
@@ -21,7 +26,18 @@ public class InfoService implements IInfoService {
 
     @Override
     public List<Info> findAll() {
-        return repository.findAll();
+
+        List<Info> infoList = repository.findAll();
+
+        infoList.stream().forEach(info -> {
+            try {
+                info.setBeacon(beaconService.find(info.getId()));
+            } catch (Exception e) {
+
+            }
+        });
+
+        return infoList;
     }
 
     @Override
@@ -31,7 +47,15 @@ public class InfoService implements IInfoService {
 
     @Override
     public Info findByBeaconId(String beaconId) throws InfoNotFoundException {
-        return repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
+        Info info = repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
+
+        try {
+            info.setBeacon(beaconService.find(info.getId()));
+        } catch (Exception e) {
+            info.setBeacon(null);
+        }
+
+        return info;
     }
 
     @Override
