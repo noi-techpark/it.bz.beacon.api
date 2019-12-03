@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,9 @@ public class User extends AuditModel implements UserDetails {
     private String surname;
 
     private String email;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<UserRoleGroup> groups = new ArrayList<>();
 
     public static User create(UserCreation userCreation) {
         User user = new User();
@@ -127,7 +131,10 @@ public class User extends AuditModel implements UserDetails {
 
     @JsonIgnore
     public List<String> getRoles() {
-        return Lists.newArrayList("ADMIN");
+        if (isAdmin()) {
+            return Lists.newArrayList("ADMIN");
+        }
+        return Lists.newArrayList();
     }
 
     @JsonIgnore
@@ -139,5 +146,13 @@ public class User extends AuditModel implements UserDetails {
 
     public boolean isAdmin() {
         return username.equals("admin");
+    }
+
+    public List<UserRoleGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<UserRoleGroup> groups) {
+        this.groups = groups;
     }
 }
