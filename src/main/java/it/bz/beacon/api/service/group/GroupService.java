@@ -91,9 +91,22 @@ public class GroupService implements IGroupService {
 
     @Override
     public List<UserRoleMapping> findAllUsers(long groupId) {
+        boolean canSeeAllUsers = isAdmin();
+
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        for (UserRoleGroup authUserRoleGroup : authorizedUser.getGroups()) {
+            if (authUserRoleGroup.getGroup().getId() == groupId) {
+                canSeeAllUsers = true;
+            }
+        }
+
         List<UserRoleMapping> ret = new ArrayList<>();
+        boolean finalCanSeeAllUsers = canSeeAllUsers;
         userRoleGroupRepository.findAllUserRoleGroupByGroupId(groupId).forEach(
-                userRoleGroup -> ret.add(UserRoleMapping.fromUserRoleGroup(userRoleGroup)));
+                userRoleGroup -> {
+                    if (finalCanSeeAllUsers || userRoleGroup.getRole() == UserRole.MANAGER)
+                        ret.add(UserRoleMapping.fromUserRoleGroup(userRoleGroup));
+                });
         return ret;
     }
 
