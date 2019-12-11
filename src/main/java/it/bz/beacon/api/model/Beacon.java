@@ -393,18 +393,6 @@ public class Beacon {
         return issues;
     }
 
-    @JsonIgnore
-    public boolean hasIssues() {
-        if (getIssues() != null) {
-            for (Issue issue : getIssues()) {
-                if (issue.getSolution() == null) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public void setIssues(List<Issue> issues) {
         this.issues = issues;
     }
@@ -431,12 +419,5 @@ public class Beacon {
 
         Date date = new Date(lastSeen);
         return date.after(checkDate.getTime());
-    }
-
-    public boolean hasRecentlyTrustedUpdated() {
-        Calendar checkDate = Calendar.getInstance();
-        checkDate.add(Calendar.MONTH, -12);
-
-        return trustedUpdatedAt != null && trustedUpdatedAt.after(checkDate.getTime());
     }
 }

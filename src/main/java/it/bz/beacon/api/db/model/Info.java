@@ -2,13 +2,13 @@ package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
-import it.bz.beacon.api.model.Beacon;
+import it.bz.beacon.api.model.RemoteBeacon;
 import it.bz.beacon.api.model.enumeration.InfoStatus;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table( name = "Info" )
@@ -38,8 +38,19 @@ public class Info extends AuditModel {
     private String floor;
 
     @JsonIgnore
+    @OneToMany(mappedBy = "beaconData", fetch = FetchType.LAZY)
+    private List<Issue> issues = new ArrayList<>();
+
+    @Formula("(select beacon_data.battery_level from beacon_data where beacon_data.id = ID)")
+    @JsonIgnore
+    private Integer batteryLevel;
+
+    @Formula("(select beacon_data.trusted_updated_at from beacon_data where beacon_data.id = ID)")
+    private Date trustedUpdatedAt;
+
+    @JsonIgnore
     @Transient
-    private Beacon beacon;
+    private RemoteBeacon remoteBeacon;
 
     public String getId() {
         return id;
@@ -153,24 +164,45 @@ public class Info extends AuditModel {
         this.instanceId = instanceId;
     }
 
+    public List<Issue> getIssues() {
+        return issues;
+    }
+
+    public void setIssues(List<Issue> issues) {
+        this.issues = issues;
+    }
+
+    public Integer getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public void setBatteryLevel(Integer batteryLevel) {
+        this.batteryLevel = batteryLevel;
+    }
+
+    public RemoteBeacon getRemoteBeacon() {
+        return remoteBeacon;
+    }
+
+    public void setRemoteBeacon(RemoteBeacon remoteBeacon) {
+        this.remoteBeacon = remoteBeacon;
+    }
 
     public boolean isOnline() {
-        // TODO add issue condition
-        if (beacon == null)
-            return false;
+        Calendar checkDate = Calendar.getInstance();
+        checkDate.add(Calendar.MONTH, -12);
 
-        Integer batteryLevel = beacon.getBatteryLevel();
-        return !beacon.hasIssues()
-                && beacon.hasRecentlyTrustedUpdated()
+        return !(issues == null || issues.isEmpty())
+                && trustedUpdatedAt != null && trustedUpdatedAt.after(checkDate.getTime())
                 && batteryLevel != null && batteryLevel >= 5;
     }
 
     public InfoStatus getStatus() {
 
-        if (beacon == null)
+        if (remoteBeacon == null)
             return null;
 
-        if (beacon.getPendingConfiguration() != null) {
+        if (remoteBeacon.getPendingConfiguration() != null) {
             return InfoStatus.PLANED;
         }
 
@@ -178,20 +210,15 @@ public class Info extends AuditModel {
     }
 
     public Integer getTxPower() {
-        return beacon != null ? beacon.getTxPower() : null;
+        return remoteBeacon != null ? remoteBeacon.getTxPower() : null;
     }
 
-    public void setBeacon(Beacon beacon) {
-        this.beacon = beacon;
+    public void setTrustedUpdatedAt(Date trustedUpdatedAt) {
+        this.trustedUpdatedAt = trustedUpdatedAt;
     }
-
-    public Beacon getBeacon() {
-        return beacon;
-    }
-
 
     @ApiModelProperty(dataType = "java.lang.Long")
     public Date getTrustedUpdatedAt() {
-        return beacon != null ? beacon.getTrustedUpdatedAt() : null;
+        return trustedUpdatedAt;
     }
 }

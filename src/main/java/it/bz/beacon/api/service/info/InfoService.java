@@ -1,10 +1,10 @@
 package it.bz.beacon.api.service.info;
 
+import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.Info;
 import it.bz.beacon.api.db.repository.InfoRepository;
 import it.bz.beacon.api.exception.db.InfoNotFoundException;
-import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,9 +14,8 @@ import java.util.List;
 @Component
 public class InfoService implements IInfoService {
 
-
     @Autowired
-    private IBeaconService beaconService;
+    private RemoteBeaconCache remoteBeaconCache;
 
     @Autowired
     private InfoRepository repository;
@@ -31,7 +30,7 @@ public class InfoService implements IInfoService {
 
         infoList.stream().forEach(info -> {
             try {
-                info.setBeacon(beaconService.find(info.getId()));
+                info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
             } catch (Exception e) {
 
             }
@@ -50,9 +49,9 @@ public class InfoService implements IInfoService {
         Info info = repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
 
         try {
-            info.setBeacon(beaconService.find(info.getId()));
+            info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
         } catch (Exception e) {
-            info.setBeacon(null);
+
         }
 
         return info;
