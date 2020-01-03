@@ -19,6 +19,6 @@ CREATE OR REPLACE VIEW public.info_beacon_data AS
     beacon_data.trusted_updated_at,
     ( SELECT count(*)::integer AS count
            FROM issue
-          WHERE issue.beacon_data_id::text = beacon_data.id::text) AS open_issue_count
+          WHERE issue.beacon_data_id::text = beacon_data.id::text and issue.solution_id is null) AS open_issue_count
    FROM info
      LEFT JOIN beacon_data ON info.id::text = beacon_data.id::text;
