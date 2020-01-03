@@ -54,6 +54,20 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String createPasswordResetToken(User user) {
+        Claims claims = Jwts.claims().setSubject(user.getUsername());
+        claims.put("updatedAt", user.getUpdatedAt().getTime());
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + 10 * 60 * 1000);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(expiration)
+                .signWith(secretKey)
+                .compact();
+    }
+
     public Authentication getAuthentication(String token) {
         try {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
@@ -65,6 +79,10 @@ public class JwtTokenProvider {
 
     public String getUsername(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public Claims getBody(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
     public String resolveToken(HttpServletRequest request) {
