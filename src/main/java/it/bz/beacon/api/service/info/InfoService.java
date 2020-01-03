@@ -5,6 +5,8 @@ import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.Info;
 import it.bz.beacon.api.db.repository.InfoRepository;
 import it.bz.beacon.api.exception.db.InfoNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,9 @@ import java.util.List;
 
 @Component
 public class InfoService implements IInfoService {
+
+    final static Logger log = LoggerFactory.getLogger(InfoService.class);
+
 
     @Autowired
     private RemoteBeaconCache remoteBeaconCache;
@@ -32,7 +37,7 @@ public class InfoService implements IInfoService {
             try {
                 info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
             } catch (Exception e) {
-
+                log.error("findAll()", e);
             }
         });
 
@@ -51,7 +56,7 @@ public class InfoService implements IInfoService {
         try {
             info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
         } catch (Exception e) {
-
+            log.error("findByBeaconId(String beaconId)", e);
         }
 
         return info;

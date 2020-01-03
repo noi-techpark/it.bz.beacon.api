@@ -1,17 +1,17 @@
 package it.bz.beacon.api.db.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import it.bz.beacon.api.model.RemoteBeacon;
 import it.bz.beacon.api.model.enumeration.InfoStatus;
-import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.UUID;
 
 @Entity
-@Table( name = "Info" )
+@Table( name = "info_beacon_data" )
 public class Info extends AuditModel {
 
     @Id
@@ -37,18 +37,12 @@ public class Info extends AuditModel {
     private double longitude;
     private String floor;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "beaconData", fetch = FetchType.LAZY)
-    private List<Issue> issues = new ArrayList<>();
+    private int openIssueCount;
 
-    @Formula("(select beacon_data.battery_level from beacon_data where beacon_data.id = ID)")
-    @JsonIgnore
-    private Integer batteryLevel;
+    public Integer batteryLevel;
 
-    @Formula("(select beacon_data.trusted_updated_at from beacon_data where beacon_data.id = ID)")
     private Date trustedUpdatedAt;
 
-    @JsonIgnore
     @Transient
     private RemoteBeacon remoteBeacon;
 
@@ -164,26 +158,6 @@ public class Info extends AuditModel {
         this.instanceId = instanceId;
     }
 
-    public List<Issue> getIssues() {
-        return issues;
-    }
-
-    public void setIssues(List<Issue> issues) {
-        this.issues = issues;
-    }
-
-    public Integer getBatteryLevel() {
-        return batteryLevel;
-    }
-
-    public void setBatteryLevel(Integer batteryLevel) {
-        this.batteryLevel = batteryLevel;
-    }
-
-    public RemoteBeacon getRemoteBeacon() {
-        return remoteBeacon;
-    }
-
     public void setRemoteBeacon(RemoteBeacon remoteBeacon) {
         this.remoteBeacon = remoteBeacon;
     }
@@ -192,7 +166,7 @@ public class Info extends AuditModel {
         Calendar checkDate = Calendar.getInstance();
         checkDate.add(Calendar.MONTH, -12);
 
-        return !(issues == null || issues.isEmpty())
+        return  openIssueCount == 0
                 && trustedUpdatedAt != null && trustedUpdatedAt.after(checkDate.getTime())
                 && batteryLevel != null && batteryLevel >= 5;
     }
