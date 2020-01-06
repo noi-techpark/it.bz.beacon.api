@@ -1,0 +1,1 @@
+alter table "user" add column require_password_change boolean not null default false;

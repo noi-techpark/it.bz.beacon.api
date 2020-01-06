@@ -53,9 +53,6 @@ public class AuthController {
         String token = request.getToken();
         try {
             valid = jwtTokenProvider.validateToken(request.getToken());
-            // TODO remove
-            String username = jwtTokenProvider.getUsername(token);
-            token = jwtTokenProvider.createToken(this.users.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")));
         } catch (InvalidJwtAuthenticationException e) {
             valid = false;
         }

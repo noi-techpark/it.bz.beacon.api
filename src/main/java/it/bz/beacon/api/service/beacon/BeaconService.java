@@ -296,7 +296,20 @@ public class BeaconService implements IBeaconService {
     }
 
     private Map<String, RemoteBeacon> getRemoteBeacons(List<BeaconData> beaconDatas) {
+
+        // TODO simulate kontakt.io with hard coded values
         Map<String, RemoteBeacon> remoteBeaconMap = Maps.newHashMap();
+        for (BeaconData bd : beaconDatas) {
+            RemoteBeacon rb = new RemoteBeacon();
+            rb.setId(bd.getId());
+            // rb.setTxPower(4);
+            // rb.setLastSeen(System.currentTimeMillis()/1000);
+            // rb.setPendingConfiguration(new PendingConfiguration());
+            remoteBeaconMap.put(bd.getId(), rb);
+        }
+        return remoteBeaconMap;
+
+        /*
 
         List<CompletableFuture<Map<String, RemoteBeacon>>> completableFutures = Lists.newArrayList();
 
@@ -319,9 +332,19 @@ public class BeaconService implements IBeaconService {
         });
 
         return remoteBeaconMap;
+         */
     }
 
     private RemoteBeacon getBeaconWithStatus(RemoteBeacon remoteBeacon) {
+
+        remoteBeacon = new RemoteBeacon();
+        remoteBeacon.setTxPower(4);
+        remoteBeacon.setLastSeen(System.currentTimeMillis() / 1000);
+        remoteBeacon.setPendingConfiguration(new PendingConfiguration());
+
+        return remoteBeacon;
+
+        /*
         CompletableFuture<DeviceStatusListResponse> statusListResponseFuture = CompletableFuture
                 .completedFuture(apiService.getDeviceStatuses(Lists.newArrayList(remoteBeacon.getManufacturerId())));
         CompletableFuture<ConfigurationListResponse> configListResponseFuture = CompletableFuture
@@ -354,6 +377,7 @@ public class BeaconService implements IBeaconService {
 
         }
         return remoteBeacon;
+         */
     }
 
     private Map<String, RemoteBeacon> getBeaconsWithStatuses(BeaconListResponse response) {
