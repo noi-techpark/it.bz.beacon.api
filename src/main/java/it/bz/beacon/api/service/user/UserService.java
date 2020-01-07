@@ -93,6 +93,7 @@ public class UserService implements IUserService {
             return repository.findById(id).map(
                     user -> {
                         user.setPassword(passwordEncoder.encode(passwordReset.getNewPassword()));
+                        user.setRequirePasswordChange(true);
                         repository.save(user);
 
                         return new BaseMessage("Password reset");
@@ -106,17 +107,23 @@ public class UserService implements IUserService {
     @Override
     public BaseMessage changePassword(long id, PasswordChange passwordChange) throws InvalidPasswordException,
             UserNotFoundException {
-        return repository.findById(id).map(
-                user -> {
-                    if (!passwordEncoder.matches(passwordChange.getOldPassword(), user.getPassword())) {
-                        throw new InvalidPasswordException();
-                    }
+        if (((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId().equals(id)) {
+            return repository.findById(id).map(
+                    user -> {
+                        if (!passwordEncoder.matches(passwordChange.getOldPassword(), user.getPassword())) {
+                            throw new InvalidPasswordException();
+                        }
 
-                    user.setPassword(passwordEncoder.encode(passwordChange.getNewPassword()));
-                    repository.save(user);
-                    return new BaseMessage("Password changed");
-                }
-        ).orElseThrow(UserNotFoundException::new);
+                        user.setPassword(passwordEncoder.encode(passwordChange.getNewPassword()));
+                        user.setRequirePasswordChange(false);
+
+                        repository.save(user);
+                        return new BaseMessage("Password changed");
+                    }
+            ).orElseThrow(UserNotFoundException::new);
+        }
+
+        throw new InsufficientRightsException();
     }
 
     private boolean isAdmin() {

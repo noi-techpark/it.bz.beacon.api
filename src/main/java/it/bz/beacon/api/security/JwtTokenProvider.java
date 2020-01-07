@@ -43,6 +43,8 @@ public class JwtTokenProvider {
         claims.put("roles", user.getRoles());
         claims.put("groups", user.getGroups());
         claims.put("admin", user.isAdmin());
+        if (user.getRequirePasswordChange())
+            claims.put("requirePasswordChange", true);
         Date now = new Date();
         Date expiration = new Date(now.getTime() + securityConfiguration.getTokenExpireLength());
 

@@ -37,6 +37,9 @@ public class User extends AuditModel implements UserDetails {
 
     private Boolean admin;
 
+    @JsonIgnore
+    private Boolean requirePasswordChange;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserRoleGroup> groups = new ArrayList<>();
 
@@ -47,6 +50,7 @@ public class User extends AuditModel implements UserDetails {
         user.setName(userCreation.getName());
         user.setSurname(userCreation.getSurname());
         user.setEmail(userCreation.getEmail());
+        user.setRequirePasswordChange(true);
 
         return user;
     }
@@ -156,5 +160,13 @@ public class User extends AuditModel implements UserDetails {
 
     public void setGroups(List<UserRoleGroup> groups) {
         this.groups = groups;
+    }
+
+    public Boolean getRequirePasswordChange() {
+        return requirePasswordChange;
+    }
+
+    public void setRequirePasswordChange(Boolean requirePasswordChange) {
+        this.requirePasswordChange = requirePasswordChange;
     }
 }
