@@ -55,53 +55,55 @@ pipeline {
     stages { 
         stage('Configure') {
             steps {
-                sh 'sed -i -e "s/<\\/settings>$//g\" ~/.m2/settings.xml'
-                sh 'echo "    <servers>" >> ~/.m2/settings.xml'
-                sh 'echo "        ${TESTSERVER_TOMCAT_CREDENTIALS}" >> ~/.m2/settings.xml'
-                sh 'echo "    </servers>" >> ~/.m2/settings.xml'
-                sh 'echo "</settings>" >> ~/.m2/settings.xml'
+                sh '''
+                    sed -i -e "s/<\\/settings>$//g\" ~/.m2/settings.xml
+                    echo "    <servers>" >> ~/.m2/settings.xml
+                    echo "        ${TESTSERVER_TOMCAT_CREDENTIALS}" >> ~/.m2/settings.xml
+                    echo "    </servers>" >> ~/.m2/settings.xml
+                    echo "</settings>" >> ~/.m2/settings.xml
 
-                sh 'cp src/main/resources/application.properties.dist src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.datasource.url\\s*=\\).*\\$%\\1${DB_URL}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.datasource.username\\s*=\\).*\\$%\\1${DB_USERNAME}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.datasource.password\\s*=\\).*\\$%\\1${DB_PASSWORD}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.jpa.properties.hibernate.dialect\\s*=\\).*\\$%\\1${DB_DIALECT}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(security.jwt.token.secret\\s*=\\).*\\$%\\1${JWT_SECRET}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(security.jwt.token.expire-length\\s*=\\).*\\$%\\1${JWT_EXPIRE_LENGTH}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(file.upload-dir\\s*=\\).*\\$%\\1${UPLOAD_DIR}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(it.bz.beacon.allowedOrigins\\s*=\\).*\\$%\\1${CORS_ORIGINS}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(kontakt.io.apiKey\\s*=\\).*\\$%\\1${KONTAKT_IO_API_KEY}%" src/main/resources/application.properties'
+                    cp src/main/resources/application.properties.dist src/main/resources/application.properties
+                    sed -i -e "s%\\(spring.datasource.url\\s*=\\).*\\$%\\1${DB_URL}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(spring.datasource.username\\s*=\\).*\\$%\\1${DB_USERNAME}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(spring.datasource.password\\s*=\\).*\\$%\\1${DB_PASSWORD}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(spring.jpa.properties.hibernate.dialect\\s*=\\).*\\$%\\1${DB_DIALECT}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(security.jwt.token.secret\\s*=\\).*\\$%\\1${JWT_SECRET}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(security.jwt.token.expire-length\\s*=\\).*\\$%\\1${JWT_EXPIRE_LENGTH}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(file.upload-dir\\s*=\\).*\\$%\\1${UPLOAD_DIR}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(it.bz.beacon.allowedOrigins\\s*=\\).*\\$%\\1${CORS_ORIGINS}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(kontakt.io.apiKey\\s*=\\).*\\$%\\1${KONTAKT_IO_API_KEY}%" src/main/resources/application.properties
 
-                sh 'sed -i -e "s%\\(api.info.host\\s*=\\).*\\$%\\1${INFO_HOST}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(api.info.title\\s*=\\).*\\$%\\1${INFO_TITLE}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(api.info.description\\s*=\\).*\\$%\\1${INFO_DESCRIPTION}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(api.info.version\\s*=\\).*\\$%\\1${INFO_VERSION}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(api.info.termsOfServiceUrl\\s*=\\).*\\$%\\1${INFO_TERMS_OF_SERVICE_URL}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(api.info.contactName\\s*=\\).*\\$%\\1${INFO_CONTACT_NAME}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(api.info.contactUrl\\s*=\\).*\\$%\\1${INFO_CONTACT_URL}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(api.info.contactEmail\\s*=\\).*\\$%\\1${INFO_CONTACT_EMAIL}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(api.info.license\\s*=\\).*\\$%\\1${INFO_LICENSE}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(api.info.licenseUrl\\s*=\\).*\\$%\\1${INFO_LICENSE_URL}%" src/main/resources/application.properties'
+                    sed -i -e "s%\\(api.info.host\\s*=\\).*\\$%\\1${INFO_HOST}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(api.info.title\\s*=\\).*\\$%\\1${INFO_TITLE}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(api.info.description\\s*=\\).*\\$%\\1${INFO_DESCRIPTION}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(api.info.version\\s*=\\).*\\$%\\1${INFO_VERSION}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(api.info.termsOfServiceUrl\\s*=\\).*\\$%\\1${INFO_TERMS_OF_SERVICE_URL}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(api.info.contactName\\s*=\\).*\\$%\\1${INFO_CONTACT_NAME}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(api.info.contactUrl\\s*=\\).*\\$%\\1${INFO_CONTACT_URL}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(api.info.contactEmail\\s*=\\).*\\$%\\1${INFO_CONTACT_EMAIL}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(api.info.license\\s*=\\).*\\$%\\1${INFO_LICENSE}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(api.info.licenseUrl\\s*=\\).*\\$%\\1${INFO_LICENSE_URL}%" src/main/resources/application.properties
 
-                sh 'sed -i -e "s%\\(it.bz.beacon.issueEmailFrom\\s*=\\).*\\$%\\1${ISSUE_EMAIL_FROM}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(it.bz.beacon.issueEmailTo\\s*=\\).*\\$%\\1${ISSUE_EMAIL_TO}%" src/main/resources/application.properties'
+                    sed -i -e "s%\\(it.bz.beacon.issueEmailFrom\\s*=\\).*\\$%\\1${ISSUE_EMAIL_FROM}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(it.bz.beacon.issueEmailTo\\s*=\\).*\\$%\\1${ISSUE_EMAIL_TO}%" src/main/resources/application.properties
 
-                sh 'sed -i -e "s%\\(spring.mail.host\\s*=\\).*\\$%\\1${MAIL_HOST}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.mail.port\\s*=\\).*\\$%\\1${MAIL_PORT}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.mail.username\\s*=\\).*\\$%\\1${MAIL_USERNAME}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.mail.password\\s*=\\).*\\$%\\1${MAIL_PASSWORD}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.mail.properties.mail.smtp.auth\\s*=\\).*\\$%\\1${MAIL_SMTP_AUTH}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(spring.mail.properties.mail.smtp.starttls.enable\\s*=\\).*\\$%\\1${MAIL_SMTP_STARTTLS}%" src/main/resources/application.properties'
+                    sed -i -e "s%\\(spring.mail.host\\s*=\\).*\\$%\\1${MAIL_HOST}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(spring.mail.port\\s*=\\).*\\$%\\1${MAIL_PORT}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(spring.mail.username\\s*=\\).*\\$%\\1${MAIL_USERNAME}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(spring.mail.password\\s*=\\).*\\$%\\1${MAIL_PASSWORD}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(spring.mail.properties.mail.smtp.auth\\s*=\\).*\\$%\\1${MAIL_SMTP_AUTH}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(spring.mail.properties.mail.smtp.starttls.enable\\s*=\\).*\\$%\\1${MAIL_SMTP_STARTTLS}%" src/main/resources/application.properties
 
-                sh 'sed -i -e "s%\\(it.bz.beacon.uuid\\s*=\\).*\\$%\\1${BEACON_UUID}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(it.bz.beacon.namespace\\s*=\\).*\\$%\\1${BEACON_NAMESPACE}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(it.bz.beacon.task.infoimport.enabled\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_ENABLED}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(it.bz.beacon.task.infoimport.spreadSheetId\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_SPREADSHEET}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(it.bz.beacon.task.infoimport.delay\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_DELAY}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(it.bz.beacon.trusted.user\\s*=\\).*\\$%\\1${BEACON_TRUSTED_USERNAME}%" src/main/resources/application.properties'
-                sh 'sed -i -e "s%\\(it.bz.beacon.trusted.password\\s*=\\).*\\$%\\1${BEACON_TRUSTED_PASSWORD}%" src/main/resources/application.properties'
+                    sed -i -e "s%\\(it.bz.beacon.uuid\\s*=\\).*\\$%\\1${BEACON_UUID}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(it.bz.beacon.namespace\\s*=\\).*\\$%\\1${BEACON_NAMESPACE}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(it.bz.beacon.task.infoimport.enabled\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_ENABLED}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(it.bz.beacon.task.infoimport.spreadSheetId\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_SPREADSHEET}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(it.bz.beacon.task.infoimport.delay\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_DELAY}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(it.bz.beacon.trusted.user\\s*=\\).*\\$%\\1${BEACON_TRUSTED_USERNAME}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(it.bz.beacon.trusted.password\\s*=\\).*\\$%\\1${BEACON_TRUSTED_PASSWORD}%" src/main/resources/application.properties
 
-                sh 'cat "${GOOGLE_SERVICE_ACCOUNT}" > src/main/resources/google-api-service-account.json'
+                    cat "${GOOGLE_SERVICE_ACCOUNT}" > src/main/resources/google-api-service-account.json
+                '''
             }
         }
         stage('Test') {
@@ -111,7 +113,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'mvn -B -U clean package'
+                sh 'mvn -B -U -Dmaven.test.skip=true clean package'
             }
         }
         stage('Deploy') {
