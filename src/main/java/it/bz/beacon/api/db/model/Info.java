@@ -1,17 +1,17 @@
 package it.bz.beacon.api.db.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import it.bz.beacon.api.model.RemoteBeacon;
+import it.bz.beacon.api.model.enumeration.InfoStatus;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table( name = "Info" )
+@Table( name = "info_beacon_data" )
 public class Info extends AuditModel {
 
     @Id
@@ -36,6 +36,15 @@ public class Info extends AuditModel {
     private double latitude;
     private double longitude;
     private String floor;
+
+    private int openIssueCount;
+
+    public Integer batteryLevel;
+
+    private Date trustedUpdatedAt;
+
+    @Transient
+    private RemoteBeacon remoteBeacon;
 
     public String getId() {
         return id;
@@ -149,10 +158,41 @@ public class Info extends AuditModel {
         this.instanceId = instanceId;
     }
 
-    @Override
-    @JsonProperty
+    public void setRemoteBeacon(RemoteBeacon remoteBeacon) {
+        this.remoteBeacon = remoteBeacon;
+    }
+
+    public boolean isOnline() {
+        Calendar checkDate = Calendar.getInstance();
+        checkDate.add(Calendar.MONTH, -12);
+
+        return  openIssueCount == 0
+                && trustedUpdatedAt != null && trustedUpdatedAt.after(checkDate.getTime())
+                && batteryLevel != null && batteryLevel >= 5;
+    }
+
+    public InfoStatus getStatus() {
+
+        if (remoteBeacon == null)
+            return null;
+
+        if (remoteBeacon.getPendingConfiguration() != null) {
+            return InfoStatus.PLANED;
+        }
+
+        return InfoStatus.INSTALLED;
+    }
+
+    public Integer getTxPower() {
+        return remoteBeacon != null ? remoteBeacon.getTxPower() : null;
+    }
+
+    public void setTrustedUpdatedAt(Date trustedUpdatedAt) {
+        this.trustedUpdatedAt = trustedUpdatedAt;
+    }
+
     @ApiModelProperty(dataType = "java.lang.Long")
-    public Date getUpdatedAt() {
-        return super.getUpdatedAt();
+    public Date getTrustedUpdatedAt() {
+        return trustedUpdatedAt;
     }
 }

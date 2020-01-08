@@ -1,5 +1,6 @@
 package it.bz.beacon.api.model;
 
+import it.bz.beacon.api.db.model.Group;
 import it.bz.beacon.api.model.enumeration.LocationType;
 
 import javax.validation.constraints.Max;
@@ -56,6 +57,8 @@ public class BeaconUpdate {
 
     @NotNull
     private UUID uuid;
+
+    private Long group;
 
     @NotNull
     @Min(0)
@@ -255,5 +258,18 @@ public class BeaconUpdate {
 
     public void setEddystoneEtlm(boolean eddystoneEtlm) {
         this.eddystoneEtlm = eddystoneEtlm;
+    }
+
+
+    public Long getGroup() {
+        return group;
+    }
+
+    public void setGroup(Long group) {
+        this.group = group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group != null ? group.getId() : null;
     }
 }

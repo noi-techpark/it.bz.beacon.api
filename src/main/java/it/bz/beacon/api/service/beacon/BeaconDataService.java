@@ -2,6 +2,7 @@ package it.bz.beacon.api.service.beacon;
 
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.repository.BeaconDataRepository;
+import it.bz.beacon.api.db.repository.GroupRepository;
 import it.bz.beacon.api.exception.db.BeaconDataNotFoundException;
 import it.bz.beacon.api.model.BeaconBatteryLevelUpdate;
 import it.bz.beacon.api.model.BeaconUpdate;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -16,6 +18,14 @@ public class BeaconDataService implements IBeaconDataService {
 
     @Autowired
     private BeaconDataRepository repository;
+
+    @Autowired
+    private GroupRepository groupRepository;
+
+    @Override
+    public List<BeaconData> findAllByGroupId(Long groupId) {
+        return repository.findAllByGroupId(groupId);
+    }
 
     @Override
     public List<BeaconData> findAll() {
@@ -46,6 +56,9 @@ public class BeaconDataService implements IBeaconDataService {
             beaconData.setLng(beaconUpdate.getLng());
             beaconData.setLocationDescription(beaconUpdate.getLocationDescription());
             beaconData.setLocationType(beaconUpdate.getLocationType());
+            if (beaconUpdate.getGroup() != null) {
+                beaconData.setGroup(groupRepository.getOne(beaconUpdate.getGroup()));
+            }
 
             return repository.save(beaconData);
         }).orElseThrow(BeaconDataNotFoundException::new);
@@ -56,6 +69,7 @@ public class BeaconDataService implements IBeaconDataService {
             throws BeaconDataNotFoundException {
         return repository.findById(id).map(beaconData -> {
             beaconData.setBatteryLevel(batteryLevelUpdate.getBatteryLevel());
+            beaconData.setTrustedUpdatedAt(new Date());
 
             return repository.save(beaconData);
         }).orElseThrow(BeaconDataNotFoundException::new);

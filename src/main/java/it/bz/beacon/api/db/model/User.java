@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +35,14 @@ public class User extends AuditModel implements UserDetails {
 
     private String email;
 
+    private Boolean admin;
+
+    @JsonIgnore
+    private Boolean requirePasswordChange;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<UserRoleGroup> groups = new ArrayList<>();
+
     public static User create(UserCreation userCreation) {
         User user = new User();
         user.setUsername(userCreation.getUsername());
@@ -41,6 +50,7 @@ public class User extends AuditModel implements UserDetails {
         user.setName(userCreation.getName());
         user.setSurname(userCreation.getSurname());
         user.setEmail(userCreation.getEmail());
+        user.setRequirePasswordChange(true);
 
         return user;
     }
@@ -127,7 +137,10 @@ public class User extends AuditModel implements UserDetails {
 
     @JsonIgnore
     public List<String> getRoles() {
-        return Lists.newArrayList("ADMIN");
+        if (isAdmin()) {
+            return Lists.newArrayList("ADMIN");
+        }
+        return Lists.newArrayList();
     }
 
     @JsonIgnore
@@ -138,6 +151,22 @@ public class User extends AuditModel implements UserDetails {
     }
 
     public boolean isAdmin() {
-        return username.equals("admin");
+        return admin;
+    }
+
+    public List<UserRoleGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<UserRoleGroup> groups) {
+        this.groups = groups;
+    }
+
+    public Boolean getRequirePasswordChange() {
+        return requirePasswordChange;
+    }
+
+    public void setRequirePasswordChange(Boolean requirePasswordChange) {
+        this.requirePasswordChange = requirePasswordChange;
     }
 }

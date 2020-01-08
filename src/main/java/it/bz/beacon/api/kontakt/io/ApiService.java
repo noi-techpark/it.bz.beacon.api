@@ -51,6 +51,9 @@ public class ApiService {
     }
 
     public BeaconListResponse getBeacons(List<String> ids) {
+
+        return new BeaconListResponse();
+        /*
         if (ids.size() <= 0) {
             return new BeaconListResponse();
         }
@@ -63,6 +66,7 @@ public class ApiService {
         );
 
         return responseEntity.getBody();
+         */
     }
 
     public DeviceStatusListResponse getDeviceStatuses(List<String> ids) {

@@ -1,9 +1,12 @@
 package it.bz.beacon.api.service.info;
 
+import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.Info;
 import it.bz.beacon.api.db.repository.InfoRepository;
 import it.bz.beacon.api.exception.db.InfoNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +16,12 @@ import java.util.List;
 @Component
 public class InfoService implements IInfoService {
 
+    final static Logger log = LoggerFactory.getLogger(InfoService.class);
+
+
+    @Autowired
+    private RemoteBeaconCache remoteBeaconCache;
+
     @Autowired
     private InfoRepository repository;
 
@@ -21,7 +30,18 @@ public class InfoService implements IInfoService {
 
     @Override
     public List<Info> findAll() {
-        return repository.findAll();
+
+        List<Info> infoList = repository.findAll();
+
+        infoList.stream().forEach(info -> {
+            try {
+                info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
+            } catch (Exception e) {
+                log.error("findAll()", e);
+            }
+        });
+
+        return infoList;
     }
 
     @Override
@@ -31,7 +51,15 @@ public class InfoService implements IInfoService {
 
     @Override
     public Info findByBeaconId(String beaconId) throws InfoNotFoundException {
-        return repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
+        Info info = repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
+
+        try {
+            info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
+        } catch (Exception e) {
+            log.error("findByBeaconId(String beaconId)", e);
+        }
+
+        return info;
     }
 
     @Override

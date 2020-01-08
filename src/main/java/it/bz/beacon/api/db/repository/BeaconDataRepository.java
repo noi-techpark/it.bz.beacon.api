@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface BeaconDataRepository extends JpaRepository<BeaconData, String> {
-    List<BeaconData> findAllByOrderByName();
+    List<BeaconData> findAllByGroupId(Long groupId);
 }

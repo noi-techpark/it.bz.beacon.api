@@ -3,6 +3,7 @@ package it.bz.beacon.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.bz.beacon.api.db.model.BeaconData;
+import it.bz.beacon.api.db.model.Group;
 import it.bz.beacon.api.db.model.Issue;
 import it.bz.beacon.api.model.enumeration.LocationType;
 import it.bz.beacon.api.model.enumeration.Status;
@@ -26,6 +27,7 @@ public class Beacon {
     private LocationType locationType;
     private String locationDescription;
     private long lastSeen;
+    private Date trustedUpdatedAt;
 
     private boolean iBeacon;
     private boolean telemetry;
@@ -52,6 +54,8 @@ public class Beacon {
 
     private String internalName;
 
+    private Group group;
+
     @JsonIgnore
     private List<Issue> issues;
 
@@ -75,9 +79,11 @@ public class Beacon {
         setLocationType(beaconData.getLocationType());
         setLocationDescription(beaconData.getLocationDescription());
         setIssues(beaconData.getIssues());
+        setGroup(beaconData.getGroup());
         if (beaconData.getBatteryLevel() != null) {
             setBatteryLevel(beaconData.getBatteryLevel());
         }
+        setTrustedUpdatedAt(beaconData.getTrustedUpdatedAt());
     }
 
     @JsonIgnore
@@ -284,8 +290,7 @@ public class Beacon {
         Calendar checkDate = Calendar.getInstance();
         checkDate.add(Calendar.MONTH, -12);
 
-        Date date = new Date(lastSeen);
-        if (date.before(checkDate.getTime())) {
+        if (hasRecentlySeen()) {
             return Status.NO_SIGNAL;
         }
 
@@ -310,6 +315,14 @@ public class Beacon {
 
     public void setLastSeen(long lastSeen) {
         this.lastSeen = lastSeen;
+    }
+
+    public Date getTrustedUpdatedAt() {
+        return trustedUpdatedAt;
+    }
+
+    public void setTrustedUpdatedAt(Date trustedUpdatedAt) {
+        this.trustedUpdatedAt = trustedUpdatedAt;
     }
 
     public boolean isiBeacon() {
@@ -390,5 +403,21 @@ public class Beacon {
 
     public void setInternalName(String internalName) {
         this.internalName = internalName;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Group getGroup() {
+        return this.group;
+    }
+
+    public boolean hasRecentlySeen() {
+        Calendar checkDate = Calendar.getInstance();
+        checkDate.add(Calendar.MONTH, -12);
+
+        Date date = new Date(lastSeen);
+        return date.after(checkDate.getTime());
     }
 }
