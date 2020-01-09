@@ -35,7 +35,7 @@ public class User extends AuditModel implements UserDetails {
 
     private String email;
 
-    private Boolean admin;
+    private boolean admin = false;
 
     @JsonIgnore
     private Boolean requirePasswordChange;
