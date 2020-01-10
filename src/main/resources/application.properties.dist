@@ -18,6 +18,9 @@ spring.jackson.serialization.write-dates-as-timestamps = true
 # JWT token expiration time in milliseconds
 security.jwt.token.expire-length = 31536000000
 
+# password reset JWT token expiration time in milliseconds
+security.jwt.token.password-reset-expire-length = 600000
+
 # The secret the JWT tokens are signed with
 security.jwt.token.secret =
 
@@ -61,6 +64,12 @@ api.info.licenseUrl =
 # Email address were new issue notifications will be send to
 it.bz.beacon.issueEmailFrom =
 it.bz.beacon.issueEmailTo =
+
+# Email address were the password reset token should be send from
+it.bz.beacon.passwordResetEmailFrom =
+
+# Password reset URL
+it.bz.beacon.passwordResetURL =
 
 # Email sending configuration
 spring.mail.host =

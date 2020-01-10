@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +23,9 @@ public class BearerSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Value("${security.jwt.token.expire-length}")
     private long tokenExpireLength;
+
+    @Value("${security.jwt.token.password-reset-expire-length}")
+    private long passwordResetTokenExpireLength;
 
     @Value("${security.jwt.token.secret}")
     private String jwtSecret;
@@ -49,6 +51,10 @@ public class BearerSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public long getTokenExpireLength() {
         return tokenExpireLength;
+    }
+
+    public long getPasswordResetTokenExpireLength() {
+        return passwordResetTokenExpireLength;
     }
 
     public byte[] getJwtSecret() {

@@ -1,6 +1,7 @@
 package it.bz.beacon.api.controller.admin;
 
 import io.swagger.annotations.ApiOperation;
+import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.UserRepository;
 import it.bz.beacon.api.exception.auth.InvalidJwtAuthenticationException;
@@ -8,6 +9,8 @@ import it.bz.beacon.api.exception.auth.InvalidJwtPasswordResetToken;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.internet.MimeMessage;
 import javax.validation.Valid;
 
 @RestController
@@ -33,6 +37,12 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JavaMailSender emailSender;
+
+    @Autowired
+    private BeaconSuedtirolConfiguration beaconSuedtirolConfiguration;
 
     @PostMapping("/signin")
     public AuthenticationToken signin(@Valid @RequestBody AuthenticationRequest data) {
@@ -64,10 +74,30 @@ public class AuthController {
     public BaseMessage resetPasswordRequest(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         String username = resetPasswordRequest.getUsername();
 
-        String token = jwtTokenProvider.createPasswordResetToken(this.users.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found")));
-        //TODO send mail with token
+        User user = this.users.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"));
 
-        System.out.println(token);
+        String token = jwtTokenProvider.createPasswordResetToken(user);
+
+        try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setSubject("Reset password instructions");
+            helper.setFrom(beaconSuedtirolConfiguration.getPasswordResetEmailFrom());
+            helper.setTo(user.getEmail());
+            helper.setText(String.format(
+                    "Hello %s! <br/><br/>" +
+                            "Someone has requested a link to change your password, and you can do this through the link below. <br/><br/>" +
+                            "<a href=\"%s%s\">Change your password</a> <br/><br/>" +
+                            "If you didn't request this, please ignore this email. <br/><br/>" +
+                            "Your password won't change until you access the link above and create a new one.",
+                    user.getName(),
+                    beaconSuedtirolConfiguration.getPasswordResetURL(),
+                    token
+            ), true);
+            emailSender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return new BaseMessage("Password request sent");
     }
