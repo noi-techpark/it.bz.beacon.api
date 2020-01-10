@@ -1,6 +1,7 @@
 package it.bz.beacon.api.service.beacon;
 
 import it.bz.beacon.api.db.model.BeaconData;
+import it.bz.beacon.api.db.model.Group;
 import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.db.repository.GroupRepository;
 import it.bz.beacon.api.exception.db.BeaconDataNotFoundException;
@@ -56,8 +57,13 @@ public class BeaconDataService implements IBeaconDataService {
             beaconData.setLng(beaconUpdate.getLng());
             beaconData.setLocationDescription(beaconUpdate.getLocationDescription());
             beaconData.setLocationType(beaconUpdate.getLocationType());
-            if (beaconUpdate.getGroup() != null) {
-                beaconData.setGroup(groupRepository.getOne(beaconUpdate.getGroup()));
+
+            beaconData.setGroup(null);
+            if (beaconUpdate.getGroup() != null)
+            {
+                long groupId = beaconUpdate.getGroup();
+                Group group = groupRepository.findById(groupId).get();
+                beaconData.setGroup(group);
             }
 
             return repository.save(beaconData);
