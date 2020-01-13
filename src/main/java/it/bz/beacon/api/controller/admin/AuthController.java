@@ -6,6 +6,7 @@ import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.UserRepository;
 import it.bz.beacon.api.exception.auth.InvalidJwtAuthenticationException;
 import it.bz.beacon.api.exception.auth.InvalidJwtPasswordResetToken;
+import it.bz.beacon.api.exception.email.EmailNotSentException;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,19 +88,20 @@ public class AuthController {
             helper.setText(String.format(
                     "Hello %s! <br/><br/>" +
                             "Someone has requested a link to change your password, and you can do this through the link below. <br/><br/>" +
-                            "<a href=\"%s%s\">Change your password</a> <br/><br/>" +
+                            "<a href=\"%s%s%s\">Change your password</a> <br/><br/>" +
                             "If you didn't request this, please ignore this email. <br/><br/>" +
                             "Your password won't change until you access the link above and create a new one.",
                     user.getName(),
                     beaconSuedtirolConfiguration.getPasswordResetURL(),
+                    "/#/reset-password-change/",
                     token
             ), true);
             emailSender.send(message);
+            return new BaseMessage("Password request sent");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new EmailNotSentException();
         }
 
-        return new BaseMessage("Password request sent");
     }
 
     @ApiOperation(value = "Check whether a token is valid or not")
