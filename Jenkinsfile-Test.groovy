@@ -52,7 +52,7 @@ pipeline {
         BEACON_TRUSTED_PASSWORD = credentials('beacon-api-test-trusted-password')
 
         BEACON_PASSWORD_RESET_URL = "https://admin.beacon.testingmachine.eu/"
-        BEACON_PASSWORD_RESET_MAIL = "noreply@admin.beacon.testingmachine.eu"
+        BEACON_PASSWORD_RESET_MAIL = "info@beacon.bz.it"
     }
 
     stages { 
