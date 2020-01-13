@@ -50,6 +50,9 @@ pipeline {
         BEACON_TASK_IMPORT_DELAY = "21600000"
         BEACON_TRUSTED_USERNAME = credentials('beacon-api-test-trusted-username')
         BEACON_TRUSTED_PASSWORD = credentials('beacon-api-test-trusted-password')
+
+        BEACON_PASSWORD_RESET_URL = "https://admin.beacon.testingmachine.eu/"
+        BEACON_PASSWORD_RESET_MAIL = "noreply@admin.beacon.testingmachine.eu"
     }
 
     stages { 
@@ -101,6 +104,9 @@ pipeline {
                     sed -i -e "s%\\(it.bz.beacon.task.infoimport.delay\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_DELAY}%" src/main/resources/application.properties
                     sed -i -e "s%\\(it.bz.beacon.trusted.user\\s*=\\).*\\$%\\1${BEACON_TRUSTED_USERNAME}%" src/main/resources/application.properties
                     sed -i -e "s%\\(it.bz.beacon.trusted.password\\s*=\\).*\\$%\\1${BEACON_TRUSTED_PASSWORD}%" src/main/resources/application.properties
+
+                    sed -i -e "s%\\(it.bz.beacon.passwordResetURL\\s*=\\).*\\$%\\1${BEACON_PASSWORD_RESET_URL}%" src/main/resources/application.properties
+                    sed -i -e "s%\\(it.bz.beacon.passwordResetEmailFrom\\s*=\\).*\\$%\\1${BEACON_PASSWORD_RESET_MAIL}%" src/main/resources/application.properties
 
                     cat "${GOOGLE_SERVICE_ACCOUNT}" > src/main/resources/google-api-service-account.json
                 '''
