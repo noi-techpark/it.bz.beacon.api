@@ -47,6 +47,7 @@ Make a copy of the `src/resources/application.properties.dist` file and name it 
 * `spring.jpa.properties.hibernate.dialect`: Database dialect
 * `security.jwt.token.secret`: JWT token secret hash
 * `security.jwt.token.expire-length`: JWT token expiration to invalidate the authentication after n milliseconds
+* `security.jwt.token.password-reset-expire-length`: JWT token expiration to invalidate the password reset request after n milliseconds
 * `it.bz.beacon.allowedOrigins`: Comma separated list of allowed origins for CORS requests
 * `kontakt.io.apiKey`: API key for the manufacturer Kontakt.IO
 * `file.upload-dir`: The directory where file uploads shall be saved to
@@ -54,6 +55,8 @@ Make a copy of the `src/resources/application.properties.dist` file and name it 
 * `it.bz.beacon.issueEmailTo`: The address where notifications about new beacon issues should be send to
 * `it.bz.beacon.issueEmailFrom`: The address where notifications about new beacon issues should be send from
 * `spring.mail.*`: Mail host configuration, so that notification mails can be send by the server
+* `it.bz.beacon.passwordResetEmailFrom`: Email address were the password reset token should be send from
+* `it.bz.beacon.passwordResetURL`: Password reset URL
 * `it.bz.beacon.uuid`: iBeacon UUID
 * `it.bz.beacon.namespace`: Eddystone namespace
 * `it.bz.beacon.task.infoimport.enabled`: Defines whether the info replication through Google spread sheet should be enabled or not
