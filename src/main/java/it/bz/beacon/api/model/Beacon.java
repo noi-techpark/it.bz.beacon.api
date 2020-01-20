@@ -24,6 +24,8 @@ public class Beacon {
     private String description;
     private float lat;
     private float lng;
+    private float info_lat;
+    private float info_lng;
     private LocationType locationType;
     private String locationDescription;
     private long lastSeen;
@@ -74,6 +76,8 @@ public class Beacon {
         setManufacturerId(beaconData.getManufacturerId());
         setLat(beaconData.getLat());
         setLng(beaconData.getLng());
+        setInfo_lat(beaconData.getInfo_lat());
+        setInfo_lng(beaconData.getInfo_lng());
         setName(beaconData.getName());
         setDescription(beaconData.getDescription());
         setLocationType(beaconData.getLocationType());
@@ -184,6 +188,22 @@ public class Beacon {
 
     public void setLng(float lng) {
         this.lng = lng;
+    }
+
+    public float getInfo_lat() {
+        return info_lat;
+    }
+
+    public void setInfo_lat(float info_lat) {
+        this.info_lat = info_lat;
+    }
+
+    public float getInfo_lng() {
+        return info_lng;
+    }
+
+    public void setInfo_lng(float info_lng) {
+        this.info_lng = info_lng;
     }
 
     public String getUrl() {

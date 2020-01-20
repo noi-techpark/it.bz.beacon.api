@@ -20,6 +20,12 @@ public class BeaconSuedtirolConfiguration {
     private String issueEmailTo;
 
     @NotBlank
+    private String passwordResetEmailFrom;
+
+    @NotBlank
+    private String passwordResetURL;
+
+    @NotBlank
     private String uuid;
 
     @NotBlank
@@ -47,6 +53,22 @@ public class BeaconSuedtirolConfiguration {
 
     public void setIssueEmailTo(String issueEmailTo) {
         this.issueEmailTo = issueEmailTo;
+    }
+
+    public String getPasswordResetEmailFrom() {
+        return passwordResetEmailFrom;
+    }
+
+    public void setPasswordResetEmailFrom(String passwordResetEmailFrom) {
+        this.passwordResetEmailFrom = passwordResetEmailFrom;
+    }
+
+    public String getPasswordResetURL() {
+        return passwordResetURL;
+    }
+
+    public void setPasswordResetURL(String passwordResetURL) {
+        this.passwordResetURL = passwordResetURL;
     }
 
     public UUID getUuid() {

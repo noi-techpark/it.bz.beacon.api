@@ -60,7 +60,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(user.getUsername());
         claims.put("updatedAt", user.getUpdatedAt().getTime());
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + 10 * 60 * 1000);
+        Date expiration = new Date(now.getTime() + securityConfiguration.getPasswordResetTokenExpireLength());
 
         return Jwts.builder()
                 .setClaims(claims)
