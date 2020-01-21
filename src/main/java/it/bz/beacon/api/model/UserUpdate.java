@@ -19,6 +19,9 @@ public class UserUpdate {
     @Email
     private String email;
 
+    @NotNull
+    private boolean admin;
+
     public String getName() {
         return name;
     }
@@ -41,5 +44,13 @@ public class UserUpdate {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 }

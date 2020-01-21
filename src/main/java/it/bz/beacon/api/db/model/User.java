@@ -148,6 +148,7 @@ public class User extends AuditModel implements UserDetails {
         name = userUpdate.getName();
         surname = userUpdate.getSurname();
         email = userUpdate.getEmail();
+        admin = userUpdate.getAdmin();
     }
 
     public boolean isAdmin() {
