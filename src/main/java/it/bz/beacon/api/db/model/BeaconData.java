@@ -3,6 +3,7 @@ package it.bz.beacon.api.db.model;
 import it.bz.beacon.api.model.Manufacturer;
 import it.bz.beacon.api.model.RemoteBeacon;
 import it.bz.beacon.api.model.enumeration.LocationType;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -29,6 +30,12 @@ public class BeaconData extends AuditModel {
     private float lat;
 
     private float lng;
+
+    @Formula("(select info.latitude from info where info.id = ID)")
+    private float info_lat;
+
+    @Formula("(select info.longitude from info where info.id = ID)")
+    private float info_lng;
 
     private String name;
 
@@ -106,6 +113,22 @@ public class BeaconData extends AuditModel {
 
     public void setLng(float lng) {
         this.lng = lng;
+    }
+
+    public float getInfo_lat() {
+        return info_lat;
+    }
+
+    public void setInfo_lat(float info_lat) {
+        this.info_lat = info_lat;
+    }
+
+    public float getInfo_lng() {
+        return info_lng;
+    }
+
+    public void setInfo_lng(float info_lng) {
+        this.info_lng = info_lng;
     }
 
     public String getName() {
