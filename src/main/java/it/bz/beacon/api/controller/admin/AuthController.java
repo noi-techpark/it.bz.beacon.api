@@ -6,6 +6,7 @@ import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.UserRepository;
 import it.bz.beacon.api.exception.auth.InvalidJwtAuthenticationException;
 import it.bz.beacon.api.exception.auth.InvalidJwtPasswordResetToken;
+import it.bz.beacon.api.exception.db.UserNotFoundException;
 import it.bz.beacon.api.exception.email.EmailNotSentException;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.security.JwtTokenProvider;
@@ -75,7 +76,9 @@ public class AuthController {
     public BaseMessage resetPasswordRequest(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         String username = resetPasswordRequest.getUsername();
 
-        User user = this.users.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username " + username + "not found"));
+        User user = this.users.findByUsernameOrEmail(username, username).orElseThrow(
+                () -> new UserNotFoundException()
+        );
 
         String token = jwtTokenProvider.createPasswordResetToken(user);
 
