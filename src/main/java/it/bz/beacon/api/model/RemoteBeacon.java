@@ -42,6 +42,10 @@ public class RemoteBeacon {
     public static RemoteBeacon fromTagBeaconDevice(TagBeaconDevice tagBeaconDevice) throws InvalidBeaconIdentifierException {
         RemoteBeacon remoteBeacon = new RemoteBeacon();
 
+        // 2020-01-21 d@vide.bz: parseManufacturerName set internally Zone and Id too (side effect?),
+        // but only if name match a specific regular expression
+        // if does not match the RE, it will use the following fallback
+        remoteBeacon.setId(tagBeaconDevice.getUniqueId());
         remoteBeacon.parseManufacturerName(tagBeaconDevice.getName());
 
         remoteBeacon.setManufacturer(Manufacturer.KONTAKT_IO);
@@ -68,9 +72,11 @@ public class RemoteBeacon {
     }
 
     private void parseManufacturerName(String name) throws InvalidBeaconIdentifierException {
-        if (!ManufacturerNameValidator.isValid(name)) {
+        /*
+         if (!ManufacturerNameValidator.isValid(name)) {
             throw new InvalidBeaconIdentifierException();
         }
+         */
 
         setName(name);
 

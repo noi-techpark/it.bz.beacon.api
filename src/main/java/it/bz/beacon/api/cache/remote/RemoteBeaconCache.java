@@ -9,6 +9,7 @@ import java.util.Map;
 @Component
 public class RemoteBeaconCache {
 
+    // TODO is a synchronized map required for multithreading?
     private Map<String, RemoteBeacon> cache = Maps.newHashMap();
 
     public void add(RemoteBeacon remoteBeacon) {

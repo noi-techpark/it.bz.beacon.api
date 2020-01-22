@@ -6,12 +6,12 @@ import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.kontakt.io.ApiService;
+import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
 import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.PendingConfiguration;
 import it.bz.beacon.api.model.RemoteBeacon;
-import it.bz.beacon.api.util.ManufacturerNameValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @Service
@@ -42,17 +41,21 @@ public class RemoteBeaconCacheTask {
     public void updateCache() {
         Lists.partition(beaconDataRepository.findAll().stream().map(BeaconData::getManufacturerId)
                 .collect(Collectors.toList()), 200).forEach(block -> {
-            remoteBeaconCache.addAll(getBeaconsWithStatuses(apiService.getBeacons(block)));
+            BeaconListResponse beacons = apiService.getBeacons(block);
+            Map<String, RemoteBeacon> beaconsWithStatuses = getBeaconsWithStatuses(beacons);
+            remoteBeaconCache.addAll(beaconsWithStatuses);
         });
     }
 
     private Map<String, RemoteBeacon> getBeaconsWithStatuses(BeaconListResponse response) {
-        if (response == null || response.getDevices() == null) {
+        if (response == null || response.getDevices() == null || response.getDevices().size() == 0) {
             return Maps.newHashMap();
         }
 
-        Map<String, RemoteBeacon> remoteBeacons = response.getDevices().stream()
-                .filter(tagBeaconDevice -> ManufacturerNameValidator.isValid(tagBeaconDevice.getName()))
+        List<TagBeaconDevice> devices = response.getDevices();
+
+        Map<String, RemoteBeacon> remoteBeacons = devices.stream()
+                // .filter(tagBeaconDevice -> ManufacturerNameValidator.isValid(tagBeaconDevice.getName()))
                 .map(RemoteBeacon::fromTagBeaconDevice).collect(Collectors.toMap(RemoteBeacon::getManufacturerId, Function.identity()));
 
         List<String> uniqueIds = Lists.newArrayList(remoteBeacons.keySet());
@@ -88,7 +91,7 @@ public class RemoteBeaconCacheTask {
                 });
             }
         } catch (InterruptedException | ExecutionException e) {
-
+            throw new RuntimeException(e);
         }
         return remoteBeacons.values().stream().collect(Collectors.toMap(RemoteBeacon::getId, Function.identity()));
     }

@@ -12,7 +12,6 @@ import it.bz.beacon.api.model.IssueCreation;
 import it.bz.beacon.api.service.beacon.IBeaconDataService;
 import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;

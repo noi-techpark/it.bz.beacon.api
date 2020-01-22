@@ -52,21 +52,26 @@ public class ApiService {
 
     public BeaconListResponse getBeacons(List<String> ids) {
 
-        return new BeaconListResponse();
-        /*
         if (ids.size() <= 0) {
             return new BeaconListResponse();
         }
 
-        ResponseEntity<BeaconListResponse> responseEntity = restTemplate.exchange(
-                "/device?maxResult=" + ids.size() + "&deviceType=" + Device.DeviceType.BEACON + "&uniqueId=" + String.join(",", ids),
-                HttpMethod.GET,
-                new HttpEntity<>(null, httpHeaders),
-                new ParameterizedTypeReference<BeaconListResponse>() {}
-        );
+        try {
+            ResponseEntity<BeaconListResponse> responseEntity = restTemplate.exchange(
+                    "/device?maxResult=" + ids.size() + "&deviceType=" + Device.DeviceType.BEACON + "&uniqueId=" + String.join(",", ids),
+                    HttpMethod.GET,
+                    new HttpEntity<>(null, httpHeaders),
+                    new ParameterizedTypeReference<BeaconListResponse>() {
+                    }
+            );
+            return responseEntity.getBody();
+        }
+        catch (RuntimeException exxx)
+        {
+            throw exxx;
+        }
 
-        return responseEntity.getBody();
-         */
+
     }
 
     public DeviceStatusListResponse getDeviceStatuses(List<String> ids) {
