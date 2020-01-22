@@ -26,7 +26,9 @@ public class BeaconController {
         if (groupId != null) {
             return service.findAllWithRemoteCache(groupId);
         }
-        return service.findAllWithRemoteCache();
+
+        List<Beacon> result = service.findAllWithRemoteCache();
+        return result;
     }
 
     @ApiOperation(value = "Search a beacon with an ID", authorizations = {@Authorization(value = "JWT")})

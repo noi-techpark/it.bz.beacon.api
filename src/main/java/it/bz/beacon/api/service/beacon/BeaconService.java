@@ -10,7 +10,10 @@ import it.bz.beacon.api.db.model.UserRoleGroup;
 import it.bz.beacon.api.db.repository.GroupRepository;
 import it.bz.beacon.api.db.repository.IssueRepository;
 import it.bz.beacon.api.exception.auth.InsufficientRightsException;
-import it.bz.beacon.api.exception.db.*;
+import it.bz.beacon.api.exception.db.BeaconConfigurationNotCreatedException;
+import it.bz.beacon.api.exception.db.BeaconConfigurationNotDeletedException;
+import it.bz.beacon.api.exception.db.BeaconNotFoundException;
+import it.bz.beacon.api.exception.db.InvalidBeaconIdentifierException;
 import it.bz.beacon.api.kontakt.io.ApiService;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
@@ -23,7 +26,6 @@ import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.model.enumeration.UserRole;
-import it.bz.beacon.api.util.ManufacturerNameValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -91,9 +93,11 @@ public class BeaconService implements IBeaconService {
             beaconData.setIssues(issueMap.get(beaconData.getId()));
         });
 
-        return beaconDatas.stream()
+        List<Beacon> result = beaconDatas.stream()
                 .map(beaconData -> Beacon.fromRemoteBeacon(beaconData, remoteBeaconCache.get(beaconData.getId())))
                 .collect(Collectors.toList());
+
+        return result;
     }
 
     @Override
@@ -145,16 +149,20 @@ public class BeaconService implements IBeaconService {
         try {
             apiService.assignOrder(order.getId());
         } catch (HttpClientErrorException e) {
-
+            // if order was already used is not possible to assign order a second time
+            // order can be assigned from the kontakt.io web interface too.
+            // throw e;
         }
 
-        return fetchBeaconsFromManufacturer(order.getId()).stream().map(tagBeaconDevice -> {
+        List<TagBeaconDevice> orderBeacons = fetchBeaconsFromManufacturer(order.getId());
+
+        return orderBeacons.stream().map(tagBeaconDevice -> {
                 try {
                     RemoteBeacon remoteBeacon = getBeaconWithStatus(RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice));
                     BeaconData beaconData;
                     try {
                         beaconData = beaconDataService.find(remoteBeacon.getId());
-                    } catch (BeaconDataNotFoundException e) {
+                    } catch (Exception e) {
                         beaconData = null;
                     }
                     if (beaconData != null) {
@@ -163,7 +171,7 @@ public class BeaconService implements IBeaconService {
 
                     BeaconData createBeaconData = BeaconData.fromRemoteBeacon(remoteBeacon);
 
-                    createBeaconData.setGroup(groupRepository.getOne(order.getGroupId()));
+                    createBeaconData.setGroup(groupRepository.findById(order.getGroupId()).get());
 
                     beaconData = beaconDataService.create(createBeaconData);
 
@@ -216,7 +224,7 @@ public class BeaconService implements IBeaconService {
 
         Beacon beacon = find(id);
         if (!authorizedUser.isAdmin() && (beaconUpdate.getGroup() == null && beacon.getGroup() == null
-                || beaconUpdate.getGroup() == null || !beaconUpdate.getGroup().equals(beacon.getGroup().getId())))
+                || beaconUpdate.getGroup() == null || !beaconUpdate.getGroup().equals(beacon.getGroup())))
             throw new InsufficientRightsException();
 
         TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon);
@@ -249,7 +257,8 @@ public class BeaconService implements IBeaconService {
 
                 beacon = find(id);
 
-                beacon.applyBeaconData(beaconDataService.update(id, beaconUpdate));
+                BeaconData beaconData = beaconDataService.update(id, beaconUpdate);
+                beacon.applyBeaconData(beaconData);
 
                 return beacon;
             } catch (InterruptedException | ExecutionException e) {
@@ -297,19 +306,7 @@ public class BeaconService implements IBeaconService {
 
     private Map<String, RemoteBeacon> getRemoteBeacons(List<BeaconData> beaconDatas) {
 
-        // TODO simulate kontakt.io with hard coded values
         Map<String, RemoteBeacon> remoteBeaconMap = Maps.newHashMap();
-        for (BeaconData bd : beaconDatas) {
-            RemoteBeacon rb = new RemoteBeacon();
-            rb.setId(bd.getId());
-            // rb.setTxPower(4);
-            // rb.setLastSeen(System.currentTimeMillis()/1000);
-            // rb.setPendingConfiguration(new PendingConfiguration());
-            remoteBeaconMap.put(bd.getId(), rb);
-        }
-        return remoteBeaconMap;
-
-        /*
 
         List<CompletableFuture<Map<String, RemoteBeacon>>> completableFutures = Lists.newArrayList();
 
@@ -332,19 +329,11 @@ public class BeaconService implements IBeaconService {
         });
 
         return remoteBeaconMap;
-         */
+
     }
 
     private RemoteBeacon getBeaconWithStatus(RemoteBeacon remoteBeacon) {
 
-        remoteBeacon = new RemoteBeacon();
-        remoteBeacon.setTxPower(4);
-        remoteBeacon.setLastSeen(System.currentTimeMillis() / 1000);
-        remoteBeacon.setPendingConfiguration(new PendingConfiguration());
-
-        return remoteBeacon;
-
-        /*
         CompletableFuture<DeviceStatusListResponse> statusListResponseFuture = CompletableFuture
                 .completedFuture(apiService.getDeviceStatuses(Lists.newArrayList(remoteBeacon.getManufacturerId())));
         CompletableFuture<ConfigurationListResponse> configListResponseFuture = CompletableFuture
@@ -374,19 +363,18 @@ public class BeaconService implements IBeaconService {
                 });
             }
         } catch (InterruptedException | ExecutionException e) {
-
+            throw new RuntimeException(e);
         }
         return remoteBeacon;
-         */
     }
 
     private Map<String, RemoteBeacon> getBeaconsWithStatuses(BeaconListResponse response) {
-        if (response == null || response.getDevices() == null) {
+        if (response == null || response.getDevices() == null || response.getDevices().size() == 0) {
             return Maps.newHashMap();
         }
 
         Map<String, RemoteBeacon> remoteBeacons = response.getDevices().stream()
-                .filter(tagBeaconDevice -> ManufacturerNameValidator.isValid(tagBeaconDevice.getName()))
+                // .filter(tagBeaconDevice -> ManufacturerNameValidator.isValid(tagBeaconDevice.getName()))
                 .map(RemoteBeacon::fromTagBeaconDevice)
                 .collect(Collectors.toMap(RemoteBeacon::getManufacturerId, Function.identity()));
 
@@ -421,7 +409,7 @@ public class BeaconService implements IBeaconService {
                 });
             }
         } catch (InterruptedException | ExecutionException e) {
-
+            throw new RuntimeException(e);
         }
         return remoteBeacons;
     }

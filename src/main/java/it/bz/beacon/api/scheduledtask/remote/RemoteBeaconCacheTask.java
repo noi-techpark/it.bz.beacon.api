@@ -12,7 +12,6 @@ import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.PendingConfiguration;
 import it.bz.beacon.api.model.RemoteBeacon;
-import it.bz.beacon.api.util.ManufacturerNameValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -56,7 +55,7 @@ public class RemoteBeaconCacheTask {
         List<TagBeaconDevice> devices = response.getDevices();
 
         Map<String, RemoteBeacon> remoteBeacons = devices.stream()
-                .filter(tagBeaconDevice -> ManufacturerNameValidator.isValid(tagBeaconDevice.getName()))
+                // .filter(tagBeaconDevice -> ManufacturerNameValidator.isValid(tagBeaconDevice.getName()))
                 .map(RemoteBeacon::fromTagBeaconDevice).collect(Collectors.toMap(RemoteBeacon::getManufacturerId, Function.identity()));
 
         List<String> uniqueIds = Lists.newArrayList(remoteBeacons.keySet());

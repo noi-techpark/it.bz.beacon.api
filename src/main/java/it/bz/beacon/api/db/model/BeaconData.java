@@ -31,10 +31,10 @@ public class BeaconData extends AuditModel {
 
     private float lng;
 
-    @Formula("(select info.latitude from info where info.id = ID)")
+    @Formula("coalesce((select info.latitude from info where info.id = ID),0)")
     private float info_lat;
 
-    @Formula("(select info.longitude from info where info.id = ID)")
+    @Formula("coalesce((select info.longitude from info where info.id = ID),0)")
     private float info_lng;
 
     private String name;
