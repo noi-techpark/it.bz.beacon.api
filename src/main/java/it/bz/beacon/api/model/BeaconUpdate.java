@@ -1,6 +1,5 @@
 package it.bz.beacon.api.model;
 
-import it.bz.beacon.api.db.model.Group;
 import it.bz.beacon.api.model.enumeration.LocationType;
 
 import javax.validation.constraints.Max;
@@ -269,7 +268,4 @@ public class BeaconUpdate {
         this.group = group;
     }
 
-    public void setGroup(Group group) {
-        this.group = group != null ? group.getId() : null;
-    }
 }

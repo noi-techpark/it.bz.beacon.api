@@ -120,7 +120,8 @@ public class BeaconService implements IBeaconService {
         Map<String, RemoteBeacon> remoteBeacons = getRemoteBeacons(Lists.newArrayList(beaconData));
 
         RemoteBeacon remoteBeacon = remoteBeacons.get(beaconData.getManufacturerId());
-        remoteBeaconCache.add(getBeaconWithStatus(remoteBeacon));
+        if (remoteBeacon != null) // remoteBeacon is null if not present in kontakt.io
+           remoteBeaconCache.add(getBeaconWithStatus(remoteBeacon));
 
         return Beacon.fromRemoteBeacon(beaconData, remoteBeacon);
     }
@@ -171,7 +172,9 @@ public class BeaconService implements IBeaconService {
 
                     BeaconData createBeaconData = BeaconData.fromRemoteBeacon(remoteBeacon);
 
-                    createBeaconData.setGroup(groupRepository.findById(order.getGroupId()).get());
+                    // group is optional
+                    if (order.getGroupId() != null)
+                       createBeaconData.setGroup(groupRepository.findById(order.getGroupId()).get());
 
                     beaconData = beaconDataService.create(createBeaconData);
 
