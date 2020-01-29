@@ -6,8 +6,6 @@ import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.UserRepository;
 import it.bz.beacon.api.exception.auth.InvalidJwtAuthenticationException;
 import it.bz.beacon.api.exception.auth.InvalidJwtPasswordResetToken;
-import it.bz.beacon.api.exception.db.UserNotFoundException;
-import it.bz.beacon.api.exception.email.EmailNotSentException;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,34 +74,34 @@ public class AuthController {
     public BaseMessage resetPasswordRequest(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         String username = resetPasswordRequest.getUsername();
 
-        User user = this.users.findByUsernameOrEmail(username, username).orElseThrow(
-                () -> new UserNotFoundException()
-        );
+        this.users.findByUsernameOrEmail(username, username).ifPresent(user -> {
+            String token = jwtTokenProvider.createPasswordResetToken(user);
 
-        String token = jwtTokenProvider.createPasswordResetToken(user);
+            try {
+                MimeMessage message = emailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+                helper.setSubject("Reset password instructions");
+                helper.setFrom(beaconSuedtirolConfiguration.getPasswordResetEmailFrom());
+                helper.setTo(user.getEmail());
+                helper.setText(String.format(
+                        "Hello %s! <br/><br/>" +
+                                "Someone has requested a link to change your password, and you can do this through the link below. <br/><br/>" +
+                                "<a href=\"%s%s%s\">Change your password</a> <br/><br/>" +
+                                "If you didn't request this, please ignore this email. <br/><br/>" +
+                                "Your password won't change until you access the link above and create a new one.",
+                        user.getName(),
+                        beaconSuedtirolConfiguration.getPasswordResetURL(),
+                        "/#/reset-password-change/",
+                        token
+                ), true);
+                emailSender.send(message);
 
-        try {
-            MimeMessage message = emailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setSubject("Reset password instructions");
-            helper.setFrom(beaconSuedtirolConfiguration.getPasswordResetEmailFrom());
-            helper.setTo(user.getEmail());
-            helper.setText(String.format(
-                    "Hello %s! <br/><br/>" +
-                            "Someone has requested a link to change your password, and you can do this through the link below. <br/><br/>" +
-                            "<a href=\"%s%s%s\">Change your password</a> <br/><br/>" +
-                            "If you didn't request this, please ignore this email. <br/><br/>" +
-                            "Your password won't change until you access the link above and create a new one.",
-                    user.getName(),
-                    beaconSuedtirolConfiguration.getPasswordResetURL(),
-                    "/#/reset-password-change/",
-                    token
-            ), true);
-            emailSender.send(message);
-            return new BaseMessage("Password request sent");
-        } catch (Exception e) {
-            throw new EmailNotSentException();
-        }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        return new BaseMessage("Password request sent");
 
     }
 
