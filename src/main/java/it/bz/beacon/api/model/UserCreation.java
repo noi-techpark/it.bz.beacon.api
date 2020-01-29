@@ -6,6 +6,7 @@ public class UserCreation {
 
     @NotEmpty
     @NotNull
+    @Pattern(regexp = ".*")
     private String username;
 
     @NotEmpty
