@@ -45,7 +45,7 @@ public class RemoteBeacon {
         // 2020-01-21 d@vide.bz: parseManufacturerName set internally Zone and Id too (side effect?),
         // but only if name match a specific regular expression
         // if does not match the RE, it will use the following fallback
-        remoteBeacon.setId(tagBeaconDevice.getUniqueId());
+        remoteBeacon.setId(tagBeaconDevice.getOrderId() + "_" + tagBeaconDevice.getUniqueId());
         remoteBeacon.parseManufacturerName(tagBeaconDevice.getName());
 
         remoteBeacon.setManufacturer(Manufacturer.KONTAKT_IO);
