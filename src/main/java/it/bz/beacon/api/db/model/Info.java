@@ -177,7 +177,7 @@ public class Info extends AuditModel {
             return null;
 
         if (remoteBeacon.getPendingConfiguration() != null) {
-            return InfoStatus.PLANED;
+            return InfoStatus.PLANNED;
         }
 
         return InfoStatus.INSTALLED;
