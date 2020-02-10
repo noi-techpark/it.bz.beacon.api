@@ -227,7 +227,7 @@ public class BeaconService implements IBeaconService {
 
         Beacon beacon = find(id);
         if (!authorizedUser.isAdmin() && (beaconUpdate.getGroup() == null && beacon.getGroup() == null
-                || beaconUpdate.getGroup() == null || !beaconUpdate.getGroup().equals(beacon.getGroup())))
+                || beaconUpdate.getGroup() == null || !beaconUpdate.getGroup().equals(beacon.getGroup().getId())))
             throw new InsufficientRightsException();
 
         TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon);
