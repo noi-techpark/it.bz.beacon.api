@@ -1,5 +1,6 @@
 package it.bz.beacon.api.db.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import it.bz.beacon.api.model.RemoteBeacon;
 import it.bz.beacon.api.model.enumeration.InfoStatus;
@@ -194,5 +195,12 @@ public class Info extends AuditModel {
     @ApiModelProperty(dataType = "java.lang.Long")
     public Date getTrustedUpdatedAt() {
         return trustedUpdatedAt;
+    }
+
+    @Override
+    @JsonProperty
+    @ApiModelProperty(dataType = "java.lang.Long")
+    public Date getUpdatedAt() {
+        return super.getUpdatedAt();
     }
 }
