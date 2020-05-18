@@ -214,8 +214,8 @@ public class BeaconService implements IBeaconService {
             auth = true;
         else
             for (UserRoleGroup userRoleGroup : authorizedUser.getGroups()) {
-                if (beaconUpdate.getGroup() == userRoleGroup.getGroup().getId() &&
-                        (userRoleGroup.getRole() == UserRole.MANAGER || userRoleGroup.getRole() == UserRole.BEACON_EDITOR)) {
+                if (beaconUpdate.getGroup().equals(userRoleGroup.getGroup().getId()) &&
+                        (userRoleGroup.getRole().equals(UserRole.MANAGER) || userRoleGroup.getRole().equals(UserRole.BEACON_EDITOR))) {
                     auth = true;
 
                     break;
@@ -280,10 +280,10 @@ public class BeaconService implements IBeaconService {
 
     private boolean isNewConfig(TagBeaconConfig tagBeaconConfig, Beacon beacon) {
         return !tagBeaconConfig.getProximity().equals(beacon.getUuid())
-                || tagBeaconConfig.getMajor() != beacon.getMajor()
-                || tagBeaconConfig.getMinor() != beacon.getMinor()
-                || tagBeaconConfig.getInterval() != beacon.getInterval()
-                || tagBeaconConfig.getTxPower() != beacon.getTxPower()
+                || !tagBeaconConfig.getMajor().equals(beacon.getMajor())
+                || !tagBeaconConfig.getMinor().equals(beacon.getMinor())
+                || !tagBeaconConfig.getInterval().equals(beacon.getInterval())
+                || !tagBeaconConfig.getTxPower().equals(beacon.getTxPower())
                 || (tagBeaconConfig.getPackets().contains(Packet.IBEACON) && tagBeaconConfig.getProfiles().contains(Profile.IBEACON)) != beacon.isiBeacon()
                 || (tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_UID) && tagBeaconConfig.getProfiles().contains(Profile.EDDYSTONE)) != beacon.isEddystoneUid()
                 || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_URL) != beacon.isEddystoneUrl()
