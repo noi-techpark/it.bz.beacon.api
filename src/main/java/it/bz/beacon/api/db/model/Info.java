@@ -14,6 +14,7 @@ import java.util.UUID;
 @Entity
 @Table( name = "info_beacon_data" )
 public class Info extends AuditModel {
+    private static final long serialVersionUID = -1796002278012913830L;
 
     @Id
     @Column(unique = true)

@@ -1,7 +1,6 @@
 package it.bz.beacon.api.config.security;
 
 import it.bz.beacon.api.security.JwtConfigurer;
-import it.bz.beacon.api.security.filter.JwtExceptionFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -17,9 +16,6 @@ public class BearerSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtConfigurer jwtConfigurer;
-
-    @Autowired
-    private JwtExceptionFilter jwtExceptionFilter;
 
     @Value("${security.jwt.token.expire-length}")
     private long tokenExpireLength;

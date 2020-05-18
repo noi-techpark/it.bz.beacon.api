@@ -9,6 +9,7 @@ import java.util.Date;
 
 @Entity
 public class Issue extends AuditModel {
+    private static final long serialVersionUID = -1129634525820294443L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

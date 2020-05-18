@@ -1,6 +1,5 @@
 package it.bz.beacon.api;
 
-import com.fasterxml.classmate.TypeResolver;
 import com.google.common.collect.Lists;
 import it.bz.beacon.api.config.ApiInfoConfiguration;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
@@ -47,9 +46,6 @@ import java.util.Map;
 @EnableScheduling
 @EnableTransactionManagement
 public class Application extends SpringBootServletInitializer {
-
-    @Autowired
-    private TypeResolver typeResolver;
 
     @Autowired
     private KontaktIOConfiguration kontaktIOConfiguration;

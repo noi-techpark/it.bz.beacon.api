@@ -1,6 +1,5 @@
 package it.bz.beacon.api.model;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 

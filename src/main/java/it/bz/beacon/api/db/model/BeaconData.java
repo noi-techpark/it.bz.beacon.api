@@ -16,6 +16,7 @@ import java.util.List;
         @UniqueConstraint(columnNames = {"manufacturerId", "manufacturer"})
 })
 public class BeaconData extends AuditModel {
+    private static final long serialVersionUID = -8817958472953525892L;
 
     @Id
     private String id;

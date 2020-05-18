@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 public class IssueSolution extends AuditModel {
+    private static final long serialVersionUID = 7285959124793835606L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

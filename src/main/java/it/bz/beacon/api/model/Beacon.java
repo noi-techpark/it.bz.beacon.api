@@ -307,9 +307,6 @@ public class Beacon {
             return Status.CONFIGURATION_PENDING;
         }
 
-        Calendar checkDate = Calendar.getInstance();
-        checkDate.add(Calendar.MONTH, -12);
-
         if (hasRecentlySeen()) {
             return Status.NO_SIGNAL;
         }

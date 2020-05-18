@@ -5,6 +5,7 @@ import javax.persistence.*;
 @Entity
 @Table( name = "OrderData", uniqueConstraints={@UniqueConstraint(columnNames = {"zoneId", "zoneCode"})} )
 public class OrderData extends AuditModel {
+    private static final long serialVersionUID = 2824484059555129298L;
 
     @Id
     @Column(unique = true)

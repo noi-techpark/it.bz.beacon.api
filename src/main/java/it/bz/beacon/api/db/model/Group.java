@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "\"Group\"")
 public class Group extends AuditModel {
+    private static final long serialVersionUID = -3399839430389394314L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 @Entity
 public class BeaconImage extends AuditModel {
+    private static final long serialVersionUID = 4405703186083116882L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
