@@ -10,8 +10,6 @@ pipeline {
         TESTSERVER_TOMCAT_ENDPOINT = "http://api.beacon.tomcat02.testingmachine.eu:8080/manager/text"
         TESTSERVER_TOMCAT_CREDENTIALS = credentials('testserver-tomcat8-credentials')
 
-        GOOGLE_SERVICE_ACCOUNT = credentials('beacon-api-google-service-account')
-
         DB_URL = "jdbc:postgresql://test-pg-bdp.co90ybcr8iim.eu-west-1.rds.amazonaws.com:5432/beacon"
         DB_USERNAME = credentials('beacon-api-test-db-username')
         DB_PASSWORD = credentials('beacon-api-test-db-password')
@@ -107,8 +105,6 @@ pipeline {
 
                     sed -i -e "s%\\(it.bz.beacon.passwordResetURL\\s*=\\).*\\$%\\1${BEACON_PASSWORD_RESET_URL}%" src/main/resources/application.properties
                     sed -i -e "s%\\(it.bz.beacon.passwordResetEmailFrom\\s*=\\).*\\$%\\1${BEACON_PASSWORD_RESET_MAIL}%" src/main/resources/application.properties
-
-                    cat "${GOOGLE_SERVICE_ACCOUNT}" > src/main/resources/google-api-service-account.json
                 '''
             }
         }
