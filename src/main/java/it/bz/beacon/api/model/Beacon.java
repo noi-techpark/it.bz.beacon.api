@@ -307,7 +307,7 @@ public class Beacon {
             return Status.CONFIGURATION_PENDING;
         }
 
-        if (hasRecentlySeen()) {
+        if (!hasRecentlySeen()) {
             return Status.NO_SIGNAL;
         }
 
