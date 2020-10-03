@@ -3,13 +3,13 @@ package it.bz.beacon.api.db.model;
 import it.bz.beacon.api.model.Manufacturer;
 import it.bz.beacon.api.model.RemoteBeacon;
 import it.bz.beacon.api.model.enumeration.LocationType;
-import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(uniqueConstraints={
@@ -28,15 +28,9 @@ public class BeaconData extends AuditModel {
     @Column(nullable = false)
     private Manufacturer manufacturer;
 
-    private float lat;
+    private float latBeacon;
 
-    private float lng;
-
-    @Formula("coalesce((select info.latitude from info where info.id = ID),0)")
-    private float info_lat;
-
-    @Formula("coalesce((select info.longitude from info where info.id = ID),0)")
-    private float info_lng;
+    private float lngBeacon;
 
     private String name;
 
@@ -60,6 +54,25 @@ public class BeaconData extends AuditModel {
 
     @Column(name = "trusted_updated_at")
     private Date trustedUpdatedAt;
+
+    @Type(type = "org.hibernate.type.StringType")
+    private String namePoi;
+    @Type(type = "org.hibernate.type.StringType")
+    private String website;
+    @Type(type = "org.hibernate.type.StringType")
+    private String address;
+    @Type(type = "org.hibernate.type.StringType")
+    private String location;
+    private String cap;
+    private double latPoi;
+    private double lngPoi;
+    private String floor;
+
+    private UUID uuid;
+    private int major;
+    private int minor;
+    private String namespace;
+    private String instanceId;
 
     public static BeaconData fromRemoteBeacon(RemoteBeacon remoteBeacon) {
 
@@ -100,36 +113,36 @@ public class BeaconData extends AuditModel {
         this.manufacturer = manufacturer;
     }
 
-    public float getLat() {
-        return lat;
+    public float getLatBeacon() {
+        return latBeacon;
     }
 
-    public void setLat(float lat) {
-        this.lat = lat;
+    public void setLatBeacon(float latBeacon) {
+        this.latBeacon = latBeacon;
     }
 
-    public float getLng() {
-        return lng;
+    public float getLngBeacon() {
+        return lngBeacon;
     }
 
-    public void setLng(float lng) {
-        this.lng = lng;
+    public void setLngBeacon(float lng) {
+        this.lngBeacon = lng;
     }
 
-    public float getInfo_lat() {
-        return info_lat;
+    public double getLatPoi() {
+        return latPoi;
     }
 
-    public void setInfo_lat(float info_lat) {
-        this.info_lat = info_lat;
+    public void setLatPoi(double info_lat) {
+        this.latPoi = info_lat;
     }
 
-    public float getInfo_lng() {
-        return info_lng;
+    public double getLngPoi() {
+        return lngPoi;
     }
 
-    public void setInfo_lng(float info_lng) {
-        this.info_lng = info_lng;
+    public void setLngPoi(double info_lng) {
+        this.lngPoi = info_lng;
     }
 
     public String getName() {
@@ -194,5 +207,93 @@ public class BeaconData extends AuditModel {
 
     public void setTrustedUpdatedAt(Date trustedUpdatedAt) {
         this.trustedUpdatedAt = trustedUpdatedAt;
+    }
+
+    public String getNamePoi() {
+        return namePoi;
+    }
+
+    public void setNamePoi(String namePoi) {
+        this.namePoi = namePoi;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getCap() {
+        return cap;
+    }
+
+    public void setCap(String cap) {
+        this.cap = cap;
+    }
+
+    public String getFloor() {
+        return floor;
+    }
+
+    public void setFloor(String floor) {
+        this.floor = floor;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public int getMajor() {
+        return major;
+    }
+
+    public void setMajor(int major) {
+        this.major = major;
+    }
+
+    public int getMinor() {
+        return minor;
+    }
+
+    public void setMinor(int minor) {
+        this.minor = minor;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 }

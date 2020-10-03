@@ -24,8 +24,8 @@ public class Beacon {
     private String description;
     private float lat;
     private float lng;
-    private float info_lat;
-    private float info_lng;
+    private double info_lat;
+    private double info_lng;
     private LocationType locationType;
     private String locationDescription;
     private long lastSeen;
@@ -74,10 +74,10 @@ public class Beacon {
         setId(beaconData.getId());
         setManufacturer(beaconData.getManufacturer());
         setManufacturerId(beaconData.getManufacturerId());
-        setLat(beaconData.getLat());
-        setLng(beaconData.getLng());
-        setInfo_lat(beaconData.getInfo_lat());
-        setInfo_lng(beaconData.getInfo_lng());
+        setLat(beaconData.getLatBeacon());
+        setLng(beaconData.getLngBeacon());
+        setInfo_lat(beaconData.getLatPoi());
+        setInfo_lng(beaconData.getLngPoi());
         setName(beaconData.getName());
         setDescription(beaconData.getDescription());
         setLocationType(beaconData.getLocationType());
@@ -190,19 +190,19 @@ public class Beacon {
         this.lng = lng;
     }
 
-    public float getInfo_lat() {
+    public double getInfo_lat() {
         return info_lat;
     }
 
-    public void setInfo_lat(float info_lat) {
+    public void setInfo_lat(double info_lat) {
         this.info_lat = info_lat;
     }
 
-    public float getInfo_lng() {
+    public double getInfo_lng() {
         return info_lng;
     }
 
-    public void setInfo_lng(float info_lng) {
+    public void setInfo_lng(double info_lng) {
         this.info_lng = info_lng;
     }
 
