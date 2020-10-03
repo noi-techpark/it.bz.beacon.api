@@ -66,6 +66,16 @@ public class BeaconDataService implements IBeaconDataService {
                 beaconData.setGroup(group);
             }
 
+            if (beaconUpdate.getInfo() != null) {
+                beaconData.setNamePoi(beaconUpdate.getInfo().getName());
+                beaconData.setWebsite(beaconUpdate.getInfo().getWebsite());
+                beaconData.setAddress(beaconUpdate.getInfo().getAddress());
+                beaconData.setLocation(beaconUpdate.getInfo().getLocation());
+                beaconData.setLatPoi(beaconUpdate.getInfo().getLatitude());
+                beaconData.setLngPoi(beaconUpdate.getInfo().getLongitude());
+                beaconData.setFloor(beaconUpdate.getInfo().getFloor());
+            }
+
             return repository.save(beaconData);
         }).orElseThrow(BeaconDataNotFoundException::new);
     }
