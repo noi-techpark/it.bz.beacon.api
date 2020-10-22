@@ -70,6 +70,7 @@ public class BeaconDataService implements IBeaconDataService {
                 beaconData.setNamePoi(beaconUpdate.getInfo().getName());
                 beaconData.setWebsite(beaconUpdate.getInfo().getWebsite());
                 beaconData.setAddress(beaconUpdate.getInfo().getAddress());
+                beaconData.setCap(beaconUpdate.getInfo().getCap());
                 beaconData.setLocation(beaconUpdate.getInfo().getLocation());
                 beaconData.setLatPoi(beaconUpdate.getInfo().getLatitude());
                 beaconData.setLngPoi(beaconUpdate.getInfo().getLongitude());
