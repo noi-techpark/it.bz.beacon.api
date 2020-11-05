@@ -58,8 +58,6 @@ public class BeaconData extends AuditModel {
     @Type(type = "org.hibernate.type.StringType")
     private String namePoi;
     @Type(type = "org.hibernate.type.StringType")
-    private String website;
-    @Type(type = "org.hibernate.type.StringType")
     private String address;
     @Type(type = "org.hibernate.type.StringType")
     private String location;
@@ -215,14 +213,6 @@ public class BeaconData extends AuditModel {
 
     public void setNamePoi(String namePoi) {
         this.namePoi = namePoi;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
     }
 
     public String getAddress() {

@@ -5,16 +5,11 @@ import org.springframework.lang.Nullable;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 public class InfoUpdate {
 
     @Nullable
     private String name;
-
-    @Nullable
-    @Pattern(regexp = "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]")
-    private String website;
 
     @Nullable
     private String address;
@@ -44,15 +39,6 @@ public class InfoUpdate {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Nullable
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(@Nullable String website) {
-        this.website = website;
     }
 
     @Nullable
