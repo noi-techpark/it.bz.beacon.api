@@ -1,9 +1,12 @@
 package it.bz.beacon.api.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import it.bz.beacon.api.model.Manufacturer;
 import it.bz.beacon.api.model.RemoteBeacon;
 import it.bz.beacon.api.model.enumeration.LocationType;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,11 +18,16 @@ import java.util.UUID;
 @Table(uniqueConstraints={
         @UniqueConstraint(columnNames = {"manufacturerId", "manufacturer"})
 })
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class BeaconData extends AuditModel {
     private static final long serialVersionUID = -8817958472953525892L;
 
     @Id
     private String id;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonIgnore
+    private Date userUpdatedAt;
 
     @Column(nullable = false)
     private String manufacturerId;
@@ -72,6 +80,14 @@ public class BeaconData extends AuditModel {
     private String namespace;
     private String instanceId;
 
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "json")
+    private RemoteBeacon remoteBeacon;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonIgnore
+    private Date remoteBeaconUpdatedAt;
+
     public static BeaconData fromRemoteBeacon(RemoteBeacon remoteBeacon) {
 
         BeaconData beaconData = new BeaconData();
@@ -93,6 +109,14 @@ public class BeaconData extends AuditModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Date getUserUpdatedAt() {
+        return userUpdatedAt;
+    }
+
+    public void setUserUpdatedAt(Date userUpdatedAt) {
+        this.userUpdatedAt = userUpdatedAt;
     }
 
     public String getManufacturerId() {
@@ -285,5 +309,21 @@ public class BeaconData extends AuditModel {
 
     public void setInstanceId(String instanceId) {
         this.instanceId = instanceId;
+    }
+
+    public RemoteBeacon getRemoteBeacon() {
+        return remoteBeacon;
+    }
+
+    public void setRemoteBeacon(RemoteBeacon remoteBeacon) {
+        this.remoteBeacon = remoteBeacon;
+    }
+
+    public Date getRemoteBeaconUpdatedAt() {
+        return remoteBeaconUpdatedAt;
+    }
+
+    public void setRemoteBeaconUpdatedAt(Date remoteBeaconUpdatedAt) {
+        this.remoteBeaconUpdatedAt = remoteBeaconUpdatedAt;
     }
 }

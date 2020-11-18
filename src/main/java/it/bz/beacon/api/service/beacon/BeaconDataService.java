@@ -45,6 +45,7 @@ public class BeaconDataService implements IBeaconDataService {
 
     @Override
     public BeaconData create(BeaconData beaconData) {
+        beaconData.setUserUpdatedAt(new Date());
         return repository.save(beaconData);
     }
 
@@ -75,6 +76,8 @@ public class BeaconDataService implements IBeaconDataService {
                 beaconData.setLngPoi(beaconUpdate.getInfo().getLongitude());
                 beaconData.setFloor(beaconUpdate.getInfo().getFloor());
             }
+
+            beaconData.setUserUpdatedAt(new Date());
 
             return repository.save(beaconData);
         }).orElseThrow(BeaconDataNotFoundException::new);

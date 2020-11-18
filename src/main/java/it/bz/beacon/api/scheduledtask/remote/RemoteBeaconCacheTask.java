@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -60,6 +61,9 @@ public class RemoteBeaconCacheTask {
                 beaconData.setMinor(remoteBeacon.getMinor());
                 beaconData.setNamespace(remoteBeacon.getNamespace());
                 beaconData.setInstanceId(remoteBeacon.getInstanceId());
+
+                beaconData.setRemoteBeacon(remoteBeacon);
+                beaconData.setRemoteBeaconUpdatedAt(new Date());
 
                 beaconDataRepository.save(beaconData);
             } catch (InfoNotFoundException e) {
