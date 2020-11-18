@@ -2,6 +2,7 @@ package it.bz.beacon.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.annotations.ApiModelProperty;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.model.Group;
 import it.bz.beacon.api.db.model.Issue;
@@ -29,6 +30,8 @@ public class Beacon {
     private LocationType locationType;
     private String locationDescription;
     private long lastSeen;
+
+    @ApiModelProperty(dataType = "java.lang.Long")
     private Date trustedUpdatedAt;
 
     private boolean iBeacon;

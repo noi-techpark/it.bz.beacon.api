@@ -5,6 +5,8 @@ import com.google.common.collect.Maps;
 import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.repository.BeaconDataRepository;
+import it.bz.beacon.api.exception.db.BeaconNotFoundException;
+import it.bz.beacon.api.exception.db.InfoNotFoundException;
 import it.bz.beacon.api.kontakt.io.ApiService;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
@@ -44,7 +46,27 @@ public class RemoteBeaconCacheTask {
             BeaconListResponse beacons = apiService.getBeacons(block);
             Map<String, RemoteBeacon> beaconsWithStatuses = getBeaconsWithStatuses(beacons);
             remoteBeaconCache.addAll(beaconsWithStatuses);
+            updateBeaconPackageData(beaconsWithStatuses);
         });
+    }
+
+
+    private void updateBeaconPackageData(Map<String, RemoteBeacon> beaconsWithStatuses) {
+        for (RemoteBeacon remoteBeacon : beaconsWithStatuses.values()) {
+            try {
+                BeaconData beaconData = beaconDataRepository.findById(remoteBeacon.getId()).orElseThrow(BeaconNotFoundException::new);
+                beaconData.setUuid(remoteBeacon.getUuid());
+                beaconData.setMajor(remoteBeacon.getMajor());
+                beaconData.setMinor(remoteBeacon.getMinor());
+                beaconData.setNamespace(remoteBeacon.getNamespace());
+                beaconData.setInstanceId(remoteBeacon.getInstanceId());
+
+                beaconDataRepository.save(beaconData);
+            } catch (InfoNotFoundException e) {
+                e.printStackTrace();
+                //TODO handle
+            }
+        }
     }
 
     private Map<String, RemoteBeacon> getBeaconsWithStatuses(BeaconListResponse response) {

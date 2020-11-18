@@ -59,9 +59,6 @@ Make a copy of the `src/resources/application.properties.dist` file and name it 
 * `it.bz.beacon.passwordResetURL`: Password reset URL
 * `it.bz.beacon.uuid`: iBeacon UUID
 * `it.bz.beacon.namespace`: Eddystone namespace
-* `it.bz.beacon.task.infoimport.enabled`: Defines whether the info replication through Google spread sheet should be enabled or not
-* `it.bz.beacon.task.infoimport.spreadSheetId`: Google spread sheet id to import
-* `it.bz.beacon.task.infoimport.delay`: Replication delay in milliseconds after last run
 * `it.bz.beacon.trusted.user`: The username for the basic authorization for the trusted api
 * `it.bz.beacon.trusted.password`: The bcrypted password for the basic authorization for the trusted api
 
