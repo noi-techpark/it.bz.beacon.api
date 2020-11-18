@@ -68,6 +68,8 @@ public class Beacon {
         Beacon beacon = new Beacon();
         beacon.applyBeaconData(beaconData);
         beacon.applyRemoteBeacon(remoteBeacon);
+        if (remoteBeacon == null)
+            beacon.applyRemoteBeacon(beaconData.getRemoteBeacon());
 
         return beacon;
     }
