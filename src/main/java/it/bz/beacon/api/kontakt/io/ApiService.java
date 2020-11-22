@@ -1,5 +1,6 @@
 package it.bz.beacon.api.kontakt.io;
 
+import it.bz.beacon.api.config.KontaktIOConfiguration;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
 import it.bz.beacon.api.kontakt.io.model.Device;
@@ -9,9 +10,11 @@ import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
 import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -19,20 +22,49 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@Service
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ApiService {
 
     @Autowired
     private RestTemplate restTemplate;
 
+    private String apiKey;
+
     @Autowired
     private HttpHeaders httpHeaders;
+
+    @Autowired
+    private KontaktIOConfiguration kontaktIOConfiguration;
+
+    public ApiService() {
+    }
+
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public HttpHeaders getHttpHeaders() {
+        if (apiKey == null)
+            return httpHeaders;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", kontaktIOConfiguration.getAcceptHeader());
+        headers.set("Api-Key", apiKey);
+
+        return headers;
+    }
 
     public BeaconListResponse getBeacons() {
         ResponseEntity<BeaconListResponse> responseEntity = restTemplate.exchange(
                 "/device?deviceType=" + Device.DeviceType.BEACON + "&maxResult=500",
                 HttpMethod.GET,
-                new HttpEntity<>(null, httpHeaders),
+                new HttpEntity<>(null, getHttpHeaders()),
                 new ParameterizedTypeReference<BeaconListResponse>() {}
         );
 
@@ -43,8 +75,9 @@ public class ApiService {
         ResponseEntity<BeaconListResponse> responseEntity = restTemplate.exchange(
                 "/device?deviceType=" + Device.DeviceType.BEACON + "&maxResult=500&startIndex=" + index,
                 HttpMethod.GET,
-                new HttpEntity<>(null, httpHeaders),
-                new ParameterizedTypeReference<BeaconListResponse>() {}
+                new HttpEntity<>(null, getHttpHeaders()),
+                new ParameterizedTypeReference<BeaconListResponse>() {
+                }
         );
 
         return responseEntity.getBody();
@@ -60,7 +93,7 @@ public class ApiService {
             ResponseEntity<BeaconListResponse> responseEntity = restTemplate.exchange(
                     "/device?maxResult=" + ids.size() + "&deviceType=" + Device.DeviceType.BEACON + "&uniqueId=" + String.join(",", ids),
                     HttpMethod.GET,
-                    new HttpEntity<>(null, httpHeaders),
+                    new HttpEntity<>(null, getHttpHeaders()),
                     new ParameterizedTypeReference<BeaconListResponse>() {
                     }
             );
@@ -82,7 +115,7 @@ public class ApiService {
         ResponseEntity<DeviceStatusListResponse> responseEntity = restTemplate.exchange(
                 "/device/status?maxResult=" + ids.size() + "&uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,
-                new HttpEntity<>(null, httpHeaders),
+                new HttpEntity<>(null, getHttpHeaders()),
                 new ParameterizedTypeReference<DeviceStatusListResponse>() {}
         );
 
@@ -97,7 +130,7 @@ public class ApiService {
         ResponseEntity<ConfigurationListResponse> responseEntity = restTemplate.exchange(
                 "/config?maxResult=" + ids.size() + "&uniqueId=" + String.join(",", ids),
                 HttpMethod.GET,
-                new HttpEntity<>(null, httpHeaders),
+                new HttpEntity<>(null, getHttpHeaders()),
                 new ParameterizedTypeReference<ConfigurationListResponse>() {}
         );
 
@@ -105,7 +138,8 @@ public class ApiService {
     }
 
     public ResponseEntity<List<BeaconConfigResponse>> createConfig(TagBeaconConfig config) {
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpHeaders headers = getHttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("uniqueId", config.getUniqueId());
@@ -124,13 +158,14 @@ public class ApiService {
         return restTemplate.exchange(
                 "/config/create",
                 HttpMethod.POST,
-                new HttpEntity<>(requestBody, httpHeaders),
+                new HttpEntity<>(requestBody, headers),
                 new ParameterizedTypeReference<List<BeaconConfigResponse>>() {}
         );
     }
 
     public ResponseEntity<BeaconConfigDeletionResponse> deleteConfig(String id) {
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpHeaders headers = getHttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("uniqueId", id);
@@ -138,7 +173,7 @@ public class ApiService {
         return restTemplate.exchange(
                 "/config/delete",
                 HttpMethod.POST,
-                new HttpEntity<>(requestBody, httpHeaders),
+                new HttpEntity<>(requestBody, headers),
                 new ParameterizedTypeReference<BeaconConfigDeletionResponse>() {}
         );
     }
@@ -147,14 +182,15 @@ public class ApiService {
         ResponseEntity<List<String>> responseEntity = restTemplate.exchange(
                 "/order?orderId=" + orderId,
                 HttpMethod.GET,
-                new HttpEntity<>(null, httpHeaders),
+                new HttpEntity<>(null, getHttpHeaders()),
                 new ParameterizedTypeReference<List<String>>() {}
         );
         return responseEntity.getBody();
     }
 
     public AssignOrderResponse assignOrder(String orderId) {
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        HttpHeaders headers = getHttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("orderId", orderId);
@@ -162,7 +198,7 @@ public class ApiService {
         ResponseEntity<AssignOrderResponse> responseEntity = restTemplate.exchange(
                 "/order/assign",
                 HttpMethod.POST,
-                new HttpEntity<>(requestBody, httpHeaders),
+                new HttpEntity<>(requestBody, headers),
                 new ParameterizedTypeReference<AssignOrderResponse>() {
                 }
         );

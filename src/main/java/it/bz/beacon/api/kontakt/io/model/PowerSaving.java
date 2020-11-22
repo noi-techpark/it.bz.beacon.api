@@ -10,6 +10,8 @@ public class PowerSaving {
     private List<Rtc> rtc;
     private Integer lightSensorThreshold;
     private Integer lightSensorHysteresis;
+    private Integer burstOnTime;
+    private Integer burstOffTime;
 
     public List<Feature> getFeatures() {
         return features;
@@ -59,9 +61,25 @@ public class PowerSaving {
         this.lightSensorHysteresis = lightSensorHysteresis;
     }
 
+    public Integer getBurstOnTime() {
+        return burstOnTime;
+    }
+
+    public void setBurstOnTime(Integer burstOnTime) {
+        this.burstOnTime = burstOnTime;
+    }
+
+    public Integer getBurstOffTime() {
+        return burstOffTime;
+    }
+
+    public void setBurstOffTime(Integer burstOffTime) {
+        this.burstOffTime = burstOffTime;
+    }
+
     private static class Rtc {
         private Day day;
-        private Integer hours;
+        private List<Integer> hours;
 
         public Day getDay() {
             return day;
@@ -71,11 +89,11 @@ public class PowerSaving {
             this.day = day;
         }
 
-        public Integer getHours() {
+        public List<Integer> getHours() {
             return hours;
         }
 
-        public void setHours(Integer hours) {
+        public void setHours(List<Integer> hours) {
             this.hours = hours;
         }
 
@@ -93,6 +111,7 @@ public class PowerSaving {
     public enum Feature {
         LIGHT_SENSOR,
         RTC,
-        MOTION_DETECTION
+        MOTION_DETECTION,
+        BURST_MODE
     }
 }

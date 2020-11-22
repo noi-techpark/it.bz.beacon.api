@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.repository.BeaconDataRepository;
+import it.bz.beacon.api.db.repository.GroupRepository;
 import it.bz.beacon.api.exception.db.BeaconNotFoundException;
 import it.bz.beacon.api.exception.db.InfoNotFoundException;
 import it.bz.beacon.api.kontakt.io.ApiService;
@@ -35,6 +36,9 @@ public class RemoteBeaconCacheTask {
     private BeaconDataRepository beaconDataRepository;
 
     @Autowired
+    private GroupRepository groupRepository;
+
+    @Autowired
     private ApiService apiService;
 
     @Autowired
@@ -42,13 +46,18 @@ public class RemoteBeaconCacheTask {
 
     @Scheduled(fixedDelay = 60 * 1000)
     public void updateCache() {
-        Lists.partition(beaconDataRepository.findAll().stream().map(BeaconData::getManufacturerId)
-                .collect(Collectors.toList()), 200).forEach(block -> {
-            BeaconListResponse beacons = apiService.getBeacons(block);
-            Map<String, RemoteBeacon> beaconsWithStatuses = getBeaconsWithStatuses(beacons);
-            remoteBeaconCache.addAll(beaconsWithStatuses);
-            updateBeaconPackageData(beaconsWithStatuses);
-        });
+        groupRepository.findAll().stream().filter(group -> group.getKontaktIoApiKey() != null && !group.getKontaktIoApiKey().isEmpty())
+                .forEach(group -> {
+                    Lists.partition(beaconDataRepository.findAllByGroupId(group.getId())
+                            .stream().map(BeaconData::getManufacturerId).collect(Collectors.toList()), 200)
+                            .forEach(block -> {
+                                apiService.setApiKey(group.getKontaktIoApiKey());
+                                BeaconListResponse beacons = apiService.getBeacons(block);
+                                Map<String, RemoteBeacon> beaconsWithStatuses = getBeaconsWithStatuses(beacons);
+                                remoteBeaconCache.addAll(beaconsWithStatuses);
+                                updateBeaconPackageData(beaconsWithStatuses);
+                            });
+                });
     }
 
 
