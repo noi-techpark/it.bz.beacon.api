@@ -5,6 +5,7 @@ import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
 import it.bz.beacon.api.util.EddystoneUrl;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class PendingConfiguration {
@@ -234,5 +235,32 @@ public class PendingConfiguration {
 
     public void setEddystoneEtlm(boolean eddystoneEtlm) {
         this.eddystoneEtlm = eddystoneEtlm;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PendingConfiguration)) return false;
+        PendingConfiguration that = (PendingConfiguration) o;
+        return isiBeacon() == that.isiBeacon() &&
+                isTelemetry() == that.isTelemetry() &&
+                isEddystoneUid() == that.isEddystoneUid() &&
+                isEddystoneUrl() == that.isEddystoneUrl() &&
+                isEddystoneTlm() == that.isEddystoneTlm() &&
+                isEddystoneEid() == that.isEddystoneEid() &&
+                isEddystoneEtlm() == that.isEddystoneEtlm() &&
+                Objects.equals(getUuid(), that.getUuid()) &&
+                Objects.equals(getMajor(), that.getMajor()) &&
+                Objects.equals(getMinor(), that.getMinor()) &&
+                Objects.equals(getNamespace(), that.getNamespace()) &&
+                Objects.equals(getUrl(), that.getUrl()) &&
+                Objects.equals(getInstanceId(), that.getInstanceId()) &&
+                Objects.equals(getTxPower(), that.getTxPower()) &&
+                Objects.equals(getInterval(), that.getInterval());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUuid(), getMajor(), getMinor(), getNamespace(), getUrl(), getInstanceId(), getTxPower(), getInterval(), isiBeacon(), isTelemetry(), isEddystoneUid(), isEddystoneUrl(), isEddystoneTlm(), isEddystoneEid(), isEddystoneEtlm());
     }
 }

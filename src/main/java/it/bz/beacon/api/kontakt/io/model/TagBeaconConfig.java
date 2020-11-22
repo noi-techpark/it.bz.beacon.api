@@ -2,11 +2,11 @@ package it.bz.beacon.api.kontakt.io.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Sets;
+import it.bz.beacon.api.db.model.Beacon;
 import it.bz.beacon.api.kontakt.io.model.enumeration.ButtonFeature;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Model;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
-import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.BeaconUpdate;
 import it.bz.beacon.api.util.EddystoneUrl;
 

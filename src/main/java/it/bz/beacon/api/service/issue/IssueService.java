@@ -1,12 +1,12 @@
 package it.bz.beacon.api.service.issue;
 
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
+import it.bz.beacon.api.db.model.Beacon;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.model.Issue;
 import it.bz.beacon.api.db.model.IssueSolution;
 import it.bz.beacon.api.db.repository.IssueRepository;
 import it.bz.beacon.api.exception.db.IssueNotFoundException;
-import it.bz.beacon.api.model.Beacon;
 import it.bz.beacon.api.model.BeaconIssue;
 import it.bz.beacon.api.model.IssueCreation;
 import it.bz.beacon.api.service.beacon.IBeaconDataService;

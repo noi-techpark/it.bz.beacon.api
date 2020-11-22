@@ -1,6 +1,7 @@
 package it.bz.beacon.api.model;
 
 import io.swagger.annotations.ApiModelProperty;
+import it.bz.beacon.api.db.model.Beacon;
 import it.bz.beacon.api.db.model.Issue;
 
 import java.util.Date;

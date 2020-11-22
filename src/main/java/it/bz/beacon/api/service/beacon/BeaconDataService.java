@@ -24,18 +24,8 @@ public class BeaconDataService implements IBeaconDataService {
     private GroupRepository groupRepository;
 
     @Override
-    public List<BeaconData> findAllByGroupId(Long groupId) {
-        return repository.findAllByGroupId(groupId);
-    }
-
-    @Override
     public List<BeaconData> findAll() {
         return repository.findAll();
-    }
-
-    @Override
-    public List<BeaconData> findAllById(List<String> ids) {
-        return repository.findAllById(ids);
     }
 
     @Override
@@ -46,6 +36,11 @@ public class BeaconDataService implements IBeaconDataService {
     @Override
     public BeaconData create(BeaconData beaconData) {
         beaconData.setUserUpdatedAt(new Date());
+        return repository.save(beaconData);
+    }
+
+    @Override
+    public BeaconData update(BeaconData beaconData) throws BeaconDataNotFoundException {
         return repository.save(beaconData);
     }
 
