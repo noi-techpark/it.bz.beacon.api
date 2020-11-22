@@ -9,11 +9,23 @@ public class GroupUpdate {
     @NotNull
     private String name;
 
+    @NotEmpty
+    @NotNull
+    private String kontaktIoApiKey;
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getKontaktIoApiKey() {
+        return kontaktIoApiKey;
+    }
+
+    public void setKontaktIoApiKey(String kontaktIoApiKey) {
+        this.kontaktIoApiKey = kontaktIoApiKey;
     }
 }
