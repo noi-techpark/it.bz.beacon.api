@@ -24,18 +24,8 @@ public class BeaconDataService implements IBeaconDataService {
     private GroupRepository groupRepository;
 
     @Override
-    public List<BeaconData> findAllByGroupId(Long groupId) {
-        return repository.findAllByGroupId(groupId);
-    }
-
-    @Override
     public List<BeaconData> findAll() {
         return repository.findAll();
-    }
-
-    @Override
-    public List<BeaconData> findAllById(List<String> ids) {
-        return repository.findAllById(ids);
     }
 
     @Override
@@ -45,6 +35,12 @@ public class BeaconDataService implements IBeaconDataService {
 
     @Override
     public BeaconData create(BeaconData beaconData) {
+        beaconData.setUserUpdatedAt(new Date());
+        return repository.save(beaconData);
+    }
+
+    @Override
+    public BeaconData update(BeaconData beaconData) throws BeaconDataNotFoundException {
         return repository.save(beaconData);
     }
 
@@ -53,8 +49,8 @@ public class BeaconDataService implements IBeaconDataService {
         return repository.findById(id).map(beaconData -> {
             beaconData.setName(beaconUpdate.getName());
             beaconData.setDescription(beaconUpdate.getDescription());
-            beaconData.setLat(beaconUpdate.getLat());
-            beaconData.setLng(beaconUpdate.getLng());
+            beaconData.setLatBeacon(beaconUpdate.getLat());
+            beaconData.setLngBeacon(beaconUpdate.getLng());
             beaconData.setLocationDescription(beaconUpdate.getLocationDescription());
             beaconData.setLocationType(beaconUpdate.getLocationType());
 
@@ -65,6 +61,18 @@ public class BeaconDataService implements IBeaconDataService {
                 Group group = groupRepository.findById(groupId).get();
                 beaconData.setGroup(group);
             }
+
+            if (beaconUpdate.getInfo() != null) {
+                beaconData.setNamePoi(beaconUpdate.getInfo().getName());
+                beaconData.setAddress(beaconUpdate.getInfo().getAddress());
+                beaconData.setCap(beaconUpdate.getInfo().getCap());
+                beaconData.setLocation(beaconUpdate.getInfo().getLocation());
+                beaconData.setLatPoi(beaconUpdate.getInfo().getLatitude());
+                beaconData.setLngPoi(beaconUpdate.getInfo().getLongitude());
+                beaconData.setFloor(beaconUpdate.getInfo().getFloor());
+            }
+
+            beaconData.setUserUpdatedAt(new Date());
 
             return repository.save(beaconData);
         }).orElseThrow(BeaconDataNotFoundException::new);

@@ -88,11 +88,6 @@ it.bz.beacon.uuid =
 # Eddystone namespace
 it.bz.beacon.namespace =
 
-# Info import
-it.bz.beacon.task.infoimport.enabled =
-it.bz.beacon.task.infoimport.spreadSheetId =
-it.bz.beacon.task.infoimport.delay =
-
 # Trusted API
 it.bz.beacon.trusted.user =
 it.bz.beacon.trusted.password =

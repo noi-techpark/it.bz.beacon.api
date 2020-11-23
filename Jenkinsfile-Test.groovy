@@ -43,9 +43,6 @@ pipeline {
 
         BEACON_UUID = "6a84c716-0f2a-1ce9-f210-6a63bd873dd9"
         BEACON_NAMESPACE = "6a84c7166a63bd873dd9"
-        BEACON_TASK_IMPORT_ENABLED = "true"
-        BEACON_TASK_IMPORT_SPREADSHEET = "13ddjs6puWyAPTqaVVo2QKQ0-E6-EQBwfIkYyv1jxN2Q"
-        BEACON_TASK_IMPORT_DELAY = "21600000"
         BEACON_TRUSTED_USERNAME = credentials('beacon-api-test-trusted-username')
         BEACON_TRUSTED_PASSWORD = credentials('beacon-api-test-trusted-password')
 
@@ -97,9 +94,6 @@ pipeline {
 
                     sed -i -e "s%\\(it.bz.beacon.uuid\\s*=\\).*\\$%\\1${BEACON_UUID}%" src/main/resources/application.properties
                     sed -i -e "s%\\(it.bz.beacon.namespace\\s*=\\).*\\$%\\1${BEACON_NAMESPACE}%" src/main/resources/application.properties
-                    sed -i -e "s%\\(it.bz.beacon.task.infoimport.enabled\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_ENABLED}%" src/main/resources/application.properties
-                    sed -i -e "s%\\(it.bz.beacon.task.infoimport.spreadSheetId\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_SPREADSHEET}%" src/main/resources/application.properties
-                    sed -i -e "s%\\(it.bz.beacon.task.infoimport.delay\\s*=\\).*\\$%\\1${BEACON_TASK_IMPORT_DELAY}%" src/main/resources/application.properties
                     sed -i -e "s%\\(it.bz.beacon.trusted.user\\s*=\\).*\\$%\\1${BEACON_TRUSTED_USERNAME}%" src/main/resources/application.properties
                     sed -i -e "s%\\(it.bz.beacon.trusted.password\\s*=\\).*\\$%\\1${BEACON_TRUSTED_PASSWORD}%" src/main/resources/application.properties
 

@@ -2,7 +2,7 @@ package it.bz.beacon.api.controller.admin;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
-import it.bz.beacon.api.model.Beacon;
+import it.bz.beacon.api.db.model.Beacon;
 import it.bz.beacon.api.model.BeaconUpdate;
 import it.bz.beacon.api.model.ManufacturerOrder;
 import it.bz.beacon.api.service.beacon.IBeaconService;
@@ -24,10 +24,10 @@ public class BeaconController {
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public List<Beacon> getList(@RequestParam(value = "groupId", required = false) Long groupId) {
         if (groupId != null) {
-            return service.findAllWithRemoteCache(groupId);
+            return service.findAllByGroupId(groupId);
         }
 
-        List<Beacon> result = service.findAllWithRemoteCache();
+        List<Beacon> result = service.findAll();
         return result;
     }
 

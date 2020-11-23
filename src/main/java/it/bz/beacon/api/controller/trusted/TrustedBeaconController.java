@@ -2,7 +2,7 @@ package it.bz.beacon.api.controller.trusted;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
-import it.bz.beacon.api.model.Beacon;
+import it.bz.beacon.api.db.model.Beacon;
 import it.bz.beacon.api.model.BeaconBatteryLevelUpdate;
 import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;

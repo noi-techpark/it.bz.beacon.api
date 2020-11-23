@@ -7,6 +7,7 @@ import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
 import it.bz.beacon.api.util.EddystoneUrl;
 import it.bz.beacon.api.util.ManufacturerNameValidator;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class RemoteBeacon {
@@ -291,5 +292,42 @@ public class RemoteBeacon {
 
     public void setEddystoneEtlm(boolean eddystoneEtlm) {
         this.eddystoneEtlm = eddystoneEtlm;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RemoteBeacon)) return false;
+        RemoteBeacon that = (RemoteBeacon) o;
+        return getMajor() == that.getMajor() &&
+                getMinor() == that.getMinor() &&
+                getInterval() == that.getInterval() &&
+                getTxPower() == that.getTxPower() &&
+                getLastSeen() == that.getLastSeen() &&
+                isiBeacon() == that.isiBeacon() &&
+                isTelemetry() == that.isTelemetry() &&
+                isEddystoneUid() == that.isEddystoneUid() &&
+                isEddystoneUrl() == that.isEddystoneUrl() &&
+                isEddystoneTlm() == that.isEddystoneTlm() &&
+                isEddystoneEid() == that.isEddystoneEid() &&
+                isEddystoneEtlm() == that.isEddystoneEtlm() &&
+                getManufacturer() == that.getManufacturer() &&
+                Objects.equals(getManufacturerId(), that.getManufacturerId()) &&
+                Objects.equals(getId(), that.getId()) &&
+                Objects.equals(getZone(), that.getZone()) &&
+                Objects.equals(getZoneCode(), that.getZoneCode()) &&
+                Objects.equals(getZoneId(), that.getZoneId()) &&
+                Objects.equals(getName(), that.getName()) &&
+                Objects.equals(getUuid(), that.getUuid()) &&
+                Objects.equals(getUrl(), that.getUrl()) &&
+                Objects.equals(getNamespace(), that.getNamespace()) &&
+                Objects.equals(getInstanceId(), that.getInstanceId()) &&
+                Objects.equals(getBatteryLevel(), that.getBatteryLevel()) &&
+                Objects.equals(getPendingConfiguration(), that.getPendingConfiguration());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getManufacturer(), getManufacturerId(), getId(), getZone(), getZoneCode(), getZoneId(), getName(), getUuid(), getMajor(), getMinor(), getUrl(), getNamespace(), getInstanceId(), getInterval(), getTxPower(), getBatteryLevel(), getLastSeen(), isiBeacon(), isTelemetry(), isEddystoneUid(), isEddystoneUrl(), isEddystoneTlm(), isEddystoneEid(), isEddystoneEtlm(), getPendingConfiguration());
     }
 }

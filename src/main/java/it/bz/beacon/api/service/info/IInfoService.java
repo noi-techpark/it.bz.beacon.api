@@ -12,6 +12,4 @@ public interface IInfoService {
     Info findByBeaconId(String beaconId) throws InfoNotFoundException;
     Info findByInstanceId(String instanceId) throws InfoNotFoundException;
     Info findByMajorMinor(int major, int minor) throws InfoNotFoundException;
-//    Info create(InfoCreation userCreation);
-//    Info update(long id, InfoUpdate infoUpdate) throws UserNotFoundException;
 }

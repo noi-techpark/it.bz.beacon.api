@@ -1,25 +1,37 @@
 package it.bz.beacon.api.model;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import org.springframework.lang.Nullable;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class InfoUpdate {
 
-    @NotNull
-    @NotEmpty
+    @Nullable
     private String name;
 
-    @NotNull
-    @NotEmpty
-    private String surname;
+    @Nullable
+    private String address;
+
+    @Nullable
+    private String location;
+
+    @Nullable
+    private String cap;
 
     @NotNull
-    @NotEmpty
-    @Email
-    private String email;
+    @Min(-90)
+    @Max(90)
+    private float latitude;
 
-    private String password;
+    @NotNull
+    @Min(-180)
+    @Max(180)
+    private float longitude;
+
+    @Nullable
+    private String floor;
 
     public String getName() {
         return name;
@@ -29,27 +41,55 @@ public class InfoUpdate {
         this.name = name;
     }
 
-    public String getSurname() {
-        return surname;
+    @Nullable
+    public String getAddress() {
+        return address;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setAddress(@Nullable String address) {
+        this.address = address;
     }
 
-    public String getEmail() {
-        return email;
+    @Nullable
+    public String getLocation() {
+        return location;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLocation(@Nullable String location) {
+        this.location = location;
     }
 
-    public String getPassword() {
-        return password;
+    @Nullable
+    public String getCap() {
+        return cap;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setCap(@Nullable String cap) {
+        this.cap = cap;
+    }
+
+    public float getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(float latitude) {
+        this.latitude = latitude;
+    }
+
+    public float getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(float longitude) {
+        this.longitude = longitude;
+    }
+
+    @Nullable
+    public String getFloor() {
+        return floor;
+    }
+
+    public void setFloor(@Nullable String floor) {
+        this.floor = floor;
     }
 }

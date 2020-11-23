@@ -1,7 +1,9 @@
 package it.bz.beacon.api.model;
 
 import it.bz.beacon.api.model.enumeration.LocationType;
+import org.springframework.lang.Nullable;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -57,6 +59,7 @@ public class BeaconUpdate {
     @NotNull
     private UUID uuid;
 
+    @Nullable
     private Long group;
 
     @NotNull
@@ -90,6 +93,10 @@ public class BeaconUpdate {
     @Min(1)
     @Max(7)
     private Integer txPower;
+
+    @Nullable
+    @Valid
+    private InfoUpdate info;
 
     public String getName() {
         return name;
@@ -268,4 +275,12 @@ public class BeaconUpdate {
         this.group = group;
     }
 
+    @Nullable
+    public InfoUpdate getInfo() {
+        return info;
+    }
+
+    public void setInfo(@Nullable InfoUpdate info) {
+        this.info = info;
+    }
 }
