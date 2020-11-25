@@ -19,13 +19,14 @@ public class Group extends AuditModel {
     @Type(type = "org.hibernate.type.StringType")
     private String name;
 
+    @JsonIgnore
     @Type(type = "org.hibernate.type.StringType")
     private String kontaktIoApiKey;
 
     public static Group create(GroupUpdate groupUpdate) {
         Group group = new Group();
         group.setName(groupUpdate.getName());
-        group.setKontaktIoApiKey(groupUpdate.getKontaktIoApiKey());
+        group.setKontaktIoApiKey(groupUpdate.getApiKey());
 
         return group;
     }
@@ -57,6 +58,6 @@ public class Group extends AuditModel {
     @JsonIgnore
     public void applyUpdate(GroupUpdate groupUpdate) {
         name = groupUpdate.getName();
-        kontaktIoApiKey = groupUpdate.getKontaktIoApiKey();
+        kontaktIoApiKey = groupUpdate.getApiKey();
     }
 }

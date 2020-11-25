@@ -75,4 +75,10 @@ public class GroupController {
                                   @PathVariable long userId) {
         return service.deleteUserAssignment(groupId, userId);
     }
+
+    @ApiOperation(value = "View the assigned api key of a group", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}/apiKey", produces = "application/json")
+    public GroupApiKey getApiKey(@PathVariable long id) {
+        return service.findGroupApiKey(id);
+    }
 }

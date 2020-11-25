@@ -11,7 +11,7 @@ public class GroupUpdate {
 
     @NotEmpty
     @NotNull
-    private String kontaktIoApiKey;
+    private String apiKey;
 
     public String getName() {
         return name;
@@ -21,11 +21,11 @@ public class GroupUpdate {
         this.name = name;
     }
 
-    public String getKontaktIoApiKey() {
-        return kontaktIoApiKey;
+    public String getApiKey() {
+        return apiKey;
     }
 
-    public void setKontaktIoApiKey(String kontaktIoApiKey) {
-        this.kontaktIoApiKey = kontaktIoApiKey;
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
     }
 }
