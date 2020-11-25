@@ -5,19 +5,13 @@ import com.google.common.collect.Maps;
 import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.db.repository.BeaconRepository;
-import it.bz.beacon.api.db.repository.GroupRepository;
 import it.bz.beacon.api.exception.auth.InsufficientRightsException;
-import it.bz.beacon.api.exception.db.BeaconConfigurationNotCreatedException;
-import it.bz.beacon.api.exception.db.BeaconConfigurationNotDeletedException;
-import it.bz.beacon.api.exception.db.BeaconNotFoundException;
-import it.bz.beacon.api.exception.db.InvalidBeaconIdentifierException;
+import it.bz.beacon.api.exception.db.*;
+import it.bz.beacon.api.exception.kontakt.io.InvalidApiKeyException;
 import it.bz.beacon.api.exception.order.NoBeaconsToOrderException;
 import it.bz.beacon.api.exception.order.NoGroupToOrderException;
 import it.bz.beacon.api.kontakt.io.ApiService;
-import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
-import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
-import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
-import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
+import it.bz.beacon.api.kontakt.io.model.*;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
@@ -25,6 +19,7 @@ import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.model.enumeration.UserRole;
+import it.bz.beacon.api.service.group.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -47,7 +42,7 @@ public class BeaconService implements IBeaconService {
     private IBeaconDataService beaconDataService;
 
     @Autowired
-    private GroupRepository groupRepository;
+    private GroupService groupService;
 
     @Autowired
     private RemoteBeaconCache remoteBeaconCache;
@@ -88,13 +83,17 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public List<Beacon> createByOrder(ManufacturerOrder order) {
+    public List<Beacon> createByOrder(ManufacturerOrder order) throws NoGroupToOrderException,
+            InsufficientRightsException, BeaconNotFoundException, NoBeaconsToOrderException {
         boolean auth = false;
 
         User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<Group> group;
-        if (order.getGroupId() == null || !(group = groupRepository.findById(order.getGroupId())).isPresent())
+        Group group;
+        try {
+            group = groupService.find(order.getGroupId());
+        } catch (GroupNotFoundException e) {
             throw new NoGroupToOrderException();
+        }
         if (authorizedUser.isAdmin())
             auth = true;
         else
@@ -111,7 +110,7 @@ public class BeaconService implements IBeaconService {
             throw new InsufficientRightsException();
 
         ApiService apiService = applicationContext.getBean(ApiService.class);
-        apiService.setApiKey(group.get().getKontaktIoApiKey());
+        apiService.setApiKey(group.getKontaktIoApiKey());
         try {
             apiService.assignOrder(order.getId());
         } catch (HttpClientErrorException e) {
@@ -139,7 +138,7 @@ public class BeaconService implements IBeaconService {
 
                 // group is optional
                 if (order.getGroupId() != null)
-                    createBeaconData.setGroup(groupRepository.findById(order.getGroupId()).get());
+                    createBeaconData.setGroup(groupService.find(order.getGroupId()));
 
                 beaconData.setRemoteBeacon(remoteBeacon);
                 beaconData.setRemoteBeaconUpdatedAt(new Date());
@@ -194,7 +193,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public Beacon update(String id, BeaconUpdate beaconUpdate) {
+    public Beacon update(String id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException, InvalidApiKeyException {
         boolean auth = false;
 
         User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -216,9 +215,27 @@ public class BeaconService implements IBeaconService {
         ApiService apiService = applicationContext.getBean(ApiService.class);
 
         Beacon beacon = find(apiService, id);
-        if (!authorizedUser.isAdmin() && (beaconUpdate.getGroup() == null && beacon.getGroup() == null
-                || beaconUpdate.getGroup() == null || !beaconUpdate.getGroup().equals(beacon.getGroup().getId())))
-            throw new InsufficientRightsException();
+        if (!Objects.equals(beaconUpdate.getGroup(), beacon.getGroup() == null ? null : beacon.getGroup().getId())) {
+            if (!authorizedUser.isAdmin()) {
+                throw new InsufficientRightsException();
+            }
+            if (beaconUpdate.getGroup() != null) {
+                Group newGroup = groupService.find(beaconUpdate.getGroup());
+                if (!Objects.equals(newGroup.getKontaktIoApiKey(), beacon.getGroup() != null ?
+                        beacon.getGroup().getKontaktIoApiKey() : null)) {
+
+                    apiService.setApiKey(newGroup.getKontaktIoApiKey());
+                    if (apiService.getBeacons(Lists.newArrayList(beacon.getManufacturerId())).getDevices().stream()
+                            .noneMatch(tagBeaconDevice ->
+                                    tagBeaconDevice.getUniqueId().equals(beacon.getManufacturerId())
+                                            && (tagBeaconDevice.getAccess() == Device.Access.OWNER
+                                            || tagBeaconDevice.getAccess() == Device.Access.SUPERVISOR
+                                            || tagBeaconDevice.getAccess() == Device.Access.EDITOR)
+                            ))
+                        throw new InvalidApiKeyException();
+                }
+            }
+        }
 
         TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon);
         apiService.setApiKey(beacon.getGroup().getKontaktIoApiKey());
