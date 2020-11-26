@@ -1,7 +1,6 @@
 package it.bz.beacon.api.service.order;
 
 import it.bz.beacon.api.db.model.OrderData;
-import it.bz.beacon.api.db.repository.InfoRepository;
 import it.bz.beacon.api.db.repository.OrderRepository;
 import it.bz.beacon.api.exception.db.OrderSymbolNotFoundException;
 import it.bz.beacon.api.exception.order.NoBeaconsToOrderException;
@@ -18,9 +17,6 @@ public class OrderService implements IOrderService {
 
     @Autowired
     private OrderRepository repository;
-
-    @Autowired
-    private InfoRepository infoRepository;
 
     @Override
     public List<BeaconOrder> findAll() {
@@ -44,7 +40,7 @@ public class OrderService implements IOrderService {
     public BeaconOrder find(String orderSymbol) {
         List<OrderData> orderDataList = repository.findAllByOrderSymbolOrderByZoneCodeAscZoneIdAsc(orderSymbol);
 
-        if (orderDataList.size() <= 0) {
+        if (orderDataList.isEmpty()) {
             throw new OrderSymbolNotFoundException();
         }
 
@@ -61,7 +57,7 @@ public class OrderService implements IOrderService {
     public BeaconOrder create() {
         List<OrderData> orderDataList = repository.findAllByOrderSymbolOrderByZoneCodeAscZoneIdAsc(null);
 
-        if (orderDataList.size() <= 0) {
+        if (orderDataList.isEmpty()) {
             throw new NoBeaconsToOrderException();
         }
 

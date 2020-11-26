@@ -9,7 +9,6 @@ import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.model.UserRoleGroup;
 import it.bz.beacon.api.db.repository.BeaconRepository;
 import it.bz.beacon.api.db.repository.GroupRepository;
-import it.bz.beacon.api.db.repository.IssueRepository;
 import it.bz.beacon.api.exception.auth.InsufficientRightsException;
 import it.bz.beacon.api.exception.db.BeaconConfigurationNotCreatedException;
 import it.bz.beacon.api.exception.db.BeaconConfigurationNotDeletedException;
@@ -49,9 +48,6 @@ public class BeaconService implements IBeaconService {
 
     @Autowired
     private IBeaconDataService beaconDataService;
-
-    @Autowired
-    private IssueRepository issueRepository;
 
     @Autowired
     private GroupRepository groupRepository;
@@ -182,7 +178,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public Beacon update(String id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException {
+    public Beacon update(String id, BeaconUpdate beaconUpdate) {
         boolean auth = false;
 
         User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -243,7 +239,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate) throws BeaconNotFoundException {
+    public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate) {
         beaconDataService.updateBatteryLevel(id, batteryLevelUpdate);
 
         return beaconRepository.findById(id).orElseThrow(BeaconNotFoundException::new);
@@ -274,7 +270,7 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-    public ResponseEntity<?> delete(String id) throws BeaconNotFoundException {
+    public ResponseEntity<?> delete(String id) {
         return null;
     }
 
@@ -315,7 +311,7 @@ public class BeaconService implements IBeaconService {
     }
 
     private Map<String, RemoteBeacon> getBeaconsWithStatuses(BeaconListResponse response) {
-        if (response == null || response.getDevices() == null || response.getDevices().size() == 0) {
+        if (response == null || response.getDevices() == null || response.getDevices().isEmpty()) {
             return Maps.newHashMap();
         }
 
