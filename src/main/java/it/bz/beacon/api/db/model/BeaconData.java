@@ -82,7 +82,6 @@ public class BeaconData extends AuditModel {
 
     @Type(type = "jsonb")
     @Column(columnDefinition = "json")
-    @Basic(fetch = FetchType.LAZY)
     private RemoteBeacon remoteBeacon;
 
     @Temporal(TemporalType.TIMESTAMP)

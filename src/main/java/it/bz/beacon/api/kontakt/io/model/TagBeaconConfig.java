@@ -2,7 +2,7 @@ package it.bz.beacon.api.kontakt.io.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Sets;
-import it.bz.beacon.api.db.model.Beacon;
+import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.kontakt.io.model.enumeration.ButtonFeature;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Model;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
@@ -39,9 +39,9 @@ public class TagBeaconConfig {
     private Accelerometer accelerometer;
     private PowerSaving powerSaving;
 
-    public static TagBeaconConfig fromBeaconUpdate(BeaconUpdate beaconUpdate, Beacon beacon) {
+    public static TagBeaconConfig fromBeaconUpdate(BeaconUpdate beaconUpdate, BeaconData beaconData) {
         TagBeaconConfig config = new TagBeaconConfig();
-        config.setUniqueId(beacon.getManufacturerId());
+        config.setUniqueId(beaconData.getManufacturerId());
 
         config.setProximity(beaconUpdate.getUuid());
         config.setMajor(beaconUpdate.getMajor());

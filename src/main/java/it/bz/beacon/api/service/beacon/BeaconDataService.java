@@ -1,18 +1,24 @@
 package it.bz.beacon.api.service.beacon;
 
+import it.bz.beacon.api.db.model.Beacon;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.model.Group;
 import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.db.repository.GroupRepository;
 import it.bz.beacon.api.exception.db.BeaconDataNotFoundException;
+import it.bz.beacon.api.exception.db.BeaconNotFoundException;
 import it.bz.beacon.api.model.BeaconBatteryLevelUpdate;
 import it.bz.beacon.api.model.BeaconUpdate;
+import it.bz.beacon.api.model.RemoteBeacon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class BeaconDataService implements IBeaconDataService {
@@ -22,6 +28,9 @@ public class BeaconDataService implements IBeaconDataService {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Override
     public List<BeaconData> findAll() {
@@ -34,18 +43,24 @@ public class BeaconDataService implements IBeaconDataService {
     }
 
     @Override
-    public BeaconData create(BeaconData beaconData) {
+    public Beacon create(BeaconData beaconData) {
         beaconData.setUserUpdatedAt(new Date());
-        return repository.save(beaconData);
+        String id = repository.saveAndFlush(beaconData).getId();
+
+        em.clear();
+
+        return repository.findBeaconById(id).orElseThrow(BeaconNotFoundException::new);
     }
 
     @Override
-    public BeaconData update(BeaconData beaconData) throws BeaconDataNotFoundException {
-        return repository.save(beaconData);
+    public Beacon update(BeaconData beaconData) throws BeaconNotFoundException {
+        String id = repository.saveAndFlush(beaconData).getId();
+        em.clear();
+        return repository.findBeaconById(id).orElseThrow(BeaconNotFoundException::new);
     }
 
     @Override
-    public BeaconData update(String id, BeaconUpdate beaconUpdate) throws BeaconDataNotFoundException {
+    public Beacon update(String id, BeaconUpdate beaconUpdate, RemoteBeacon remoteBeacon) throws BeaconDataNotFoundException {
         return repository.findById(id).map(beaconData -> {
             beaconData.setName(beaconUpdate.getName());
             beaconData.setDescription(beaconUpdate.getDescription());
@@ -74,19 +89,52 @@ public class BeaconDataService implements IBeaconDataService {
 
             beaconData.setUserUpdatedAt(new Date());
 
-            return repository.save(beaconData);
+            if (remoteBeacon != null) {
+                beaconData.setRemoteBeaconUpdatedAt(new Date());
+                beaconData.setRemoteBeacon(remoteBeacon);
+            }
+
+            repository.saveAndFlush(beaconData).getId();
+
+            em.clear();
+
+            return repository.findBeaconById(id).orElseThrow(BeaconNotFoundException::new);
         }).orElseThrow(BeaconDataNotFoundException::new);
     }
 
     @Override
-    public BeaconData updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate)
+    public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate)
             throws BeaconDataNotFoundException {
         return repository.findById(id).map(beaconData -> {
             beaconData.setBatteryLevel(batteryLevelUpdate.getBatteryLevel());
             beaconData.setTrustedUpdatedAt(new Date());
 
-            return repository.save(beaconData);
+            repository.saveAndFlush(beaconData);
+
+            em.clear();
+
+            return repository.findBeaconById(id).orElseThrow(BeaconNotFoundException::new);
         }).orElseThrow(BeaconDataNotFoundException::new);
+    }
+
+    @Override
+    public List<Beacon> findAllBeacon() {
+        return repository.findAllBeacon();
+    }
+
+    @Override
+    public List<Beacon> findAllBeaconByGroupId(Long groupId) {
+        return repository.findAllBeaconByGroupId(groupId);
+    }
+
+    @Override
+    public List<Beacon> findAllBeacon(List<String> ids) {
+        return repository.findAllBeaconById(ids);
+    }
+
+    @Override
+    public Optional<Beacon> findBeacon(String id) {
+        return repository.findBeaconById(id);
     }
 
     @Override
