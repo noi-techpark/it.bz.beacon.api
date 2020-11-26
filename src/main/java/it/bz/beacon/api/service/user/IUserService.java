@@ -19,4 +19,6 @@ public interface IUserService {
             InsufficientRightsException;
     BaseMessage changePassword(long id, PasswordChange passwordChange) throws InvalidPasswordException,
             UserNotFoundException;
+
+    List<GroupApiKey> findAllGroupApiKey(long id);
 }
