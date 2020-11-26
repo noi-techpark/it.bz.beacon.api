@@ -5,4 +5,5 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.FORBIDDEN, reason = "The given password reset JWT token is not valid")
 public class InvalidJwtPasswordResetToken extends RuntimeException {
+    private static final long serialVersionUID = -2366978314834942091L;
 }

@@ -17,7 +17,6 @@ import java.util.UUID;
 @Table(name = "beacon")
 @TypeDef(name = "json", typeClass = JsonStringType.class)
 public class Beacon {
-    private static final long serialVersionUID = -8817958472953525892L;
 
     @Id
     private String id;

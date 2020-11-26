@@ -74,14 +74,14 @@ public class BeaconService implements IBeaconService {
 
     @Override
     public List<Beacon> findAllWithIds(List<String> ids) {
-        if (ids.size() <= 0) {
+        if (ids.isEmpty()) {
             return Lists.newArrayList();
         }
         return beaconRepository.findAllById(ids);
     }
 
     @Override
-    public Beacon find(String id) throws BeaconNotFoundException {
+    public Beacon find(String id) {
         updateRemoteBeacon(id);
         return beaconRepository.findById(id).orElseThrow(BeaconNotFoundException::new);
     }
