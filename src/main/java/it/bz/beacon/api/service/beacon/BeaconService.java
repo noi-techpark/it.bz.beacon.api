@@ -148,9 +148,7 @@ public class BeaconService implements IBeaconService {
 
                 BeaconData createBeaconData = BeaconData.fromRemoteBeacon(remoteBeacon);
 
-                // group is optional
-                if (order.getGroupId() != null)
-                    createBeaconData.setGroup(groupService.find(order.getGroupId()));
+                createBeaconData.setGroup(groupService.find(order.getGroupId()));
 
                 createBeaconData.setRemoteBeacon(remoteBeacon);
                 createBeaconData.setRemoteBeaconUpdatedAt(new Date());
