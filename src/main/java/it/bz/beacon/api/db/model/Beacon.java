@@ -39,7 +39,6 @@ public class Beacon {
 
     private double info_lng;
 
-    @Column(nullable = false)
     private LocationType locationType = LocationType.OUTDOOR;
 
     @Type(type = "org.hibernate.type.StringType")
@@ -53,24 +52,24 @@ public class Beacon {
     @Temporal(TemporalType.TIMESTAMP)
     private Date trustedUpdatedAt;
 
-    private boolean iBeacon;
-    private boolean telemetry;
-    private boolean eddystoneUid;
-    private boolean eddystoneUrl;
-    private boolean eddystoneTlm;
-    private boolean eddystoneEid;
-    private boolean eddystoneEtlm;
+    private Boolean iBeacon;
+    private Boolean telemetry;
+    private Boolean eddystoneUid;
+    private Boolean eddystoneUrl;
+    private Boolean eddystoneTlm;
+    private Boolean eddystoneEid;
+    private Boolean eddystoneEtlm;
 
     private UUID uuid;
-    private int major;
-    private int minor;
+    private Integer major;
+    private Integer minor;
 
     private String url;
     private String namespace;
     private String instanceId;
 
-    private int interval;
-    private int txPower;
+    private Integer interval;
+    private Integer txPower;
 
     private Integer batteryLevel;
 
@@ -82,7 +81,7 @@ public class Beacon {
     private String internalName;
 
     @ManyToOne
-    @JoinColumn(name = "group_id", nullable = true, updatable = true)
+    @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
     @Enumerated(EnumType.STRING)
@@ -200,59 +199,59 @@ public class Beacon {
         this.trustedUpdatedAt = trustedUpdatedAt;
     }
 
-    public boolean isiBeacon() {
+    public Boolean getiBeacon() {
         return iBeacon;
     }
 
-    public void setiBeacon(boolean iBeacon) {
+    public void setiBeacon(Boolean iBeacon) {
         this.iBeacon = iBeacon;
     }
 
-    public boolean isTelemetry() {
+    public Boolean getTelemetry() {
         return telemetry;
     }
 
-    public void setTelemetry(boolean telemetry) {
+    public void setTelemetry(Boolean telemetry) {
         this.telemetry = telemetry;
     }
 
-    public boolean isEddystoneUid() {
+    public Boolean getEddystoneUid() {
         return eddystoneUid;
     }
 
-    public void setEddystoneUid(boolean eddystoneUid) {
+    public void setEddystoneUid(Boolean eddystoneUid) {
         this.eddystoneUid = eddystoneUid;
     }
 
-    public boolean isEddystoneUrl() {
+    public Boolean getEddystoneUrl() {
         return eddystoneUrl;
     }
 
-    public void setEddystoneUrl(boolean eddystoneUrl) {
+    public void setEddystoneUrl(Boolean eddystoneUrl) {
         this.eddystoneUrl = eddystoneUrl;
     }
 
-    public boolean isEddystoneTlm() {
+    public Boolean getEddystoneTlm() {
         return eddystoneTlm;
     }
 
-    public void setEddystoneTlm(boolean eddystoneTlm) {
+    public void setEddystoneTlm(Boolean eddystoneTlm) {
         this.eddystoneTlm = eddystoneTlm;
     }
 
-    public boolean isEddystoneEid() {
+    public Boolean getEddystoneEid() {
         return eddystoneEid;
     }
 
-    public void setEddystoneEid(boolean eddystoneEid) {
+    public void setEddystoneEid(Boolean eddystoneEid) {
         this.eddystoneEid = eddystoneEid;
     }
 
-    public boolean isEddystoneEtlm() {
+    public Boolean getEddystoneEtlm() {
         return eddystoneEtlm;
     }
 
-    public void setEddystoneEtlm(boolean eddystoneEtlm) {
+    public void setEddystoneEtlm(Boolean eddystoneEtlm) {
         this.eddystoneEtlm = eddystoneEtlm;
     }
 
@@ -264,19 +263,19 @@ public class Beacon {
         this.uuid = uuid;
     }
 
-    public int getMajor() {
+    public Integer getMajor() {
         return major;
     }
 
-    public void setMajor(int major) {
+    public void setMajor(Integer major) {
         this.major = major;
     }
 
-    public int getMinor() {
+    public Integer getMinor() {
         return minor;
     }
 
-    public void setMinor(int minor) {
+    public void setMinor(Integer minor) {
         this.minor = minor;
     }
 
@@ -310,19 +309,19 @@ public class Beacon {
         this.instanceId = instanceId;
     }
 
-    public int getInterval() {
+    public Integer getInterval() {
         return interval;
     }
 
-    public void setInterval(int interval) {
+    public void setInterval(Integer interval) {
         this.interval = interval;
     }
 
-    public int getTxPower() {
+    public Integer getTxPower() {
         return txPower;
     }
 
-    public void setTxPower(int txPower) {
+    public void setTxPower(Integer txPower) {
         this.txPower = txPower;
     }
 

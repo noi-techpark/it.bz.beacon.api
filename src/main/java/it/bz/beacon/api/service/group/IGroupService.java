@@ -2,6 +2,7 @@ package it.bz.beacon.api.service.group;
 
 import it.bz.beacon.api.db.model.Group;
 import it.bz.beacon.api.db.model.UserRoleGroup;
+import it.bz.beacon.api.exception.auth.InsufficientRightsException;
 import it.bz.beacon.api.exception.db.GroupNotFoundException;
 import it.bz.beacon.api.exception.db.UserRoleGroupNotFoundException;
 import it.bz.beacon.api.model.*;
@@ -26,4 +27,6 @@ public interface IGroupService {
     UserRoleGroup updateUserRole(long groupId, long userId, GroupUserRoleUpdate groupUserRoleUpdate) throws UserRoleGroupNotFoundException;
 
     BaseMessage deleteUserAssignment(long groupId, long userId) throws UserRoleGroupNotFoundException;
+
+    GroupApiKey findGroupApiKey(long id) throws GroupNotFoundException, InsufficientRightsException;
 }

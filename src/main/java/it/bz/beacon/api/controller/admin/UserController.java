@@ -59,4 +59,10 @@ public class UserController {
     public BaseMessage resetPassword(@PathVariable long id, @Valid @RequestBody PasswordReset passwordReset) {
         return service.resetPassword(id, passwordReset);
     }
+
+    @ApiOperation(value = "View a list of all the api key assigned to the groups that the user is member of", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}/apiKey", produces = "application/json")
+    public List<GroupApiKey> getApiKey(@PathVariable long id) {
+        return service.findAllGroupApiKey(id);
+    }
 }

@@ -3,22 +3,14 @@ package it.bz.beacon.api.service.beacon;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
-import it.bz.beacon.api.db.model.Beacon;
-import it.bz.beacon.api.db.model.BeaconData;
-import it.bz.beacon.api.db.model.User;
-import it.bz.beacon.api.db.model.UserRoleGroup;
-import it.bz.beacon.api.db.repository.BeaconRepository;
-import it.bz.beacon.api.db.repository.GroupRepository;
+import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.exception.auth.InsufficientRightsException;
-import it.bz.beacon.api.exception.db.BeaconConfigurationNotCreatedException;
-import it.bz.beacon.api.exception.db.BeaconConfigurationNotDeletedException;
-import it.bz.beacon.api.exception.db.BeaconNotFoundException;
-import it.bz.beacon.api.exception.db.InvalidBeaconIdentifierException;
+import it.bz.beacon.api.exception.db.*;
+import it.bz.beacon.api.exception.kontakt.io.InvalidApiKeyException;
+import it.bz.beacon.api.exception.order.NoBeaconsToOrderException;
+import it.bz.beacon.api.exception.order.NoGroupToOrderException;
 import it.bz.beacon.api.kontakt.io.ApiService;
-import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
-import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
-import it.bz.beacon.api.kontakt.io.model.TagBeaconConfig;
-import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
+import it.bz.beacon.api.kontakt.io.model.*;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
@@ -26,7 +18,9 @@ import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.model.enumeration.UserRole;
+import it.bz.beacon.api.service.group.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -44,28 +38,25 @@ import java.util.stream.Collectors;
 public class BeaconService implements IBeaconService {
 
     @Autowired
-    private ApiService apiService;
-
-    @Autowired
     private IBeaconDataService beaconDataService;
 
     @Autowired
-    private GroupRepository groupRepository;
+    private GroupService groupService;
 
     @Autowired
     private RemoteBeaconCache remoteBeaconCache;
 
     @Autowired
-    private BeaconRepository beaconRepository;
+    private ApplicationContext applicationContext;
 
     @Override
     public List<Beacon> findAll() {
-        return beaconRepository.findAll();
+        return beaconDataService.findAllBeacon();
     }
 
     @Override
     public List<Beacon> findAllByGroupId(Long groupId) {
-        return beaconRepository.findAllByGroupId(groupId);
+        return beaconDataService.findAllBeaconByGroupId(groupId);
     }
 
     @Override
@@ -73,20 +64,48 @@ public class BeaconService implements IBeaconService {
         if (ids.isEmpty()) {
             return Lists.newArrayList();
         }
-        return beaconRepository.findAllById(ids);
+        return beaconDataService.findAllBeacon(ids);
     }
 
     @Override
     public Beacon find(String id) {
-        updateRemoteBeacon(id);
-        return beaconRepository.findById(id).orElseThrow(BeaconNotFoundException::new);
+        ApiService apiService = applicationContext.getBean(ApiService.class);
+        return find(apiService, id);
+    }
+
+    public Beacon find(ApiService apiService, String id) {
+        BeaconData beaconData = beaconDataService.find(id);
+
+        apiService.setApiKey(beaconData.getGroup().getKontaktIoApiKey());
+        RemoteBeacon remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
+        if (remoteBeacon != null && !remoteBeacon.equals(beaconData.getRemoteBeacon())) {
+            beaconData.setRemoteBeacon(remoteBeacon);
+            beaconData.setRemoteBeaconUpdatedAt(new Date());
+            Beacon ret = beaconDataService.update(beaconData);
+            return ret;
+        }
+
+        return beaconDataService.findBeacon(id).orElseThrow(BeaconNotFoundException::new);
+    }
+
+    private RemoteBeacon findRemoteBeacon(ApiService apiService, String manufacturerId) {
+        List<String> block = Lists.newArrayList(manufacturerId);
+        Map<String, RemoteBeacon> remoteBeacons = getBeaconsWithStatuses(apiService, apiService.getBeacons(block));
+        return remoteBeacons.get(manufacturerId);
     }
 
     @Override
-    public List<Beacon> createByOrder(ManufacturerOrder order) {
+    public List<Beacon> createByOrder(ManufacturerOrder order) throws NoGroupToOrderException,
+            InsufficientRightsException, BeaconNotFoundException, NoBeaconsToOrderException {
         boolean auth = false;
 
         User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Group group;
+        try {
+            group = groupService.find(order.getGroupId());
+        } catch (GroupNotFoundException e) {
+            throw new NoGroupToOrderException();
+        }
         if (authorizedUser.isAdmin())
             auth = true;
         else
@@ -102,7 +121,8 @@ public class BeaconService implements IBeaconService {
         if (!auth)
             throw new InsufficientRightsException();
 
-
+        ApiService apiService = applicationContext.getBean(ApiService.class);
+        apiService.setApiKey(group.getKontaktIoApiKey());
         try {
             apiService.assignOrder(order.getId());
         } catch (HttpClientErrorException e) {
@@ -111,51 +131,51 @@ public class BeaconService implements IBeaconService {
             // throw e;
         }
 
-        List<TagBeaconDevice> orderBeacons = fetchBeaconsFromManufacturer(order.getId());
+        List<TagBeaconDevice> orderBeacons = fetchBeaconsFromManufacturer(apiService, order.getId());
 
-        return orderBeacons.stream().map(tagBeaconDevice -> {
+        List<Beacon> orderBeaconsResult = orderBeacons.stream().map(tagBeaconDevice -> {
+            try {
+                RemoteBeacon remoteBeacon = getBeaconWithStatus(apiService, RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice));
+                BeaconData beaconData;
                 try {
-                    RemoteBeacon remoteBeacon = getBeaconWithStatus(RemoteBeacon.fromTagBeaconDevice(tagBeaconDevice));
-                    BeaconData beaconData;
-                    try {
-                        beaconData = beaconDataService.find(remoteBeacon.getId());
-                    } catch (Exception e) {
-                        beaconData = null;
-                    }
-                    if (beaconData != null) {
-                        return null;
-                    }
-
-                    BeaconData createBeaconData = BeaconData.fromRemoteBeacon(remoteBeacon);
-
-                    // group is optional
-                    if (order.getGroupId() != null)
-                       createBeaconData.setGroup(groupRepository.findById(order.getGroupId()).get());
-
-                    beaconData.setRemoteBeacon(remoteBeacon);
-                    beaconData.setRemoteBeaconUpdatedAt(new Date());
-
-                    beaconData = beaconDataService.create(createBeaconData);
-
-                    remoteBeaconCache.add(remoteBeacon);
-                    return beaconRepository.findById(beaconData.getId()).orElseThrow(BeaconNotFoundException::new);
-                } catch (InvalidBeaconIdentifierException e) {
+                    beaconData = beaconDataService.find(remoteBeacon.getId());
+                } catch (Exception e) {
+                    beaconData = null;
+                }
+                if (beaconData != null) {
                     return null;
                 }
+
+                BeaconData createBeaconData = BeaconData.fromRemoteBeacon(remoteBeacon);
+
+                createBeaconData.setGroup(groupService.find(order.getGroupId()));
+
+                createBeaconData.setRemoteBeacon(remoteBeacon);
+                createBeaconData.setRemoteBeaconUpdatedAt(new Date());
+
+                return beaconDataService.create(createBeaconData);
+            } catch (InvalidBeaconIdentifierException e) {
+                return null;
+            }
         }).filter(Objects::nonNull).collect(Collectors.toList());
+
+        if (orderBeaconsResult.isEmpty())
+            throw new NoBeaconsToOrderException();
+
+        return orderBeaconsResult;
     }
 
-    private List<TagBeaconDevice> fetchBeaconsFromManufacturer(String orderId) {
-        return fetchBeaconsFromManufacturer(orderId, 0);
+    private List<TagBeaconDevice> fetchBeaconsFromManufacturer(ApiService apiService, String orderId) {
+        return fetchBeaconsFromManufacturer(apiService, orderId, 0);
     }
 
-    private List<TagBeaconDevice> fetchBeaconsFromManufacturer(String orderId, int startIndex) {
+    private List<TagBeaconDevice> fetchBeaconsFromManufacturer(ApiService apiService, String orderId, int startIndex) {
         BeaconListResponse response = apiService.getBeacons(startIndex);
 
         List<TagBeaconDevice> beacons = Lists.newArrayList();
 
         if (response.getSearchMeta().getNextResults() != null && !response.getSearchMeta().getNextResults().toString().trim().equals("")) {
-            beacons.addAll(fetchBeaconsFromManufacturer(orderId, startIndex + response.getSearchMeta().getMaxResult()));
+            beacons.addAll(fetchBeaconsFromManufacturer(apiService, orderId, startIndex + response.getSearchMeta().getMaxResult()));
         }
 
         beacons.addAll(response.getDevices().stream().filter(tagBeaconDevice -> tagBeaconDevice.getOrderId().equals(orderId))
@@ -164,21 +184,8 @@ public class BeaconService implements IBeaconService {
         return beacons;
     }
 
-    private void updateRemoteBeacon(String id) {
-        BeaconData beaconData = beaconDataService.find(id);
-        List<String> block = Lists.newArrayList(beaconData.getManufacturerId());
-
-        Map<String, RemoteBeacon> remoteBeacons = getBeaconsWithStatuses(apiService.getBeacons(block));
-
-        if (remoteBeacons.containsKey(id) && !remoteBeacons.get(id).equals(beaconData.getRemoteBeacon())) {
-            beaconData.setRemoteBeacon(remoteBeacons.get(id));
-            beaconData.setRemoteBeaconUpdatedAt(new Date());
-            beaconDataService.update(beaconData);
-        }
-    }
-
     @Override
-    public Beacon update(String id, BeaconUpdate beaconUpdate) {
+    public Beacon update(String id, BeaconUpdate beaconUpdate) throws BeaconNotFoundException, InvalidApiKeyException {
         boolean auth = false;
 
         User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -197,76 +204,113 @@ public class BeaconService implements IBeaconService {
         if (!auth)
             throw new InsufficientRightsException();
 
-        Beacon beacon = find(id);
-        if (!authorizedUser.isAdmin() && (beaconUpdate.getGroup() == null && beacon.getGroup() == null
-                || beaconUpdate.getGroup() == null || !beaconUpdate.getGroup().equals(beacon.getGroup().getId())))
-            throw new InsufficientRightsException();
+        BeaconData beaconData = beaconDataService.find(id);
 
-        TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beacon);
+        ApiService apiService = applicationContext.getBean(ApiService.class);
+        apiService.setApiKey(beaconData.getGroup().getKontaktIoApiKey());
 
-        if (isNewConfig(tagBeaconConfig, beacon)) {
-            CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> configResponse = createConfig(tagBeaconConfig);
-            CompletableFuture.allOf(configResponse).join();
+        if (!Objects.equals(beaconUpdate.getGroup(), beaconData.getGroup() == null ? null : beaconData.getGroup().getId())) {
+            if (!authorizedUser.isAdmin()) {
+                throw new InsufficientRightsException();
+            }
+            if (beaconUpdate.getGroup() != null) {
+                Group newGroup = groupService.find(beaconUpdate.getGroup());
+                if (!Objects.equals(newGroup.getKontaktIoApiKey(), beaconData.getGroup() != null ?
+                        beaconData.getGroup().getKontaktIoApiKey() : null)) {
 
-            try {
-                if (configResponse.get().getStatusCode() != HttpStatus.CREATED) {
+                    apiService.setApiKey(newGroup.getKontaktIoApiKey());
+                    if (apiService.getBeacons(Lists.newArrayList(beaconData.getManufacturerId())).getDevices().stream()
+                            .noneMatch(tagBeaconDevice ->
+                                    tagBeaconDevice.getUniqueId().equals(beaconData.getManufacturerId())
+                                            && (tagBeaconDevice.getAccess() == Device.Access.OWNER
+                                            || tagBeaconDevice.getAccess() == Device.Access.SUPERVISOR
+                                            || tagBeaconDevice.getAccess() == Device.Access.EDITOR)
+                            ))
+                        throw new InvalidApiKeyException();
+                }
+            }
+        }
+
+        TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beaconData);
+        RemoteBeacon remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
+
+        if (isNewConfig(tagBeaconConfig, remoteBeacon)) {
+            if (isNewPendingConfig(tagBeaconConfig, remoteBeacon.getPendingConfiguration())) {
+                CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> configResponse = createConfig(apiService, tagBeaconConfig);
+                CompletableFuture.allOf(configResponse).join();
+
+                try {
+                    if (configResponse.get().getStatusCode() != HttpStatus.CREATED) {
+                        throw new BeaconConfigurationNotCreatedException();
+                    }
+                    remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
+                } catch (InterruptedException | ExecutionException e) {
                     throw new BeaconConfigurationNotCreatedException();
                 }
-
-                beaconDataService.update(id, beaconUpdate);
-
-                return beaconRepository.findById(id).orElseThrow(BeaconNotFoundException::new);
-            } catch (InterruptedException | ExecutionException e) {
-                throw new BeaconConfigurationNotCreatedException();
             }
 
         } else {
-            CompletableFuture<ResponseEntity<BeaconConfigDeletionResponse>> configResponse = deleteConfig(beacon);
-            CompletableFuture.allOf(configResponse).join();
+            if (remoteBeacon.getPendingConfiguration() != null) {
+                CompletableFuture<ResponseEntity<BeaconConfigDeletionResponse>> configResponse = deleteConfig(apiService, beaconData);
+                CompletableFuture.allOf(configResponse).join();
 
-            try {
-                if (configResponse.get().getStatusCode() != HttpStatus.OK) {
-                    throw new BeaconConfigurationNotDeletedException();
+                try {
+                    if (configResponse.get().getStatusCode() != HttpStatus.OK) {
+                        throw new BeaconConfigurationNotDeletedException();
+                    }
+                    remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new BeaconConfigurationNotCreatedException();
                 }
-
-                beaconDataService.update(id, beaconUpdate);
-
-                return beaconRepository.findById(id).orElseThrow(BeaconNotFoundException::new);
-            } catch (InterruptedException | ExecutionException e) {
-                throw new BeaconConfigurationNotCreatedException();
             }
         }
+
+        return beaconDataService.update(id, beaconUpdate, remoteBeacon);
     }
 
     @Override
     public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate) {
         beaconDataService.updateBatteryLevel(id, batteryLevelUpdate);
-
-        return beaconRepository.findById(id).orElseThrow(BeaconNotFoundException::new);
+        return beaconDataService.updateBatteryLevel(id, batteryLevelUpdate);
     }
 
-    private boolean isNewConfig(TagBeaconConfig tagBeaconConfig, Beacon beacon) {
-        return !tagBeaconConfig.getProximity().equals(beacon.getUuid())
-                || !tagBeaconConfig.getMajor().equals(beacon.getMajor())
-                || !tagBeaconConfig.getMinor().equals(beacon.getMinor())
-                || !tagBeaconConfig.getInterval().equals(beacon.getInterval())
-                || !tagBeaconConfig.getTxPower().equals(beacon.getTxPower())
-                || (tagBeaconConfig.getPackets().contains(Packet.IBEACON) && tagBeaconConfig.getProfiles().contains(Profile.IBEACON)) != beacon.isiBeacon()
-                || (tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_UID) && tagBeaconConfig.getProfiles().contains(Profile.EDDYSTONE)) != beacon.isEddystoneUid()
-                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_URL) != beacon.isEddystoneUrl()
-                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_TLM) != beacon.isEddystoneTlm()
-                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_EID) != beacon.isEddystoneEid()
-                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_ETLM) != beacon.isEddystoneEtlm();
+    private boolean isNewConfig(TagBeaconConfig tagBeaconConfig, RemoteBeacon remoteBeacon) {
+        return !tagBeaconConfig.getProximity().equals(remoteBeacon.getUuid())
+                || !tagBeaconConfig.getMajor().equals(remoteBeacon.getMajor())
+                || !tagBeaconConfig.getMinor().equals(remoteBeacon.getMinor())
+                || !tagBeaconConfig.getInterval().equals(remoteBeacon.getInterval())
+                || !tagBeaconConfig.getTxPower().equals(remoteBeacon.getTxPower())
+                || (tagBeaconConfig.getPackets().contains(Packet.IBEACON) && tagBeaconConfig.getProfiles().contains(Profile.IBEACON)) != remoteBeacon.isiBeacon()
+                || (tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_UID) && tagBeaconConfig.getProfiles().contains(Profile.EDDYSTONE)) != remoteBeacon.isEddystoneUid()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_URL) != remoteBeacon.isEddystoneUrl()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_TLM) != remoteBeacon.isEddystoneTlm()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_EID) != remoteBeacon.isEddystoneEid()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_ETLM) != remoteBeacon.isEddystoneEtlm();
+    }
+
+    private boolean isNewPendingConfig(TagBeaconConfig tagBeaconConfig, PendingConfiguration pendingConfiguration) {
+        return pendingConfiguration == null
+                || !tagBeaconConfig.getProximity().equals(pendingConfiguration.getUuid())
+                || !tagBeaconConfig.getMajor().equals(pendingConfiguration.getMajor())
+                || !tagBeaconConfig.getMinor().equals(pendingConfiguration.getMinor())
+                || !tagBeaconConfig.getInterval().equals(pendingConfiguration.getInterval())
+                || !tagBeaconConfig.getTxPower().equals(pendingConfiguration.getTxPower())
+                || (tagBeaconConfig.getPackets().contains(Packet.IBEACON) && tagBeaconConfig.getProfiles().contains(Profile.IBEACON)) != pendingConfiguration.isiBeacon()
+                || (tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_UID) && tagBeaconConfig.getProfiles().contains(Profile.EDDYSTONE)) != pendingConfiguration.isEddystoneUid()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_URL) != pendingConfiguration.isEddystoneUrl()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_TLM) != pendingConfiguration.isEddystoneTlm()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_EID) != pendingConfiguration.isEddystoneEid()
+                || tagBeaconConfig.getPackets().contains(Packet.EDDYSTONE_ETLM) != pendingConfiguration.isEddystoneEtlm();
     }
 
     @Async
-    private CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> createConfig(TagBeaconConfig tagBeaconConfig) {
+    private CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> createConfig(ApiService apiService, TagBeaconConfig tagBeaconConfig) {
         return CompletableFuture.completedFuture(apiService.createConfig(tagBeaconConfig));
     }
 
     @Async
-    private CompletableFuture<ResponseEntity<BeaconConfigDeletionResponse>> deleteConfig(Beacon beacon) {
-        return CompletableFuture.completedFuture(apiService.deleteConfig(beacon.getManufacturerId()));
+    private CompletableFuture<ResponseEntity<BeaconConfigDeletionResponse>> deleteConfig(ApiService apiService, BeaconData beaconData) {
+        return CompletableFuture.completedFuture(apiService.deleteConfig(beaconData.getManufacturerId()));
     }
 
     @Override
@@ -274,7 +318,7 @@ public class BeaconService implements IBeaconService {
         return null;
     }
 
-    private RemoteBeacon getBeaconWithStatus(RemoteBeacon remoteBeacon) {
+    private RemoteBeacon getBeaconWithStatus(ApiService apiService, RemoteBeacon remoteBeacon) {
 
         CompletableFuture<DeviceStatusListResponse> statusListResponseFuture = CompletableFuture
                 .completedFuture(apiService.getDeviceStatuses(Lists.newArrayList(remoteBeacon.getManufacturerId())));
@@ -310,8 +354,8 @@ public class BeaconService implements IBeaconService {
         return remoteBeacon;
     }
 
-    private Map<String, RemoteBeacon> getBeaconsWithStatuses(BeaconListResponse response) {
-        if (response == null || response.getDevices() == null || response.getDevices().isEmpty()) {
+    private Map<String, RemoteBeacon> getBeaconsWithStatuses(ApiService apiService, BeaconListResponse response) {
+        if (response == null || response.getDevices() == null || response.getDevices().size() == 0) {
             return Maps.newHashMap();
         }
 

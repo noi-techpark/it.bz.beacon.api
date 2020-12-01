@@ -173,4 +173,31 @@ public class GroupService implements IGroupService {
             throw new InsufficientRightsException();
         }).orElseThrow(UserRoleGroupNotFoundException::new);
     }
+
+    @Override
+    public GroupApiKey findGroupApiKey(long id) throws GroupNotFoundException, InsufficientRightsException {
+        Group group = repository.findById(id).orElseThrow(GroupNotFoundException::new);
+
+        boolean canSeeApiKey = false;
+
+        if (isAdmin())
+            canSeeApiKey = true;
+        else {
+            User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            for (UserRoleGroup authUserRoleGroup : authorizedUser.getGroups()) {
+                if (authUserRoleGroup.getGroup().getId() == id &&
+                        (authUserRoleGroup.getRole() == UserRole.MANAGER || authUserRoleGroup.getRole() == UserRole.BEACON_EDITOR)) {
+                    canSeeApiKey = true;
+                }
+            }
+        }
+
+        if (!canSeeApiKey) {
+            throw new InsufficientRightsException();
+        }
+
+        return GroupApiKey.fromGroup(group);
+    }
+
+
 }

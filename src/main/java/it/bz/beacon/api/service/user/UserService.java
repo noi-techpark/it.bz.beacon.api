@@ -8,6 +8,8 @@ import it.bz.beacon.api.exception.db.AuthenticatedUserNotDeletableException;
 import it.bz.beacon.api.exception.db.DuplicateEntryException;
 import it.bz.beacon.api.exception.db.UserNotFoundException;
 import it.bz.beacon.api.model.*;
+import it.bz.beacon.api.model.enumeration.UserRole;
+import it.bz.beacon.api.service.group.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,9 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class UserService implements IUserService {
+
+    @Autowired
+    private GroupService groupService;
 
     @Autowired
     private UserRepository repository;
@@ -127,6 +133,23 @@ public class UserService implements IUserService {
         }
 
         throw new InsufficientRightsException();
+    }
+
+    @Override
+    public List<GroupApiKey> findAllGroupApiKey(long id) throws UserNotFoundException {
+        User authUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return repository.findById(id).map(user -> {
+            if (!isAdmin() && !authUser.getUsername().equals(user.getUsername())) {
+                throw new InsufficientRightsException();
+            }
+            if (user.isAdmin())
+                return groupService.findAll().stream().map(group -> GroupApiKey.fromGroup(group)).collect(Collectors.toList());
+
+            return user.getGroups().stream().filter(userRoleGroup ->
+                    userRoleGroup.getRole() == UserRole.MANAGER || userRoleGroup.getRole() == UserRole.BEACON_EDITOR)
+                    .map(userRoleGroup -> GroupApiKey.fromGroup(userRoleGroup.getGroup())).collect(Collectors.toList());
+        }).orElseThrow(UserNotFoundException::new);
     }
 
     private boolean isAdmin() {

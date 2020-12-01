@@ -1,0 +1,1 @@
+alter table "group" add column kontakt_io_api_key text not null default '';
