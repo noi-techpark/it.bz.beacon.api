@@ -57,7 +57,7 @@ public class BeaconData extends AuditModel {
     private List<Issue> issues = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "group_id", nullable = true, updatable = true)
+    @JoinColumn(name = "group_id", nullable = false, updatable = true)
     private Group group;
 
     @Column(name = "trusted_updated_at")
