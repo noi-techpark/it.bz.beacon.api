@@ -271,14 +271,10 @@ public class BeaconService implements IBeaconService {
     }
 
     @Override
-<<<<<<< HEAD
     public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate) {
         beaconDataService.updateBatteryLevel(id, batteryLevelUpdate);
-=======
-    public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate) throws BeaconNotFoundException {
         return beaconDataService.updateBatteryLevel(id, batteryLevelUpdate);
     }
->>>>>>>  avoid inconsistent api results
 
     private boolean isNewConfig(TagBeaconConfig tagBeaconConfig, RemoteBeacon remoteBeacon) {
         return !tagBeaconConfig.getProximity().equals(remoteBeacon.getUuid())

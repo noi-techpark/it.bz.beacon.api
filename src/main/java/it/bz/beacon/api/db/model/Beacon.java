@@ -199,10 +199,6 @@ public class Beacon {
         this.trustedUpdatedAt = trustedUpdatedAt;
     }
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
-
     public Boolean getiBeacon() {
         return iBeacon;
     }
