@@ -152,8 +152,8 @@ public class BeaconService implements IBeaconService {
                 if (order.getGroupId() != null)
                     createBeaconData.setGroup(groupService.find(order.getGroupId()));
 
-                beaconData.setRemoteBeacon(remoteBeacon);
-                beaconData.setRemoteBeaconUpdatedAt(new Date());
+                createBeaconData.setRemoteBeacon(remoteBeacon);
+                createBeaconData.setRemoteBeaconUpdatedAt(new Date());
 
                 return beaconDataService.create(createBeaconData);
             } catch (InvalidBeaconIdentifierException e) {
@@ -206,9 +206,10 @@ public class BeaconService implements IBeaconService {
         if (!auth)
             throw new InsufficientRightsException();
 
-        ApiService apiService = applicationContext.getBean(ApiService.class);
-
         BeaconData beaconData = beaconDataService.find(id);
+
+        ApiService apiService = applicationContext.getBean(ApiService.class);
+        apiService.setApiKey(beaconData.getGroup().getKontaktIoApiKey());
 
         if (!Objects.equals(beaconUpdate.getGroup(), beaconData.getGroup() == null ? null : beaconData.getGroup().getId())) {
             if (!authorizedUser.isAdmin()) {
@@ -233,7 +234,6 @@ public class BeaconService implements IBeaconService {
         }
 
         TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beaconData);
-        apiService.setApiKey(beaconData.getGroup().getKontaktIoApiKey());
         RemoteBeacon remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
 
         if (isNewConfig(tagBeaconConfig, remoteBeacon)) {
