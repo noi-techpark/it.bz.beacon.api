@@ -282,7 +282,6 @@ public class BeaconService implements IBeaconService {
 
     @Override
     public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate) {
-        beaconDataService.updateBatteryLevel(id, batteryLevelUpdate);
         return beaconDataService.updateBatteryLevel(id, batteryLevelUpdate);
     }
 
