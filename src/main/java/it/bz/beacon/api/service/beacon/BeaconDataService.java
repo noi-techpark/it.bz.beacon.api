@@ -105,7 +105,7 @@ public class BeaconDataService implements IBeaconDataService {
     @Override
     public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate)
             throws BeaconDataNotFoundException {
-        return repository.findById(id).map(beaconData -> {
+        return repository.findBeaconByIdOrManufacturerId(id).map(beaconData -> {
             beaconData.setBatteryLevel(batteryLevelUpdate.getBatteryLevel());
             beaconData.setTrustedUpdatedAt(new Date());
 

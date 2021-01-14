@@ -7,6 +7,7 @@ import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.exception.auth.InsufficientRightsException;
 import it.bz.beacon.api.exception.db.*;
 import it.bz.beacon.api.exception.kontakt.io.InvalidApiKeyException;
+import it.bz.beacon.api.exception.kontakt.io.NoAccessToBeaconException;
 import it.bz.beacon.api.exception.order.NoBeaconsToOrderException;
 import it.bz.beacon.api.exception.order.NoGroupToOrderException;
 import it.bz.beacon.api.kontakt.io.ApiService;
@@ -234,6 +235,17 @@ public class BeaconService implements IBeaconService {
         TagBeaconConfig tagBeaconConfig = TagBeaconConfig.fromBeaconUpdate(beaconUpdate, beaconData);
         RemoteBeacon remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
 
+        if (remoteBeacon == null) {
+            if (apiService.getBeacons(Lists.newArrayList(beaconData.getManufacturerId())).getDevices().stream()
+                    .noneMatch(tagBeaconDevice ->
+                            tagBeaconDevice.getUniqueId().equals(beaconData.getManufacturerId())
+                                    && (tagBeaconDevice.getAccess() == Device.Access.OWNER
+                                    || tagBeaconDevice.getAccess() == Device.Access.SUPERVISOR
+                                    || tagBeaconDevice.getAccess() == Device.Access.EDITOR)
+                    ))
+                throw new NoAccessToBeaconException();
+        }
+
         if (isNewConfig(tagBeaconConfig, remoteBeacon)) {
             if (isNewPendingConfig(tagBeaconConfig, remoteBeacon.getPendingConfiguration())) {
                 CompletableFuture<ResponseEntity<List<BeaconConfigResponse>>> configResponse = createConfig(apiService, tagBeaconConfig);
@@ -270,7 +282,6 @@ public class BeaconService implements IBeaconService {
 
     @Override
     public Beacon updateBatteryLevel(String id, BeaconBatteryLevelUpdate batteryLevelUpdate) {
-        beaconDataService.updateBatteryLevel(id, batteryLevelUpdate);
         return beaconDataService.updateBatteryLevel(id, batteryLevelUpdate);
     }
 
