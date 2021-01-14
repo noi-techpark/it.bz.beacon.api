@@ -46,3 +46,4 @@ secrets.yml
 /src/main/resources/google-api-service-account.json
 .vscode
 *.old
+.env

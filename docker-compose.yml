@@ -3,7 +3,7 @@ services:
   java:
     build:
       context: .
-      dockerfile: docker/dockerfile-java
+      dockerfile: infrastructure/docker/java.dockerfile
     volumes:
       - ./:/code
     working_dir: /code
