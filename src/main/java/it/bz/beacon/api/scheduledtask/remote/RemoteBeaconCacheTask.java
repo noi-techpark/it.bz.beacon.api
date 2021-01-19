@@ -8,6 +8,7 @@ import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.db.repository.GroupRepository;
 import it.bz.beacon.api.exception.db.BeaconNotFoundException;
 import it.bz.beacon.api.exception.db.InfoNotFoundException;
+import it.bz.beacon.api.exception.kontakt.io.InvalidApiKeyException;
 import it.bz.beacon.api.kontakt.io.ApiService;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
 import it.bz.beacon.api.kontakt.io.response.BeaconListResponse;
@@ -15,6 +16,8 @@ import it.bz.beacon.api.kontakt.io.response.ConfigurationListResponse;
 import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.PendingConfiguration;
 import it.bz.beacon.api.model.RemoteBeacon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -44,6 +47,8 @@ public class RemoteBeaconCacheTask {
     @Autowired
     private RemoteBeaconCache remoteBeaconCache;
 
+    final static Logger log = LoggerFactory.getLogger(RemoteBeaconCacheTask.class);
+
     @Scheduled(fixedDelay = 60 * 1000)
     public void updateCache() {
         groupRepository.findAll().stream().filter(group -> group.getKontaktIoApiKey() != null && !group.getKontaktIoApiKey().isEmpty())
@@ -51,11 +56,15 @@ public class RemoteBeaconCacheTask {
                     Lists.partition(beaconDataRepository.findAllByGroupId(group.getId())
                             .stream().map(BeaconData::getManufacturerId).collect(Collectors.toList()), 200)
                             .forEach(block -> {
-                                apiService.setApiKey(group.getKontaktIoApiKey());
-                                BeaconListResponse beacons = apiService.getBeacons(block);
-                                Map<String, RemoteBeacon> beaconsWithStatuses = getBeaconsWithStatuses(beacons);
-                                remoteBeaconCache.addAll(beaconsWithStatuses);
-                                updateBeaconPackageData(beaconsWithStatuses);
+                                try {
+                                    apiService.setApiKey(group.getKontaktIoApiKey());
+                                    BeaconListResponse beacons = apiService.getBeacons(block);
+                                    Map<String, RemoteBeacon> beaconsWithStatuses = getBeaconsWithStatuses(beacons);
+                                    remoteBeaconCache.addAll(beaconsWithStatuses);
+                                    updateBeaconPackageData(beaconsWithStatuses);
+                                } catch (InvalidApiKeyException e) {
+                                    log.error("Invalid API key for group: {}", group.getName());
+                                }
                             });
                 });
     }

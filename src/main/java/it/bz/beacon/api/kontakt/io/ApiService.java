@@ -1,6 +1,7 @@
 package it.bz.beacon.api.kontakt.io;
 
 import it.bz.beacon.api.config.KontaktIOConfiguration;
+import it.bz.beacon.api.exception.kontakt.io.InvalidApiKeyException;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigDeletionResponse;
 import it.bz.beacon.api.kontakt.io.model.BeaconConfigResponse;
 import it.bz.beacon.api.kontakt.io.model.Device;
@@ -101,7 +102,7 @@ public class ApiService {
         }
         catch (RuntimeException exxx)
         {
-            throw exxx;
+            throw new InvalidApiKeyException();
         }
 
 

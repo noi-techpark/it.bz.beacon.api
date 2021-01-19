@@ -20,6 +20,8 @@ import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.model.enumeration.UserRole;
 import it.bz.beacon.api.service.group.GroupService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -37,6 +39,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class BeaconService implements IBeaconService {
+
+    final static Logger log = LoggerFactory.getLogger(BeaconService.class);
 
     @Autowired
     private IBeaconDataService beaconDataService;
@@ -78,12 +82,16 @@ public class BeaconService implements IBeaconService {
         BeaconData beaconData = beaconDataService.find(id);
 
         apiService.setApiKey(beaconData.getGroup().getKontaktIoApiKey());
-        RemoteBeacon remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
-        if (remoteBeacon != null && !remoteBeacon.equals(beaconData.getRemoteBeacon())) {
-            beaconData.setRemoteBeacon(remoteBeacon);
-            beaconData.setRemoteBeaconUpdatedAt(new Date());
-            Beacon ret = beaconDataService.update(beaconData);
-            return ret;
+        try {
+            RemoteBeacon remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
+            if (remoteBeacon != null && !remoteBeacon.equals(beaconData.getRemoteBeacon())) {
+                beaconData.setRemoteBeacon(remoteBeacon);
+                beaconData.setRemoteBeaconUpdatedAt(new Date());
+                Beacon ret = beaconDataService.update(beaconData);
+                return ret;
+            }
+        } catch (InvalidApiKeyException e) {
+            log.error("Invalid API key for group: {}", beaconData.getGroup().getName());
         }
 
         return beaconDataService.findBeacon(id).orElseThrow(BeaconNotFoundException::new);
