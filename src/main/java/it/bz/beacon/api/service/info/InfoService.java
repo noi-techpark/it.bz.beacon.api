@@ -30,18 +30,7 @@ public class InfoService implements IInfoService {
 
     @Override
     public List<Info> findAll() {
-
-        List<Info> infoList = repository.findAll();
-
-        infoList.stream().forEach(info -> {
-            try {
-                info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
-            } catch (Exception e) {
-                log.error("findAll()", e);
-            }
-        });
-
-        return infoList;
+        return repository.findAll();
     }
 
     @Override
@@ -51,15 +40,7 @@ public class InfoService implements IInfoService {
 
     @Override
     public Info findByBeaconId(String beaconId) throws InfoNotFoundException {
-        Info info = repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
-
-        try {
-            info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
-        } catch (Exception e) {
-            log.error("findByBeaconId(String beaconId)", e);
-        }
-
-        return info;
+        return repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
     }
 
     @Override
