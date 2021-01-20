@@ -27,4 +27,7 @@ public interface BeaconDataRepository extends JpaRepository<BeaconData, String> 
 
     @Query("select b from BeaconData b where id = :id or manufacturer_id = :id")
     Optional<BeaconData> findBeaconByIdOrManufacturerId(@Param("id") String id);
+
+    @Query("select b from BeaconData b where manufacturer_id in :ids")
+    List<BeaconData> findAllByManufacturerIds(@Param("ids") List<String> ids);
 }

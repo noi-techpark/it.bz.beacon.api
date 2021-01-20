@@ -87,14 +87,26 @@ public class BeaconService implements IBeaconService {
             if (remoteBeacon != null && !remoteBeacon.equals(beaconData.getRemoteBeacon())) {
                 beaconData.setRemoteBeacon(remoteBeacon);
                 beaconData.setRemoteBeaconUpdatedAt(new Date());
-                Beacon ret = beaconDataService.update(beaconData);
-                return ret;
+                beaconData.setFlagApiAccessible(hasWritingPermissions(beaconData.getRemoteBeacon()));
+                return beaconDataService.update(beaconData);
             }
         } catch (InvalidApiKeyException e) {
+            if (beaconData.isFlagApiAccessible()) {
+                beaconData.setFlagApiAccessible(false);
+                return beaconDataService.update(beaconData);
+            }
             log.error("Invalid API key for group: {}", beaconData.getGroup().getName());
         }
 
         return beaconDataService.findBeacon(id).orElseThrow(BeaconNotFoundException::new);
+    }
+
+    private boolean hasWritingPermissions(RemoteBeacon remoteBeacon) {
+        return remoteBeacon != null && remoteBeacon.getAccess() != null
+                && (remoteBeacon.getAccess() == Device.Access.OWNER
+                || remoteBeacon.getAccess() == Device.Access.SUPERVISOR
+                || remoteBeacon.getAccess() == Device.Access.EDITOR);
+
     }
 
     private RemoteBeacon findRemoteBeacon(ApiService apiService, String manufacturerId) {
@@ -161,6 +173,7 @@ public class BeaconService implements IBeaconService {
 
                 createBeaconData.setRemoteBeacon(remoteBeacon);
                 createBeaconData.setRemoteBeaconUpdatedAt(new Date());
+                beaconData.setFlagApiAccessible(hasWritingPermissions(remoteBeacon));
 
                 return beaconDataService.create(createBeaconData);
             } catch (InvalidBeaconIdentifierException e) {
