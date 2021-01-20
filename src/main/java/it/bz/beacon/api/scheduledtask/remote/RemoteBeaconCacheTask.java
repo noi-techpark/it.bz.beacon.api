@@ -2,7 +2,6 @@ package it.bz.beacon.api.scheduledtask.remote;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.db.model.BeaconData;
 import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.db.repository.GroupRepository;
@@ -44,9 +43,6 @@ public class RemoteBeaconCacheTask {
     @Autowired
     private ApiService apiService;
 
-    @Autowired
-    private RemoteBeaconCache remoteBeaconCache;
-
     final static Logger log = LoggerFactory.getLogger(RemoteBeaconCacheTask.class);
 
     @Scheduled(fixedDelay = 60 * 1000)
@@ -64,7 +60,6 @@ public class RemoteBeaconCacheTask {
                                     Map<String, RemoteBeacon> beaconsWithStatuses = getBeaconsWithStatuses(beacons);
                                     notUpdatedBeacons.removeAll(beaconsWithStatuses.values().stream()
                                             .map(RemoteBeacon::getManufacturerId).collect(Collectors.toList()));
-                                    remoteBeaconCache.addAll(beaconsWithStatuses);
                                     updateBeaconPackageData(beaconsWithStatuses);
                                 } catch (InvalidApiKeyException e) {
                                     log.error("Invalid API key for group: {}", group.getName());

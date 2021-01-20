@@ -1,6 +1,5 @@
 package it.bz.beacon.api.service.info;
 
-import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.Info;
 import it.bz.beacon.api.db.repository.InfoRepository;
@@ -18,9 +17,6 @@ public class InfoService implements IInfoService {
 
     final static Logger log = LoggerFactory.getLogger(InfoService.class);
 
-
-    @Autowired
-    private RemoteBeaconCache remoteBeaconCache;
 
     @Autowired
     private InfoRepository repository;

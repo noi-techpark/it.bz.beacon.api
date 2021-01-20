@@ -2,7 +2,6 @@ package it.bz.beacon.api.service.beacon;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.exception.auth.InsufficientRightsException;
 import it.bz.beacon.api.exception.db.*;
@@ -47,9 +46,6 @@ public class BeaconService implements IBeaconService {
 
     @Autowired
     private GroupService groupService;
-
-    @Autowired
-    private RemoteBeaconCache remoteBeaconCache;
 
     @Autowired
     private ApplicationContext applicationContext;
