@@ -1,3 +1,5 @@
+alter table beacon_data add column flag_api_accessible boolean not null default false;
+
 create or replace view beacon as
 with
    raw_beacon_data as (
