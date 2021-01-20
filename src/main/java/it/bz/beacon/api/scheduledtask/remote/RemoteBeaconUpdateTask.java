@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Service
-public class RemoteBeaconCacheTask {
+public class RemoteBeaconUpdateTask {
 
     @Autowired
     private BeaconDataRepository beaconDataRepository;
@@ -43,7 +43,7 @@ public class RemoteBeaconCacheTask {
     @Autowired
     private ApiService apiService;
 
-    final static Logger log = LoggerFactory.getLogger(RemoteBeaconCacheTask.class);
+    final static Logger log = LoggerFactory.getLogger(RemoteBeaconUpdateTask.class);
 
     @Scheduled(fixedDelay = 60 * 1000)
     public void updateCache() {
