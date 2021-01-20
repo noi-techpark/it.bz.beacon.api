@@ -7,6 +7,7 @@ import it.bz.beacon.api.db.repository.BeaconDataRepository;
 import it.bz.beacon.api.db.repository.GroupRepository;
 import it.bz.beacon.api.exception.db.BeaconDataNotFoundException;
 import it.bz.beacon.api.exception.db.BeaconNotFoundException;
+import it.bz.beacon.api.kontakt.io.model.Device.Access;
 import it.bz.beacon.api.model.BeaconBatteryLevelUpdate;
 import it.bz.beacon.api.model.BeaconUpdate;
 import it.bz.beacon.api.model.RemoteBeacon;
@@ -93,6 +94,7 @@ public class BeaconDataService implements IBeaconDataService {
                 beaconData.setRemoteBeaconUpdatedAt(new Date());
                 beaconData.setRemoteBeacon(remoteBeacon);
             }
+            beaconData.setFlagApiAccessible(hasWritingPermissions(remoteBeacon));
 
             repository.saveAndFlush(beaconData).getId();
 
@@ -100,6 +102,14 @@ public class BeaconDataService implements IBeaconDataService {
 
             return repository.findBeaconById(id).orElseThrow(BeaconNotFoundException::new);
         }).orElseThrow(BeaconDataNotFoundException::new);
+    }
+
+    private boolean hasWritingPermissions(RemoteBeacon remoteBeacon) {
+        return remoteBeacon != null && remoteBeacon.getAccess() != null
+                && (remoteBeacon.getAccess() == Access.OWNER
+                || remoteBeacon.getAccess() == Access.SUPERVISOR
+                || remoteBeacon.getAccess() == Access.EDITOR);
+
     }
 
     @Override

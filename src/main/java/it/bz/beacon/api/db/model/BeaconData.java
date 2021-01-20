@@ -88,6 +88,8 @@ public class BeaconData extends AuditModel {
     @JsonIgnore
     private Date remoteBeaconUpdatedAt;
 
+    private boolean flagApiAccessible;
+
     public static BeaconData fromRemoteBeacon(RemoteBeacon remoteBeacon) {
 
         BeaconData beaconData = new BeaconData();
@@ -325,5 +327,13 @@ public class BeaconData extends AuditModel {
 
     public void setRemoteBeaconUpdatedAt(Date remoteBeaconUpdatedAt) {
         this.remoteBeaconUpdatedAt = remoteBeaconUpdatedAt;
+    }
+
+    public boolean isFlagApiAccessible() {
+        return flagApiAccessible;
+    }
+
+    public void setFlagApiAccessible(boolean flagApiAccessible) {
+        this.flagApiAccessible = flagApiAccessible;
     }
 }

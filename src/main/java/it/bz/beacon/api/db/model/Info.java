@@ -2,12 +2,10 @@ package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import it.bz.beacon.api.model.RemoteBeacon;
 import it.bz.beacon.api.model.enumeration.InfoStatus;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -39,14 +37,14 @@ public class Info extends AuditModel {
     private double longitude;
     private String floor;
 
-    private int openIssueCount;
-
-    public Integer batteryLevel;
-
+    private Integer batteryLevel;
     private Date trustedUpdatedAt;
 
-    @Transient
-    private RemoteBeacon remoteBeacon;
+    @Enumerated(EnumType.STRING)
+    private InfoStatus status;
+
+    private Integer txPower;
+    private boolean online;
 
     public String getId() {
         return id;
@@ -160,33 +158,36 @@ public class Info extends AuditModel {
         this.instanceId = instanceId;
     }
 
-    public void setRemoteBeacon(RemoteBeacon remoteBeacon) {
-        this.remoteBeacon = remoteBeacon;
+    public Integer getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public void setBatteryLevel(Integer batteryLevel) {
+        this.batteryLevel = batteryLevel;
     }
 
     public boolean isOnline() {
-        Calendar checkDate = Calendar.getInstance();
-        checkDate.add(Calendar.MONTH, -12);
+        return online;
+    }
 
-        return  openIssueCount == 0
-                && trustedUpdatedAt != null && trustedUpdatedAt.after(checkDate.getTime())
-                && batteryLevel != null && batteryLevel >= 5;
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 
     public InfoStatus getStatus() {
+        return status;
+    }
 
-        if (remoteBeacon == null)
-            return null;
-
-        if (remoteBeacon.getPendingConfiguration() != null) {
-            return InfoStatus.PLANNED;
-        }
-
-        return InfoStatus.INSTALLED;
+    public void setStatus(InfoStatus status) {
+        this.status = status;
     }
 
     public Integer getTxPower() {
-        return remoteBeacon != null ? remoteBeacon.getTxPower() : null;
+        return txPower;
+    }
+
+    public void setTxPower(Integer txPower) {
+        this.txPower = txPower;
     }
 
     public void setTrustedUpdatedAt(Date trustedUpdatedAt) {

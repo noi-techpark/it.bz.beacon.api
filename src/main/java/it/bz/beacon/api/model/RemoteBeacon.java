@@ -1,6 +1,7 @@
 package it.bz.beacon.api.model;
 
 import it.bz.beacon.api.exception.db.InvalidBeaconIdentifierException;
+import it.bz.beacon.api.kontakt.io.model.Device.Access;
 import it.bz.beacon.api.kontakt.io.model.TagBeaconDevice;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Packet;
 import it.bz.beacon.api.kontakt.io.model.enumeration.Profile;
@@ -39,6 +40,7 @@ public class RemoteBeacon {
     private boolean eddystoneEid;
     private boolean eddystoneEtlm;
     private PendingConfiguration pendingConfiguration;
+    private Access access;
 
     public static RemoteBeacon fromTagBeaconDevice(TagBeaconDevice tagBeaconDevice) throws InvalidBeaconIdentifierException {
         RemoteBeacon remoteBeacon = new RemoteBeacon();
@@ -68,6 +70,8 @@ public class RemoteBeacon {
         remoteBeacon.setEddystoneUrl(tagBeaconDevice.getPackets().contains(Packet.EDDYSTONE_URL));
         remoteBeacon.setEddystoneEid(tagBeaconDevice.getPackets().contains(Packet.EDDYSTONE_EID));
         remoteBeacon.setEddystoneEtlm(tagBeaconDevice.getPackets().contains(Packet.EDDYSTONE_ETLM));
+
+        remoteBeacon.setAccess(tagBeaconDevice.getAccess());
 
         return remoteBeacon;
     }
@@ -292,6 +296,14 @@ public class RemoteBeacon {
 
     public void setEddystoneEtlm(boolean eddystoneEtlm) {
         this.eddystoneEtlm = eddystoneEtlm;
+    }
+
+    public Access getAccess() {
+        return access;
+    }
+
+    public void setAccess(Access access) {
+        this.access = access;
     }
 
     @Override

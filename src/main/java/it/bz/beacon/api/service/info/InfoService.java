@@ -1,6 +1,5 @@
 package it.bz.beacon.api.service.info;
 
-import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.Info;
 import it.bz.beacon.api.db.repository.InfoRepository;
@@ -20,9 +19,6 @@ public class InfoService implements IInfoService {
 
 
     @Autowired
-    private RemoteBeaconCache remoteBeaconCache;
-
-    @Autowired
     private InfoRepository repository;
 
     @Autowired
@@ -30,18 +26,7 @@ public class InfoService implements IInfoService {
 
     @Override
     public List<Info> findAll() {
-
-        List<Info> infoList = repository.findAll();
-
-        infoList.stream().forEach(info -> {
-            try {
-                info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
-            } catch (Exception e) {
-                log.error("findAll()", e);
-            }
-        });
-
-        return infoList;
+        return repository.findAll();
     }
 
     @Override
@@ -51,15 +36,7 @@ public class InfoService implements IInfoService {
 
     @Override
     public Info findByBeaconId(String beaconId) throws InfoNotFoundException {
-        Info info = repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
-
-        try {
-            info.setRemoteBeacon(remoteBeaconCache.get(info.getId()));
-        } catch (Exception e) {
-            log.error("findByBeaconId(String beaconId)", e);
-        }
-
-        return info;
+        return repository.findById(beaconId).orElseThrow(InfoNotFoundException::new);
     }
 
     @Override

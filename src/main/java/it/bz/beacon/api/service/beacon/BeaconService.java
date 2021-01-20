@@ -2,7 +2,6 @@ package it.bz.beacon.api.service.beacon;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import it.bz.beacon.api.cache.remote.RemoteBeaconCache;
 import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.exception.auth.InsufficientRightsException;
 import it.bz.beacon.api.exception.db.*;
@@ -20,6 +19,8 @@ import it.bz.beacon.api.kontakt.io.response.DeviceStatusListResponse;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.model.enumeration.UserRole;
 import it.bz.beacon.api.service.group.GroupService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -38,14 +39,13 @@ import java.util.stream.Collectors;
 @Component
 public class BeaconService implements IBeaconService {
 
+    final static Logger log = LoggerFactory.getLogger(BeaconService.class);
+
     @Autowired
     private IBeaconDataService beaconDataService;
 
     @Autowired
     private GroupService groupService;
-
-    @Autowired
-    private RemoteBeaconCache remoteBeaconCache;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -78,15 +78,31 @@ public class BeaconService implements IBeaconService {
         BeaconData beaconData = beaconDataService.find(id);
 
         apiService.setApiKey(beaconData.getGroup().getKontaktIoApiKey());
-        RemoteBeacon remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
-        if (remoteBeacon != null && !remoteBeacon.equals(beaconData.getRemoteBeacon())) {
-            beaconData.setRemoteBeacon(remoteBeacon);
-            beaconData.setRemoteBeaconUpdatedAt(new Date());
-            Beacon ret = beaconDataService.update(beaconData);
-            return ret;
+        try {
+            RemoteBeacon remoteBeacon = findRemoteBeacon(apiService, beaconData.getManufacturerId());
+            if (remoteBeacon != null && !remoteBeacon.equals(beaconData.getRemoteBeacon())) {
+                beaconData.setRemoteBeacon(remoteBeacon);
+                beaconData.setRemoteBeaconUpdatedAt(new Date());
+                beaconData.setFlagApiAccessible(hasWritingPermissions(beaconData.getRemoteBeacon()));
+                return beaconDataService.update(beaconData);
+            }
+        } catch (InvalidApiKeyException e) {
+            if (beaconData.isFlagApiAccessible()) {
+                beaconData.setFlagApiAccessible(false);
+                return beaconDataService.update(beaconData);
+            }
+            log.error("Invalid API key for group: {}", beaconData.getGroup().getName());
         }
 
         return beaconDataService.findBeacon(id).orElseThrow(BeaconNotFoundException::new);
+    }
+
+    private boolean hasWritingPermissions(RemoteBeacon remoteBeacon) {
+        return remoteBeacon != null && remoteBeacon.getAccess() != null
+                && (remoteBeacon.getAccess() == Device.Access.OWNER
+                || remoteBeacon.getAccess() == Device.Access.SUPERVISOR
+                || remoteBeacon.getAccess() == Device.Access.EDITOR);
+
     }
 
     private RemoteBeacon findRemoteBeacon(ApiService apiService, String manufacturerId) {
@@ -153,6 +169,7 @@ public class BeaconService implements IBeaconService {
 
                 createBeaconData.setRemoteBeacon(remoteBeacon);
                 createBeaconData.setRemoteBeaconUpdatedAt(new Date());
+                beaconData.setFlagApiAccessible(hasWritingPermissions(remoteBeacon));
 
                 return beaconDataService.create(createBeaconData);
             } catch (InvalidBeaconIdentifierException e) {
