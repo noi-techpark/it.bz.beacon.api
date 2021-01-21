@@ -169,7 +169,7 @@ public class BeaconService implements IBeaconService {
 
                 createBeaconData.setRemoteBeacon(remoteBeacon);
                 createBeaconData.setRemoteBeaconUpdatedAt(new Date());
-                beaconData.setFlagApiAccessible(hasWritingPermissions(remoteBeacon));
+                createBeaconData.setFlagApiAccessible(hasWritingPermissions(remoteBeacon));
 
                 return beaconDataService.create(createBeaconData);
             } catch (InvalidBeaconIdentifierException e) {
