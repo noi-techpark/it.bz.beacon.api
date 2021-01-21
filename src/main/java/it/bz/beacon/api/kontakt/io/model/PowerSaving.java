@@ -77,7 +77,7 @@ public class PowerSaving {
         this.burstOffTime = burstOffTime;
     }
 
-    private static class Rtc {
+    public static class Rtc {
         private Day day;
         private List<Integer> hours;
 

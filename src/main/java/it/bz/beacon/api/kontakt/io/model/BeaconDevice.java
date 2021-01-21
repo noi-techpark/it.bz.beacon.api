@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-abstract public class BeaconDevice extends Device {
+public abstract class BeaconDevice extends Device {
     private String name;
     private String mac;
     private Set<Profile> profiles;
@@ -180,7 +180,7 @@ abstract public class BeaconDevice extends Device {
         this.lastSeen = lastSeen;
     }
 
-    private static class FutureId {
+    public static class FutureId {
 
         private List<FutureIBeacon> iBeacon;
         private List<FutureEddystone> eddystone;
@@ -201,7 +201,7 @@ abstract public class BeaconDevice extends Device {
             this.eddystone = eddystone;
         }
 
-        private static class FutureIBeacon {
+        public static class FutureIBeacon {
             private UUID proximity;
             private int major;
             private int minor;
@@ -231,7 +231,7 @@ abstract public class BeaconDevice extends Device {
             }
         }
 
-        private static class FutureEddystone {
+        public static class FutureEddystone {
             private String namespace;
             private String instanceId;
 

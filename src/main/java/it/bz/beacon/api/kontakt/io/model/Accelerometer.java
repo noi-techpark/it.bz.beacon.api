@@ -76,7 +76,7 @@ public class Accelerometer {
         DOUBLE_TAP_AND_FREE_FALL
     }
 
-    private static class DoubleTap {
+    public static class DoubleTap {
         private Integer timeLimit;
         private Integer timeWindow;
         private Set<DetectionFlag> detectionFlags;
@@ -130,7 +130,7 @@ public class Accelerometer {
         }
     }
 
-    private static class Move {
+    public static class Move {
         private Integer duration;
         private Set<DetectionFlag> detectionFlags;
         private DetectionFlagJunction detectionFlagsJunction;
@@ -183,7 +183,7 @@ public class Accelerometer {
         }
     }
 
-    private static class HighPass {
+    public static class HighPass {
         private Mode mode;
         private Integer reference;
         private boolean accelerometerData;

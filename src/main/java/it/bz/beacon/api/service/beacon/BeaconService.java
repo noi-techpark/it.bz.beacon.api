@@ -383,7 +383,7 @@ public class BeaconService implements IBeaconService {
     }
 
     private Map<String, RemoteBeacon> getBeaconsWithStatuses(ApiService apiService, BeaconListResponse response) {
-        if (response == null || response.getDevices() == null || response.getDevices().size() == 0) {
+        if (response == null || response.getDevices() == null || response.getDevices().isEmpty()) {
             return Maps.newHashMap();
         }
 

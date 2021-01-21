@@ -5,4 +5,5 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "BeaconData not found")
 public class BeaconDataNotFoundException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 }

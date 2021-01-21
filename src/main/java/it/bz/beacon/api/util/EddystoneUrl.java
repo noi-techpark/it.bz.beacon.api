@@ -8,30 +8,36 @@ import java.util.Map;
 
 public class EddystoneUrl {
 
-    private static final Map<Byte, String> URI_SCHEMES = new HashMap<Byte, String>() {{
-        put((byte) 0, "http://www.");
-        put((byte) 1, "https://www.");
-        put((byte) 2, "http://");
-        put((byte) 3, "https://");
-        put((byte) 4, "urn:uuid:");    // RFC 2141 and RFC 4122};
-    }};
+    private static final Map<Byte, String> URI_SCHEMES = new HashMap<Byte, String>() {
+        private static final long serialVersionUID = 1L;
+        {
+            put((byte) 0, "http://www.");
+            put((byte) 1, "https://www.");
+            put((byte) 2, "http://");
+            put((byte) 3, "https://");
+            put((byte) 4, "urn:uuid:");    // RFC 2141 and RFC 4122};
+        }
+    };
 
-    private static final Map<Byte, String> URL_CODES = new HashMap<Byte, String>() {{
-        put((byte) 0, ".com/");
-        put((byte) 1, ".org/");
-        put((byte) 2, ".edu/");
-        put((byte) 3, ".net/");
-        put((byte) 4, ".info/");
-        put((byte) 5, ".biz/");
-        put((byte) 6, ".gov/");
-        put((byte) 7, ".com");
-        put((byte) 8, ".org");
-        put((byte) 9, ".edu");
-        put((byte) 10, ".net");
-        put((byte) 11, ".info");
-        put((byte) 12, ".biz");
-        put((byte) 13, ".gov");
-    }};
+    private static final Map<Byte, String> URL_CODES = new HashMap<Byte, String>() {
+        private static final long serialVersionUID = 1L;
+            {
+            put((byte) 0, ".com/");
+            put((byte) 1, ".org/");
+            put((byte) 2, ".edu/");
+            put((byte) 3, ".net/");
+            put((byte) 4, ".info/");
+            put((byte) 5, ".biz/");
+            put((byte) 6, ".gov/");
+            put((byte) 7, ".com");
+            put((byte) 8, ".org");
+            put((byte) 9, ".edu");
+            put((byte) 10, ".net");
+            put((byte) 11, ".info");
+            put((byte) 12, ".biz");
+            put((byte) 13, ".gov");
+        }
+    };
 
     public static final String NO_URI = "";
 

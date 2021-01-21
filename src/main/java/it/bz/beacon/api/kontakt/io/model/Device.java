@@ -206,7 +206,7 @@ public class Device {
         VIEWER
     }
 
-    private static class Share {
+    public static class Share {
 
         private String managerMail;
         private Access access;

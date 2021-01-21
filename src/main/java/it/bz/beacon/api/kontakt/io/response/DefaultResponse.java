@@ -49,7 +49,7 @@ public class DefaultResponse {
         this.details = details;
     }
 
-    private static class Detail {
+    public static class Detail {
         private String field;
         private String error;
         private String message;

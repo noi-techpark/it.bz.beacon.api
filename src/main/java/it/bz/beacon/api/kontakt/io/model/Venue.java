@@ -95,7 +95,7 @@ public class Venue {
         OWNER,
         SUPERVISOR
     }
-    private static class Share {
+    public static class Share {
 
         private String managerMail;
         private Access access;
