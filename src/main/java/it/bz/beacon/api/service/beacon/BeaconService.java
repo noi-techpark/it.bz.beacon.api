@@ -127,7 +127,7 @@ public class BeaconService implements IBeaconService {
             auth = true;
         else
             for (UserRoleGroup userRoleGroup : authorizedUser.getGroups()) {
-                if (order.getGroupId() != null && order.getGroupId() == userRoleGroup.getGroup().getId() &&
+                if (order.getGroupId() != null && order.getGroupId().equals(userRoleGroup.getGroup().getId()) &&
                         (userRoleGroup.getRole() == UserRole.MANAGER)) {
                     auth = true;
 
@@ -169,7 +169,7 @@ public class BeaconService implements IBeaconService {
 
                 createBeaconData.setRemoteBeacon(remoteBeacon);
                 createBeaconData.setRemoteBeaconUpdatedAt(new Date());
-                beaconData.setFlagApiAccessible(hasWritingPermissions(remoteBeacon));
+                createBeaconData.setFlagApiAccessible(hasWritingPermissions(remoteBeacon));
 
                 return beaconDataService.create(createBeaconData);
             } catch (InvalidBeaconIdentifierException e) {
