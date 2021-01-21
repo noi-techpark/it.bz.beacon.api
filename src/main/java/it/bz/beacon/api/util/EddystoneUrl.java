@@ -8,6 +8,10 @@ import java.util.Map;
 
 public class EddystoneUrl {
 
+    private EddystoneUrl() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static final Map<Byte, String> URI_SCHEMES = new HashMap<Byte, String>() {
         private static final long serialVersionUID = 1L;
         {
