@@ -64,7 +64,7 @@ public class UserService implements IUserService {
                 throw new InsufficientRightsException();
             }
 
-            if (authUser.getId() == user.getId() && authUser.isAdmin() != user.isAdmin())
+            if (authUser.getId().equals(user.getId()) && authUser.isAdmin() != user.isAdmin())
                 throw new InsufficientRightsException();
 
             user.applyUpdate(userUpdate);
