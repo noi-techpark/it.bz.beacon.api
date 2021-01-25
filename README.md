@@ -60,11 +60,7 @@ Make a copy of the `src/resources/application.properties.dist` file and name it 
 * `it.bz.beacon.uuid`: iBeacon UUID
 * `it.bz.beacon.namespace`: Eddystone namespace
 * `it.bz.beacon.trusted.user`: The username for the basic authorization for the trusted api
-* `it.bz.beacon.trusted.password`: The bcrypted password for the basic authorization for the trusted api
-
-
-If you enable info import, you have to create a Google service account which is able to use the Google Sheet API and move the resulting client-secret.json file to /src/main/resources/google-api-service-account.json.
-For more information on generating this json file, have a look at the Google documentation for [Using OAuth 2.0 for Server to Server Applications](https://developers.google.com/identity/protocols/OAuth2ServiceAccount)
+* `it.bz.beacon.trusted.password`: The bcrypted password for the basic authorization for the trusted api (Hint: just use the webapp to create an account with a password, and then copy the bcrypt hash from the database table)
 
 You may also change other values in the application.properties file on your own risk.
 Make sure your webserver is configured to handle file uploads for at least 10MB of size.
@@ -177,6 +173,17 @@ If you desire to access to an open API, no authentication has to be passed with 
 
 CAUTION!
 In case you set a wrong authorization header either for the JWT token or the Basic auth, some API endpoints may not work properly.
+
+#### Google spread sheet import of POI data
+
+**The Google spread sheet import is deprecated as of 2021:** <strike>If you
+enable info import, you have to create a Google service account which is able to
+use the Google Sheet API and move the resulting client-secret.json file to
+/src/main/resources/google-api-service-account.json. For more information on
+generating this json file, have a look at the Google documentation for [Using
+OAuth 2.0 for Server to Server
+Applications](https://developers.google.com/identity/protocols/OAuth2ServiceAccount)</strike>
+
 
 ### Support
 
