@@ -39,7 +39,7 @@ cd beacon-suedtirol-api/
 
 ### Configuration
 
-Make a copy of the `src/resources/application.properties.dist` file and name it `application.properties`. Fill in the required values:
+Make a copy of the `src/resources/application.dist.properties` file and name it `application.properties`. Fill in the required values:
 
 * `spring.datasource.url`: Database connection url
 * `spring.datasource.username`: Database connection username

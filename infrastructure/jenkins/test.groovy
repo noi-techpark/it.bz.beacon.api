@@ -13,12 +13,10 @@ pipeline {
         DB_URL = "jdbc:postgresql://test-pg-bdp.co90ybcr8iim.eu-west-1.rds.amazonaws.com:5432/beacon"
         DB_USERNAME = credentials('beacon-api-test-db-username')
         DB_PASSWORD = credentials('beacon-api-test-db-password')
-        DB_DIALECT = "org.hibernate.dialect.PostgreSQLDialect"
         JWT_SECRET = credentials('beacon-api-test-jwt-secret')
         JWT_EXPIRE_LENGTH = "3600000"
         UPLOAD_DIR = "/var/data/beacon-api"
         CORS_ORIGINS = "*"
-        KONTAKT_IO_API_KEY = credentials('beacon-api-test-kontakt-io-api-key')
 
         INFO_HOST = "api.beacon.testingmachine.eu"
         INFO_TITLE = "Beacon Suedtirol API"
@@ -41,8 +39,6 @@ pipeline {
         MAIL_SMTP_AUTH = "true"
         MAIL_SMTP_STARTTLS = "true"
 
-        BEACON_UUID = "6a84c716-0f2a-1ce9-f210-6a63bd873dd9"
-        BEACON_NAMESPACE = "6a84c7166a63bd873dd9"
         BEACON_TRUSTED_USERNAME = credentials('beacon-api-test-trusted-username')
         BEACON_TRUSTED_PASSWORD = credentials('beacon-api-test-trusted-password')
 
@@ -60,16 +56,14 @@ pipeline {
                     echo "    </servers>" >> ~/.m2/settings.xml
                     echo "</settings>" >> ~/.m2/settings.xml
 
-                    cp src/main/resources/application.properties.dist src/main/resources/application.properties
+                    cp src/main/resources/application.dist.properties src/main/resources/application.properties
                     sed -i -e "s%\\(spring.datasource.url\\s*=\\).*\\$%\\1${DB_URL}%" src/main/resources/application.properties
                     sed -i -e "s%\\(spring.datasource.username\\s*=\\).*\\$%\\1${DB_USERNAME}%" src/main/resources/application.properties
                     sed -i -e "s%\\(spring.datasource.password\\s*=\\).*\\$%\\1${DB_PASSWORD}%" src/main/resources/application.properties
-                    sed -i -e "s%\\(spring.jpa.properties.hibernate.dialect\\s*=\\).*\\$%\\1${DB_DIALECT}%" src/main/resources/application.properties
                     sed -i -e "s%\\(security.jwt.token.secret\\s*=\\).*\\$%\\1${JWT_SECRET}%" src/main/resources/application.properties
                     sed -i -e "s%\\(security.jwt.token.expire-length\\s*=\\).*\\$%\\1${JWT_EXPIRE_LENGTH}%" src/main/resources/application.properties
                     sed -i -e "s%\\(file.upload-dir\\s*=\\).*\\$%\\1${UPLOAD_DIR}%" src/main/resources/application.properties
                     sed -i -e "s%\\(it.bz.beacon.allowedOrigins\\s*=\\).*\\$%\\1${CORS_ORIGINS}%" src/main/resources/application.properties
-                    sed -i -e "s%\\(kontakt.io.apiKey\\s*=\\).*\\$%\\1${KONTAKT_IO_API_KEY}%" src/main/resources/application.properties
 
                     sed -i -e "s%\\(api.info.host\\s*=\\).*\\$%\\1${INFO_HOST}%" src/main/resources/application.properties
                     sed -i -e "s%\\(api.info.title\\s*=\\).*\\$%\\1${INFO_TITLE}%" src/main/resources/application.properties
@@ -92,8 +86,6 @@ pipeline {
                     sed -i -e "s%\\(spring.mail.properties.mail.smtp.auth\\s*=\\).*\\$%\\1${MAIL_SMTP_AUTH}%" src/main/resources/application.properties
                     sed -i -e "s%\\(spring.mail.properties.mail.smtp.starttls.enable\\s*=\\).*\\$%\\1${MAIL_SMTP_STARTTLS}%" src/main/resources/application.properties
 
-                    sed -i -e "s%\\(it.bz.beacon.uuid\\s*=\\).*\\$%\\1${BEACON_UUID}%" src/main/resources/application.properties
-                    sed -i -e "s%\\(it.bz.beacon.namespace\\s*=\\).*\\$%\\1${BEACON_NAMESPACE}%" src/main/resources/application.properties
                     sed -i -e "s%\\(it.bz.beacon.trusted.user\\s*=\\).*\\$%\\1${BEACON_TRUSTED_USERNAME}%" src/main/resources/application.properties
                     sed -i -e "s%\\(it.bz.beacon.trusted.password\\s*=\\).*\\$%\\1${BEACON_TRUSTED_PASSWORD}%" src/main/resources/application.properties
 

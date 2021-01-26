@@ -42,6 +42,7 @@ secrets.yml
 *.properties
 *.properties.dev
 *.properties.test
+!application.dist.properties
 /uploads
 /src/main/resources/google-api-service-account.json
 .vscode
