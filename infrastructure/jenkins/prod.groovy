@@ -5,11 +5,7 @@ pipeline {
             additionalBuildArgs '--build-arg JENKINS_USER_ID=$(id -u jenkins) --build-arg JENKINS_GROUP_ID=$(id -g jenkins)'
         }
     }
-    options { 
-        disableConcurrentBuilds()
-        disableResume()
-        copyArtifactPermission('/it.bz.beacon/api.prod-deploy')
-    }
+
     environment {
         DB_URL = "jdbc:postgresql://postgres-prod.co90ybcr8iim.eu-west-1.rds.amazonaws.com:5432/beacon"
         DB_USERNAME = credentials('beacon-api-db-username')
