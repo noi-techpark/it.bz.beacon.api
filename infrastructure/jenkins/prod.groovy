@@ -5,7 +5,12 @@ pipeline {
             additionalBuildArgs '--build-arg JENKINS_USER_ID=$(id -u jenkins) --build-arg JENKINS_GROUP_ID=$(id -g jenkins)'
         }
     }
-
+    options {
+        ansiColor('xterm')
+        disableConcurrentBuilds()
+        disableResume()
+        copyArtifactPermission('/it.bz.beacon/api.prod-deploy')
+    }
     environment {
         DB_URL = "jdbc:postgresql://postgres-prod.co90ybcr8iim.eu-west-1.rds.amazonaws.com:5432/beacon"
         DB_USERNAME = credentials('beacon-api-db-username')
@@ -46,7 +51,6 @@ pipeline {
         BEACON_PASSWORD_RESET_URL = "https://admin.beacon.bz.it/"
         BEACON_PASSWORD_RESET_MAIL = "info@beacon.bz.it"
     }
-
     stages { 
         stage('Configure') {
             steps {
