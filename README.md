@@ -1,13 +1,38 @@
-# Beacon Südtirol API
+# it.bz.beacon.api: Beacon Südtirol API
 
 The API for the Beacon Südtirol project for configuring beacons and accessing beacon data.
 
 ## Table of contents
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
 - [Getting started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Source code](#source-code)
+  - [Configuration](#configuration)
+  - [Database](#database)
+  - [Build](#build)
 - [Running tests](#running-tests)
 - [Deployment](#deployment)
+- [Docker environment](#docker-environment)
+  - [Installation](#installation)
+  - [Start and stop the containers](#start-and-stop-the-containers)
+  - [Running commands inside the container](#running-commands-inside-the-container)
 - [Information](#information)
+  - [User management](#user-management)
+  - [Using the API](#using-the-api)
+    - [Open endpoint calls](#open-endpoint-calls)
+    - [JWT token protected endpoint calls](#jwt-token-protected-endpoint-calls)
+    - [Basic auth protected endpoint calls](#basic-auth-protected-endpoint-calls)
+    - [Google spread sheet import of POI data](#google-spread-sheet-import-of-poi-data)
+  - [Support](#support)
+  - [Contributing](#contributing)
+  - [Documentation](#documentation)
+  - [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Getting started
 
@@ -20,7 +45,7 @@ To build the project, the following prerequisites must be met:
 
 - Java JDK 1.8 or higher (e.g. [OpenJDK](https://openjdk.java.net/))
 - [Maven](https://maven.apache.org/) 3.x
-- Database (e.g. [PostgreSQL](https://www.postgresql.org))
+- Database (ideally, [PostgreSQL](https://www.postgresql.org))
 - Filesystem
 
 ### Source code
@@ -28,48 +53,32 @@ To build the project, the following prerequisites must be met:
 Get a copy of the repository:
 
 ```bash
-git clone https://github.com/idm-suedtirol/beacon-suedtirol-api.git
+git clone https://github.com/idm-suedtirol/it.bz.beacon.api.git
 ```
 
 Change directory:
 
 ```bash
-cd beacon-suedtirol-api/
+cd it.bz.beacon.api/
 ```
 
 ### Configuration
 
-Make a copy of the `src/resources/application.dist.properties` file and name it `application.properties`. Fill in the required values:
-
-* `spring.datasource.url`: Database connection url
-* `spring.datasource.username`: Database connection username
-* `spring.datasource.password`: Database connection password
-* `spring.jpa.properties.hibernate.dialect`: Database dialect
-* `security.jwt.token.secret`: JWT token secret hash
-* `security.jwt.token.expire-length`: JWT token expiration to invalidate the authentication after n milliseconds
-* `security.jwt.token.password-reset-expire-length`: JWT token expiration to invalidate the password reset request after n milliseconds
-* `it.bz.beacon.allowedOrigins`: Comma separated list of allowed origins for CORS requests
-* `kontakt.io.apiKey`: API key for the manufacturer Kontakt.IO
-* `file.upload-dir`: The directory where file uploads shall be saved to
-* `api.info.*`: API information values
-* `it.bz.beacon.issueEmailTo`: The address where notifications about new beacon issues should be send to
-* `it.bz.beacon.issueEmailFrom`: The address where notifications about new beacon issues should be send from
-* `spring.mail.*`: Mail host configuration, so that notification mails can be send by the server
-* `it.bz.beacon.passwordResetEmailFrom`: Email address were the password reset token should be send from
-* `it.bz.beacon.passwordResetURL`: Password reset URL
-* `it.bz.beacon.uuid`: iBeacon UUID
-* `it.bz.beacon.namespace`: Eddystone namespace
-* `it.bz.beacon.trusted.user`: The username for the basic authorization for the trusted api
-* `it.bz.beacon.trusted.password`: The bcrypted password for the basic authorization for the trusted api (Hint: just use the webapp to create an account with a password, and then copy the bcrypt hash from the database table)
-
-You may also change other values in the application.properties file on your own risk.
-Make sure your webserver is configured to handle file uploads for at least 10MB of size.
+1) Go to `src/resources/` and make a copy of `application.dist.properties`.
+   Name it `application.properties`. Fill in the required values. See comments
+   inside that file for further information. 
+2) Make sure your webserver is configured to handle file uploads for at least
+   10MB of size.
 
 ### Database
 
-The schema of the database will be automatically generated when starting the application based on the SQL files located in `src/main/resources/db/migration`.
+The schema of the database will be automatically generated when starting the
+application based on the SQL files located in `src/main/resources/db/migration`.
 
-Also an admin user will be inserted with username "admin" and password "password". The admin will be the only user be able to create and delete users and reset their passwords.
+Also an admin user will be inserted with username "admin" and password
+"password". The admin will be the only user be able to create and delete users
+and reset their passwords initially, but then you can create arbitrary users and
+groups. Multiple administrators are possible.
 
 ### Build
 
@@ -158,21 +167,29 @@ As a matter of fact, using the API, you have to choose which type of authenticat
 If you desire to access to an open API, no authentication has to be passed with the request.
 
 #### JWT token protected endpoint calls
-1. Make a request to /v1/signin using your credentials of the web application or android app
+1. Make a request to /v1/signin using your credentials of the web application or
+   android app
 2. If your credentials were correct, a JWT token will be present in the response
-3. In SwaggerUI, click on the "Authorize" button on the top of the page and insert "Bearer [token]" in the JWT token field by replacing [token] with the acutal token received in the response
+3. In SwaggerUI, click on the "Authorize" button on the top of the page and
+   insert "Bearer [token]" in the JWT token field by replacing [token] with the
+   acutal token received in the response
 4. Click on "Authorize" in the JWT token section
-5. The padlocks on the right side of the JWT token protected API endpoints will turn black and closed
+5. The padlocks on the right side of the JWT token protected API endpoints will
+   turn black and closed
 6. You are now able to call JWT token protected APIs
 
 #### Basic auth protected endpoint calls
-1. In SwaggerUI, click on the "Authorize" button on the top of the page and insert the credentials of the page in the username and password fields of the Basic auth section. These credentials were configured in your application.properties file.
+1. In SwaggerUI, click on the "Authorize" button on the top of the page and
+   insert the credentials of the page in the username and password fields of the
+   Basic auth section. These credentials were configured in your
+   application.properties file.
 2. Click on "Authorize" in the Basic auth section
-3. The padlocks on the right side of the Basic auth protected API endpoints will turn black and closed
+3. The padlocks on the right side of the Basic auth protected API endpoints will
+   turn black and closed
 4. You are now able to call Basic auth protected APIs
 
-CAUTION!
-In case you set a wrong authorization header either for the JWT token or the Basic auth, some API endpoints may not work properly.
+**CAUTION!** In case you set a wrong authorization header either for the JWT token
+or the Basic auth, some API endpoints may not work properly.
 
 #### Google spread sheet import of POI data
 
