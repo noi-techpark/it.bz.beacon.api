@@ -1,7 +1,7 @@
 # it.bz.beacon.api: Beacon Südtirol API
 The API for the Beacon Südtirol project for configuring beacons and accessing beacon data.
 
-[![ci it.bz.beacon.api](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/ci.yml/badge.svg)](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/ci.yml)
+[![CI](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/ci.yml/badge.svg)](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/ci.yml)
 
 ## Table of contents
 
