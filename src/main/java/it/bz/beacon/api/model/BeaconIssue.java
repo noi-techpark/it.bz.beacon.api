@@ -38,7 +38,7 @@ public class BeaconIssue {
         if (issue.getSolution() != null) {
             beaconIssue.setResolved(true);
             beaconIssue.setSolution(issue.getSolution().getSolution());
-            beaconIssue.setSolutionDescription(issue.getSolution().getSolution());
+            beaconIssue.setSolutionDescription(issue.getSolution().getSolutionDescription());
             beaconIssue.setResolveDate(issue.getSolution().getCreatedAt());
             beaconIssue.setResolver(issue.getSolution().getResolver());
         }
