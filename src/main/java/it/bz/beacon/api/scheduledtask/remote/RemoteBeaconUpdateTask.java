@@ -53,6 +53,7 @@ public class RemoteBeaconUpdateTask {
                     Lists.partition(beaconDataRepository.findAllByGroupId(group.getId())
                             .stream().map(BeaconData::getManufacturerId).collect(Collectors.toList()), 200)
                             .forEach(block -> {
+                                log.info("Updating beacons group: {}", group.getName());
                                 List<String> notUpdatedBeacons = Lists.newArrayList(block);
                                 try {
                                     apiService.setApiKey(group.getKontaktIoApiKey());
