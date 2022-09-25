@@ -3,6 +3,7 @@ package it.bz.beacon.api.model;
 import io.swagger.annotations.ApiModelProperty;
 import it.bz.beacon.api.db.model.Beacon;
 import it.bz.beacon.api.db.model.Issue;
+import it.bz.beacon.api.db.model.IssueComment;
 
 import java.util.Date;
 
@@ -18,7 +19,7 @@ public class BeaconIssue {
     @ApiModelProperty(dataType = "java.lang.Long")
     private Date reportDate;
 
-    private boolean resolved = false;
+    private boolean resolved;
     private String solution;
     private String solutionDescription;
 
@@ -27,7 +28,7 @@ public class BeaconIssue {
 
     private String resolver;
 
-    public static BeaconIssue fromIssue(Issue issue, Beacon beacon) {
+    public static BeaconIssue fromIssue(Issue issue, Beacon beacon, IssueComment issueComment) {
         BeaconIssue beaconIssue = new BeaconIssue();
         beaconIssue.setId(issue.getId());
         beaconIssue.setBeacon(beacon);
@@ -35,12 +36,12 @@ public class BeaconIssue {
         beaconIssue.setProblemDescription(issue.getProblemDescription());
         beaconIssue.setReportDate(issue.getReportDate());
         beaconIssue.setReporter(issue.getReporter());
-        if (issue.getSolution() != null) {
-            beaconIssue.setResolved(true);
-            beaconIssue.setSolution(issue.getSolution().getSolution());
-            beaconIssue.setSolutionDescription(issue.getSolution().getSolutionDescription());
-            beaconIssue.setResolveDate(issue.getSolution().getCreatedAt());
-            beaconIssue.setResolver(issue.getSolution().getResolver());
+        beaconIssue.setResolved(issue.isResolved());
+        beaconIssue.setResolveDate(issue.getResolvedAt());
+        if (issue.getSolution() != null && issueComment != null) {
+            beaconIssue.setSolution(issueComment.getComment());
+            beaconIssue.setSolutionDescription(null);
+            beaconIssue.setResolver(issueComment.getUserUsername());
         }
 
         return beaconIssue;

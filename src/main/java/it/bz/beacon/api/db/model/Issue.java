@@ -25,6 +25,11 @@ public class Issue extends AuditModel {
     private String problemDescription;
     private String reporter;
 
+    private boolean resolved;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date resolvedAt;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     private IssueSolution solution;
 
@@ -88,5 +93,21 @@ public class Issue extends AuditModel {
 
     public void setSolution(IssueSolution solution) {
         this.solution = solution;
+    }
+
+    public boolean isResolved() {
+        return resolved;
+    }
+
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
+    }
+
+    public Date getResolvedAt() {
+        return resolvedAt;
+    }
+
+    public void setResolvedAt(Date resolvedAt) {
+        this.resolvedAt = resolvedAt;
     }
 }

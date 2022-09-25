@@ -1,10 +1,7 @@
 package it.bz.beacon.api.service.issue;
 
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
-import it.bz.beacon.api.db.model.Beacon;
-import it.bz.beacon.api.db.model.BeaconData;
-import it.bz.beacon.api.db.model.Issue;
-import it.bz.beacon.api.db.model.IssueSolution;
+import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.db.repository.IssueRepository;
 import it.bz.beacon.api.exception.db.IssueNotFoundException;
 import it.bz.beacon.api.model.BeaconIssue;
@@ -41,17 +38,15 @@ public class IssueService implements IIssueService {
     @Autowired
     private BeaconSuedtirolConfiguration beaconSuedtirolConfiguration;
 
+    @Autowired
+    private IIssueCommentService issueCommentService;
+
     @Override
     @Transactional
     public List<BeaconIssue> findAll(boolean onlyUnresolved) {
-        List<Issue> issues = onlyUnresolved ? repository.findAllBySolution(null) : repository.findAll();
+        List<Issue> issues = onlyUnresolved ? repository.findAllByResolvedIsFalse() : repository.findAll();
 
-        Map<String, Beacon> beacons = beaconService.findAllWithIds(issues.stream()
-                .map(issue -> issue.getBeaconData().getId()).collect(Collectors.toList()))
-                .stream().collect(Collectors.toMap(Beacon::getId, Function.identity()));
-
-        return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId())))
-                .collect(Collectors.toList());
+        return mapIssuesToBeaconIssues(issues);
     }
 
     @Override
@@ -59,12 +54,7 @@ public class IssueService implements IIssueService {
     public List<BeaconIssue> findAllByBeacon(BeaconData beaconData, boolean onlyUnresolved) {
         List<Issue> issues = onlyUnresolved ? repository.findAllByBeaconDataAndSolution(beaconData, null) : repository.findAllByBeaconData(beaconData);
 
-        Map<String, Beacon> beacons = beaconService.findAllWithIds(issues.stream()
-                .map(issue -> issue.getBeaconData().getId()).collect(Collectors.toList()))
-                .stream().collect(Collectors.toMap(Beacon::getId, Function.identity()));
-
-        return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId())))
-                .collect(Collectors.toList());
+        return mapIssuesToBeaconIssues(issues);
     }
 
     @Override
@@ -72,8 +62,12 @@ public class IssueService implements IIssueService {
     public BeaconIssue find(long id) {
         Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
+        IssueComment issueComment = null;
 
-        return BeaconIssue.fromIssue(issue, beacon);
+        if (issue.isResolved())
+            issueComment = issueCommentService.findLastCommentByIssue(issue);
+
+        return BeaconIssue.fromIssue(issue, beacon, issueComment);
     }
 
     @Override
@@ -84,7 +78,7 @@ public class IssueService implements IIssueService {
         Issue issue = repository.save(Issue.create(beaconData, issueCreation));
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
 
-        BeaconIssue beaconIssue = BeaconIssue.fromIssue(issue, beacon);
+        BeaconIssue beaconIssue = BeaconIssue.fromIssue(issue, beacon, null);
         notifyNewBeaconIssue(beaconIssue);
 
         return beaconIssue;
@@ -99,7 +93,7 @@ public class IssueService implements IIssueService {
 
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
 
-        return BeaconIssue.fromIssue(issue, beacon);
+        return BeaconIssue.fromIssue(issue, beacon, null);
     }
 
     private void notifyNewBeaconIssue(BeaconIssue beaconIssue) {
@@ -118,5 +112,16 @@ public class IssueService implements IIssueService {
             ), true);
             emailSender.send(message);
         } catch (Exception e) { }
+    }
+
+    private List<BeaconIssue> mapIssuesToBeaconIssues(List<Issue> issues) {
+        Map<String, Beacon> beacons = beaconService.findAllWithIds(issues.stream()
+                .map(issue -> issue.getBeaconData().getId()).collect(Collectors.toList()))
+                .stream().collect(Collectors.toMap(Beacon::getId, Function.identity()));
+
+        issueCommentService.findLastCommentByIssuesMap(issues.stream().filter(issue -> issue.isResolved()).collect(Collectors.toList()));
+
+        return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId()), lastComments.get(issue.getId())))
+                .collect(Collectors.toList());
     }
 }
