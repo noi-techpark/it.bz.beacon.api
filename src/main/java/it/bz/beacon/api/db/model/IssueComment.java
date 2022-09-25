@@ -35,6 +35,22 @@ public class IssueComment extends AuditModel {
     @NotNull
     private String comment;
 
+    public static IssueComment create(IssueSolution issueSolution, Issue issue, User authorizedUser) {
+        IssueComment issueComment = new IssueComment();
+        issueComment.issue = issue;
+        issueComment.userUsername = authorizedUser.getUsername();
+        issueComment.userName = authorizedUser.getName() + " " + authorizedUser.getSurname();
+        issueComment.setUser(authorizedUser);
+
+        issueComment.comment = issueSolution.getSolution() +
+                (issueSolution.getSolutionDescription() != null
+                        && !issueSolution.getSolutionDescription().equals(issueSolution.getSolution())
+                        && !issueSolution.getSolutionDescription().trim().isEmpty() ?
+                        "\n\n" + issueSolution.getSolutionDescription() : "");
+
+        return issueComment;
+    }
+
 
     public long getId() {
         return id;

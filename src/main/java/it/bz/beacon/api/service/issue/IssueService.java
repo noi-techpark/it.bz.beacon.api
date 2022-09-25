@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.internet.MimeMessage;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -89,11 +90,15 @@ public class IssueService implements IIssueService {
     public BeaconIssue resolve(long id, IssueSolution issueSolution) {
         Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
         issue.setSolution(issueSolution);
+        issue.setResolved(true);
+        issue.setResolvedAt(new Date());
         issue = repository.save(issue);
+
+        IssueComment issueComment = issueCommentService.create(issue, issueSolution);
 
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
 
-        return BeaconIssue.fromIssue(issue, beacon, null);
+        return BeaconIssue.fromIssue(issue, beacon, issueComment);
     }
 
     private void notifyNewBeaconIssue(BeaconIssue beaconIssue) {
@@ -119,9 +124,9 @@ public class IssueService implements IIssueService {
                 .map(issue -> issue.getBeaconData().getId()).collect(Collectors.toList()))
                 .stream().collect(Collectors.toMap(Beacon::getId, Function.identity()));
 
-        issueCommentService.findLastCommentByIssuesMap(issues.stream().filter(issue -> issue.isResolved()).collect(Collectors.toList()));
+        Map<Long, IssueComment> lastCommentMap = issueCommentService.findLastCommentByIssuesMap(issues.stream().filter(issue -> issue.isResolved()).collect(Collectors.toList()));
 
-        return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId()), lastComments.get(issue.getId())))
+        return issues.stream().map(issue -> BeaconIssue.fromIssue(issue, beacons.get(issue.getBeaconData().getId()), lastCommentMap.get(issue.getId())))
                 .collect(Collectors.toList());
     }
 }
