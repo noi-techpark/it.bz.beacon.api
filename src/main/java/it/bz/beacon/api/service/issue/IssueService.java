@@ -108,6 +108,8 @@ public class IssueService implements IIssueService {
         Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
         if (issueStatusChange.isResolved() && !issue.isResolved())
             issue.setResolvedAt(new Date());
+        if (!issueStatusChange.isResolved() && issue.getResolvedAt() != null)
+            issue.setResolvedAt(null);
         issue.setResolved(issueStatusChange.isResolved());
         issue = repository.save(issue);
 

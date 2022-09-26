@@ -37,11 +37,13 @@ public class BeaconIssue {
         beaconIssue.setReportDate(issue.getReportDate());
         beaconIssue.setReporter(issue.getReporter());
         beaconIssue.setResolved(issue.isResolved());
-        beaconIssue.setResolveDate(issue.getResolvedAt());
-        if (issue.getSolution() != null && issueComment != null) {
-            beaconIssue.setSolution(issueComment.getComment());
-            beaconIssue.setSolutionDescription(null);
-            beaconIssue.setResolver(issueComment.getUserUsername());
+        if (issue.isResolved()) {
+            beaconIssue.setResolveDate(issue.getResolvedAt());
+            if (issueComment != null) {
+                beaconIssue.setSolution(issueComment.getComment());
+                beaconIssue.setSolutionDescription(null);
+                beaconIssue.setResolver(issueComment.getUserUsername());
+            }
         }
 
         return beaconIssue;
