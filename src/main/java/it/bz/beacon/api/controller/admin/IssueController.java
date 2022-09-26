@@ -2,10 +2,9 @@ package it.bz.beacon.api.controller.admin;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
+import it.bz.beacon.api.db.model.IssueComment;
 import it.bz.beacon.api.db.model.IssueSolution;
-import it.bz.beacon.api.model.BeaconIssue;
-import it.bz.beacon.api.model.IssueCreation;
-import it.bz.beacon.api.model.IssueStatusChange;
+import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.service.issue.IIssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -49,5 +48,29 @@ public class IssueController {
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/status", produces = "application/json")
     public BeaconIssue updateStatus(@PathVariable long id, @Valid @RequestBody IssueStatusChange issueStatusChange) {
         return service.updateStatus(id, issueStatusChange);
+    }
+
+    @ApiOperation(value = "View a list of available comments for an issue", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.GET, value = "/{issueId}/comments", produces = "application/json")
+    public List<IssueComment> getComments(@PathVariable long issueId) {
+        return service.findAllComments(issueId);
+    }
+
+    @ApiOperation(value = "Create an issue comment", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.POST, value = "/{issueId}/comments", produces = "application/json")
+    public IssueComment createComment(@PathVariable long issueId, @Valid @RequestBody IssueCommentCreation issueCommentCreation) {
+        return service.createComment(issueId, issueCommentCreation);
+    }
+
+    @ApiOperation(value = "Update an issue comment", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{issueId}/comments/{commentId}", produces = "application/json")
+    public IssueComment updateComment(@PathVariable long issueId, @PathVariable long commentId, @Valid @RequestBody IssueCommentUpdate issueCommentUpdate) {
+        return service.updateComment(issueId, commentId, issueCommentUpdate);
+    }
+
+    @ApiOperation(value = "Delete an issue comment", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{issueId}/comments/{commentId}", produces = "application/json")
+    public BaseMessage deleteComment(@PathVariable long issueId, @PathVariable long commentId) {
+        return service.deleteComment(issueId, commentId);
     }
 }

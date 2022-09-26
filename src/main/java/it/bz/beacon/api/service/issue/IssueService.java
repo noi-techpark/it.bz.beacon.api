@@ -4,9 +4,7 @@ import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.db.repository.IssueRepository;
 import it.bz.beacon.api.exception.db.IssueNotFoundException;
-import it.bz.beacon.api.model.BeaconIssue;
-import it.bz.beacon.api.model.IssueCreation;
-import it.bz.beacon.api.model.IssueStatusChange;
+import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.service.beacon.IBeaconDataService;
 import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +117,42 @@ public class IssueService implements IIssueService {
 
         return BeaconIssue.fromIssue(issue, beacon, issueComment);
     }
+
+    @Override
+    @Transactional
+    public List<IssueComment> findAllComments(long issueId) {
+        Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
+        return issueCommentService.findAllComments(issue);
+    }
+
+    @Override
+    @Transactional
+    public IssueComment createComment(long issueId, IssueCommentCreation issueCommentCreation) {
+        Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
+
+        if (issueCommentCreation.isCloseOnComment() && !issue.isResolved()) {
+            issue.setResolvedAt(new Date());
+            issue.setResolved(true);
+            issue = repository.save(issue);
+        }
+
+        return issueCommentService.create(issue, issueCommentCreation);
+    }
+
+    @Override
+    @Transactional
+    public IssueComment updateComment(long issueId, long commentId, IssueCommentUpdate issueCommentUpdate) {
+        Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
+        return issueCommentService.update(issue, commentId, issueCommentUpdate);
+    }
+
+    @Override
+    @Transactional
+    public BaseMessage deleteComment(long issueId, long commentId) {
+        Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
+        return issueCommentService.delete(issue, commentId);
+    }
+
 
     private void notifyNewBeaconIssue(BeaconIssue beaconIssue) {
         try {

@@ -1,6 +1,7 @@
 package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import it.bz.beacon.api.model.IssueCommentCreation;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -12,7 +13,6 @@ public class IssueComment extends AuditModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonIgnore
     private long id;
 
     @JsonIgnore
@@ -29,24 +29,20 @@ public class IssueComment extends AuditModel {
 
     @NotNull
     @ManyToOne
+    @JsonIgnore
     private User user;
 
     @NotEmpty
     @NotNull
     private String comment;
 
-    public static IssueComment create(IssueSolution issueSolution, Issue issue, User authorizedUser) {
+    public static IssueComment create(IssueCommentCreation issueCommentCreation, Issue issue, User authorizedUser) {
         IssueComment issueComment = new IssueComment();
         issueComment.issue = issue;
         issueComment.userUsername = authorizedUser.getUsername();
         issueComment.userName = authorizedUser.getName() + " " + authorizedUser.getSurname();
         issueComment.setUser(authorizedUser);
-
-        issueComment.comment = issueSolution.getSolution() +
-                (issueSolution.getSolutionDescription() != null
-                        && !issueSolution.getSolutionDescription().equals(issueSolution.getSolution())
-                        && !issueSolution.getSolutionDescription().trim().isEmpty() ?
-                        "\n\n" + issueSolution.getSolutionDescription() : "");
+        issueComment.comment = issueCommentCreation.getComment();
 
         return issueComment;
     }
