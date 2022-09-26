@@ -1,10 +1,9 @@
 package it.bz.beacon.api.service.issue;
 
 import it.bz.beacon.api.db.model.BeaconData;
+import it.bz.beacon.api.db.model.IssueComment;
 import it.bz.beacon.api.db.model.IssueSolution;
-import it.bz.beacon.api.model.BeaconIssue;
-import it.bz.beacon.api.model.IssueCreation;
-import it.bz.beacon.api.model.IssueStatusChange;
+import it.bz.beacon.api.model.*;
 
 import java.util.List;
 
@@ -14,6 +13,13 @@ public interface IIssueService {
     BeaconIssue find(long id);
     BeaconIssue create(IssueCreation issueCreation);
     BeaconIssue resolve(long id, IssueSolution issueSolution);
-
     BeaconIssue updateStatus(long id, IssueStatusChange issueStatusChange);
+
+    List<IssueComment> findAllComments(long issueId);
+
+    IssueComment createComment(long issueId, IssueCommentCreation issueCommentCreation);
+
+    IssueComment updateComment(long issueId, long commentId, IssueCommentUpdate issueCommentUpdate);
+
+    BaseMessage deleteComment(long issueId, long commentId);
 }

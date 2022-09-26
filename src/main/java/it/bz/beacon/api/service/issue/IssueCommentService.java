@@ -6,6 +6,9 @@ import it.bz.beacon.api.db.model.IssueSolution;
 import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.IssueCommentRepository;
 import it.bz.beacon.api.exception.db.IssueCommentNotFoundException;
+import it.bz.beacon.api.model.BaseMessage;
+import it.bz.beacon.api.model.IssueCommentCreation;
+import it.bz.beacon.api.model.IssueCommentUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -50,10 +53,44 @@ public class IssueCommentService implements IIssueCommentService {
 
     @Override
     public IssueComment create(Issue issue, IssueSolution issueSolution) {
-        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        IssueCommentCreation issueCommentCreation = new IssueCommentCreation();
+        issueCommentCreation.setComment(issueSolution.getSolution() +
+                (issueSolution.getSolutionDescription() != null
+                        && !issueSolution.getSolutionDescription().equals(issueSolution.getSolution())
+                        && !issueSolution.getSolutionDescription().trim().isEmpty() ?
+                        "\n\n" + issueSolution.getSolutionDescription() : ""));
 
-        IssueComment issueComment = IssueComment.create(issueSolution, issue, authorizedUser);
+        return create(issue, issueCommentCreation);
+    }
+
+    @Override
+    public List<IssueComment> findAllComments(Issue issue) {
+        return repository.findAllByIssue(issue);
+    }
+
+    @Override
+    public IssueComment create(Issue issue, IssueCommentCreation issueCommentCreation) {
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        IssueComment issueComment = IssueComment.create(issueCommentCreation, issue, authorizedUser);
         return repository.save(issueComment);
+    }
+
+    @Override
+    public IssueComment update(Issue issue, long commentId, IssueCommentUpdate issueCommentUpdate) {
+        IssueComment issueComment = repository.findByIdAndIssue(commentId, issue).orElseThrow(IssueCommentNotFoundException::new);
+        issueComment.setComment(issueCommentUpdate.getComment());
+        return repository.save(issueComment);
+    }
+
+    @Override
+    public BaseMessage delete(Issue issue, long commentId) {
+        return repository.findByIdAndIssue(commentId, issue).map(
+                issueComment -> {
+                    repository.delete(issueComment);
+
+                    return new BaseMessage("Issue comment deleted");
+                }
+        ).orElseThrow(IssueCommentNotFoundException::new);
     }
 
 
