@@ -5,6 +5,7 @@ import io.swagger.annotations.Authorization;
 import it.bz.beacon.api.db.model.IssueSolution;
 import it.bz.beacon.api.model.BeaconIssue;
 import it.bz.beacon.api.model.IssueCreation;
+import it.bz.beacon.api.model.IssueStatusChange;
 import it.bz.beacon.api.service.issue.IIssueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,14 @@ public class IssueController {
 
     @ApiOperation(value = "Update a issue", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/resolve", produces = "application/json")
+    @Deprecated
     public BeaconIssue update(@PathVariable long id, @Valid @RequestBody IssueSolution issueSolution) {
         return service.resolve(id, issueSolution);
+    }
+
+    @ApiOperation(value = "Change the resolved status of an issue", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.POST, value = "/{id}/status", produces = "application/json")
+    public BeaconIssue updateStatus(@PathVariable long id, @Valid @RequestBody IssueStatusChange issueStatusChange) {
+        return service.updateStatus(id, issueStatusChange);
     }
 }

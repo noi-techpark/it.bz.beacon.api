@@ -6,6 +6,7 @@ import it.bz.beacon.api.db.repository.IssueRepository;
 import it.bz.beacon.api.exception.db.IssueNotFoundException;
 import it.bz.beacon.api.model.BeaconIssue;
 import it.bz.beacon.api.model.IssueCreation;
+import it.bz.beacon.api.model.IssueStatusChange;
 import it.bz.beacon.api.service.beacon.IBeaconDataService;
 import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +98,22 @@ public class IssueService implements IIssueService {
         IssueComment issueComment = issueCommentService.create(issue, issueSolution);
 
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
+
+        return BeaconIssue.fromIssue(issue, beacon, issueComment);
+    }
+
+    @Override
+    @Transactional
+    public BeaconIssue updateStatus(long id, IssueStatusChange issueStatusChange) {
+        Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
+        if (issueStatusChange.isResolved() && !issue.isResolved())
+            issue.setResolvedAt(new Date());
+        issue.setResolved(issueStatusChange.isResolved());
+        issue = repository.save(issue);
+
+        Beacon beacon = beaconService.find(issue.getBeaconData().getId());
+
+        IssueComment issueComment = issueCommentService.findLastCommentByIssue(issue);
 
         return BeaconIssue.fromIssue(issue, beacon, issueComment);
     }
