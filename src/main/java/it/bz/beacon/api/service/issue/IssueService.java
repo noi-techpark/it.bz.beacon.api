@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.internet.MimeMessage;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -178,8 +179,18 @@ public class IssueService implements IIssueService {
         return issueCommentService.delete(issue, commentId);
     }
 
+    @Transactional
+    public String[] findAllIssueEmails(Issue issue) {
+        String reporterEmail = repository.findReporterMailAddress(issue);
+        List<String> commentEmails = issueCommentService.findAllUserEmailsByIssue(issue);
+        if (reporterEmail != null)
+            commentEmails.add(reporterEmail);
+        return commentEmails.stream().distinct().toArray(String[]::new);
+    }
+
     private void notifyNewBeaconIssue(Issue issue) {
         notifyBeaconIssueMessage(issue,
+                new String[]{beaconSuedtirolConfiguration.getIssueEmailFrom()},
                 String.format("New issue for beacon %s",
                         issue.getBeaconData().getName()),
                 String.format(
@@ -193,6 +204,7 @@ public class IssueService implements IIssueService {
 
     private void notifyNewBeaconIssueComment(Issue issue, IssueComment issueComment) {
         notifyBeaconIssueMessage(issue,
+                findAllIssueEmails(issue),
                 issue.getProblem(),
                 String.format(
                         "<b>%s</b> commented:<p style=\"white-space: pre-wrap\">%s<p>",
@@ -203,6 +215,7 @@ public class IssueService implements IIssueService {
 
     private void notifyBeaconIssueStatusChange(Issue issue, String reported) {
         notifyBeaconIssueMessage(issue,
+                findAllIssueEmails(issue),
                 issue.getProblem(),
                 String.format(
                         "<p>Issue was %s by %s<p>",
@@ -211,8 +224,9 @@ public class IssueService implements IIssueService {
         );
     }
 
-    private void notifyBeaconIssueMessage(Issue issue, String subject, String messageHtml) {
+    private void notifyBeaconIssueMessage(Issue issue, String[] tos, String subject, String messageHtml) {
         try {
+            System.out.println(Arrays.toString(tos));
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setSubject(String.format("[BeaconBZ][%s][%s] %s (#%s)",
@@ -221,7 +235,7 @@ public class IssueService implements IIssueService {
                     subject,
                     issue.getId()));
             helper.setFrom(beaconSuedtirolConfiguration.getIssueEmailFrom());
-            helper.setTo(beaconSuedtirolConfiguration.getIssueEmailTo());
+            helper.setTo(tos);
             helper.setText(String.format(
                     "%s<span>---</span><br/><a href=\"%s%s%s%s%s\"> View Issue</a>",
                     messageHtml,
