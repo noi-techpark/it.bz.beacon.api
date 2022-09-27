@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,9 @@ public class IssueCommentService implements IIssueCommentService {
     @Transactional
     public Map<Long, IssueComment> findLastCommentByIssuesMap(List<Issue> issues) {
         return issues.stream()
-                .map(issue -> repository.findFirstByIssueOrderByCreatedAtDesc(issue)).
-                        collect(Collectors.toMap(IssueComment::getIssueId, Function.identity()));
+                .map(issue -> repository.findFirstByIssueOrderByCreatedAtDesc(issue))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(IssueComment::getIssueId, Function.identity()));
     }
 
     @Override

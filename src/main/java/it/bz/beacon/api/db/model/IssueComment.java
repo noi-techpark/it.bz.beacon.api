@@ -6,6 +6,7 @@ import it.bz.beacon.api.model.IssueCommentCreation;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Entity
 public class IssueComment extends AuditModel {
@@ -98,5 +99,13 @@ public class IssueComment extends AuditModel {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Date getCreateDate() {
+        return getCreatedAt();
+    }
+
+    public Date getUpdateDate() {
+        return !getCreatedAt().equals(getUpdatedAt()) ? getUpdatedAt() : null;
     }
 }
