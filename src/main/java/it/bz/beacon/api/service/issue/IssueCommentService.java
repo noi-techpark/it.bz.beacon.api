@@ -67,7 +67,7 @@ public class IssueCommentService implements IIssueCommentService {
 
     @Override
     public List<IssueComment> findAllComments(Issue issue) {
-        return repository.findAllByIssue(issue);
+        return repository.findAllByIssueOrderByCreatedAt(issue);
     }
 
     @Override
