@@ -14,11 +14,13 @@ alter table issue_comment add constraint FK_issue_comment_issue_id_issue foreign
 alter table issue_comment add constraint FK_issue_comment_user_id_user foreign key (user_id) references "user";
 
 alter table issue add column resolved boolean not null default false;
-alter table issue add column resolved_at timestamp;
+alter table issue add column resolver varchar(255);
+alter table issue add column resolve_date timestamp;
 
 update issue
 set resolved = true,
-    resolved_at = issue_solution.created_at
+    resolve_date = issue_solution.created_at,
+    resolver = issue_solution.resolver
 from issue_solution
 where solution_id is not null and issue.solution_id = issue_solution.id;
 
