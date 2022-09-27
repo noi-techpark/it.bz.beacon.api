@@ -11,7 +11,7 @@ public interface IssueCommentRepository extends JpaRepository<IssueComment, Long
 
     IssueComment findFirstByIssueOrderByCreatedAtDesc(Issue issue);
 
-    List<IssueComment> findAllByIssue(Issue issue);
+    List<IssueComment> findAllByIssueOrderByCreatedAt(Issue issue);
 
     Optional<IssueComment> findByIdAndIssue(long commentId, Issue issue);
 }
