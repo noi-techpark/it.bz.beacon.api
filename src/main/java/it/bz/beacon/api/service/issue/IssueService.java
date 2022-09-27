@@ -10,6 +10,7 @@ import it.bz.beacon.api.service.beacon.IBeaconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,7 +80,7 @@ public class IssueService implements IIssueService {
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
 
         BeaconIssue beaconIssue = BeaconIssue.fromIssue(issue, beacon, null);
-        notifyNewBeaconIssue(beaconIssue);
+        notifyNewBeaconIssue(issue);
 
         return beaconIssue;
     }
@@ -90,7 +91,7 @@ public class IssueService implements IIssueService {
         Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
         issue.setSolution(issueSolution);
         issue.setResolved(true);
-        issue.setResolvedAt(new Date());
+        issue.setResolveDate(new Date());
         issue = repository.save(issue);
 
         IssueComment issueComment = issueCommentService.create(issue, issueSolution);
@@ -104,10 +105,16 @@ public class IssueService implements IIssueService {
     @Transactional
     public BeaconIssue updateStatus(long id, IssueStatusChange issueStatusChange) {
         Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
-        if (issueStatusChange.isResolved() && !issue.isResolved())
-            issue.setResolvedAt(new Date());
-        if (!issueStatusChange.isResolved() && issue.getResolvedAt() != null)
-            issue.setResolvedAt(null);
+        boolean notify = issue.isResolved() != issueStatusChange.isResolved();
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (issueStatusChange.isResolved() && !issue.isResolved()) {
+            issue.setResolveDate(new Date());
+            issue.setResolver(authorizedUser.getUsername());
+        }
+        if (!issueStatusChange.isResolved() && issue.getResolveDate() != null)
+            issue.setResolveDate(null);
+        if (!issueStatusChange.isResolved() && issue.getResolver() != null)
+            issue.setResolver(null);
         issue.setResolved(issueStatusChange.isResolved());
         issue = repository.save(issue);
 
@@ -115,7 +122,13 @@ public class IssueService implements IIssueService {
 
         IssueComment issueComment = issueCommentService.findLastCommentByIssue(issue);
 
-        return BeaconIssue.fromIssue(issue, beacon, issueComment);
+        BeaconIssue beaconIssue = BeaconIssue.fromIssue(issue, beacon, issueComment);
+
+        if (notify) {
+            notifyBeaconIssueStatusChange(issue, authorizedUser.getUsername());
+        }
+
+        return beaconIssue;
     }
 
     @Override
@@ -130,13 +143,25 @@ public class IssueService implements IIssueService {
     public IssueComment createComment(long issueId, IssueCommentCreation issueCommentCreation) {
         Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
 
+        boolean notifyClose = false;
+
         if (issueCommentCreation.isCloseOnComment() && !issue.isResolved()) {
-            issue.setResolvedAt(new Date());
+            User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            issue.setResolveDate(new Date());
             issue.setResolved(true);
+            issue.setResolver(authorizedUser.getUsername());
             issue = repository.save(issue);
+            notifyClose = true;
         }
 
-        return issueCommentService.create(issue, issueCommentCreation);
+        IssueComment issueComment = issueCommentService.create(issue, issueCommentCreation);
+
+        notifyNewBeaconIssueComment(issue, issueComment);
+
+        if (notifyClose)
+            notifyBeaconIssueStatusChange(issue, issueComment.getUserUsername());
+
+        return issueComment;
     }
 
     @Override
@@ -153,23 +178,62 @@ public class IssueService implements IIssueService {
         return issueCommentService.delete(issue, commentId);
     }
 
+    private void notifyNewBeaconIssue(Issue issue) {
+        notifyBeaconIssueMessage(issue,
+                String.format("New issue for beacon %s",
+                        issue.getBeaconData().getName()),
+                String.format(
+                        "A new issue has been reported by <b>%s</b> for beacon <b>%s</b>:<br/><h2>%s</h2><p style=\"white-space: pre-wrap\">%s<p>",
+                        issue.getReporter(),
+                        issue.getBeaconData().getName(),
+                        issue.getProblem(),
+                        issue.getProblemDescription())
+        );
+    }
 
-    private void notifyNewBeaconIssue(BeaconIssue beaconIssue) {
+    private void notifyNewBeaconIssueComment(Issue issue, IssueComment issueComment) {
+        notifyBeaconIssueMessage(issue,
+                issue.getProblem(),
+                String.format(
+                        "<b>%s</b> commented:<p style=\"white-space: pre-wrap\">%s<p>",
+                        issueComment.getUserUsername(),
+                        issueComment.getComment())
+        );
+    }
+
+    private void notifyBeaconIssueStatusChange(Issue issue, String reported) {
+        notifyBeaconIssueMessage(issue,
+                issue.getProblem(),
+                String.format(
+                        "<p>Issue was %s by %s<p>",
+                        issue.isResolved() ? "closed" : "reopened",
+                        reported)
+        );
+    }
+
+    private void notifyBeaconIssueMessage(Issue issue, String subject, String messageHtml) {
         try {
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setSubject("New issue for beacon " + beaconIssue.getBeacon().getName());
+            helper.setSubject(String.format("[BeaconBZ][%s][%s] %s (#%s)",
+                    issue.getBeaconData().getGroup().getName(),
+                    issue.getBeaconData().getId(),
+                    subject,
+                    issue.getId()));
             helper.setFrom(beaconSuedtirolConfiguration.getIssueEmailFrom());
             helper.setTo(beaconSuedtirolConfiguration.getIssueEmailTo());
             helper.setText(String.format(
-                    "A new issue has been reported by '%s' for beacon '%s':<br/><br/>%s<br/><br/>%s",
-                    beaconIssue.getReporter(),
-                    beaconIssue.getBeacon().getName(),
-                    beaconIssue.getProblem(),
-                    beaconIssue.getProblemDescription()
+                    "%s<span>---</span><br/><a href=\"%s%s%s%s%s\"> View Issue</a>",
+                    messageHtml,
+                    beaconSuedtirolConfiguration.getPasswordResetURL(),
+                    "/#/issues/beacon/",
+                    issue.getBeaconData().getId(),
+                    "/issue/",
+                    issue.getId()
             ), true);
             emailSender.send(message);
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
     }
 
     private List<BeaconIssue> mapIssuesToBeaconIssues(List<Issue> issues) {
