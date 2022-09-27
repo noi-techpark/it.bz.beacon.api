@@ -95,5 +95,10 @@ public class IssueCommentService implements IIssueCommentService {
         ).orElseThrow(IssueCommentNotFoundException::new);
     }
 
+    @Override
+    public List<String> findAllUserEmailsByIssue(Issue issue) {
+        return repository.findAllUserEmailsByIssue(issue);
+    }
+
 
 }
