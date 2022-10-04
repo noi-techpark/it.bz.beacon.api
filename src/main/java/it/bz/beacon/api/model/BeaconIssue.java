@@ -25,8 +25,9 @@ public class BeaconIssue {
 
     @ApiModelProperty(dataType = "java.lang.Long")
     private Date resolveDate;
-
     private String resolver;
+
+    private String ticketId;
 
     public static BeaconIssue fromIssue(Issue issue, Beacon beacon, IssueComment issueComment) {
         BeaconIssue beaconIssue = new BeaconIssue();
@@ -45,6 +46,7 @@ public class BeaconIssue {
                 beaconIssue.setSolutionDescription(null);
             }
         }
+        beaconIssue.setTicketId(issue.getTicketId());
 
         return beaconIssue;
     }
@@ -135,5 +137,13 @@ public class BeaconIssue {
 
     public void setResolver(String resolver) {
         this.resolver = resolver;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
     }
 }
