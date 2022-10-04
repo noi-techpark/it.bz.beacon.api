@@ -5,6 +5,8 @@ import it.bz.beacon.api.db.model.Beacon;
 import it.bz.beacon.api.db.model.Issue;
 import it.bz.beacon.api.db.model.IssueComment;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 public class BeaconIssue {
@@ -29,6 +31,9 @@ public class BeaconIssue {
 
     private Long ticketId;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModified;
+
     public static BeaconIssue fromIssue(Issue issue, Beacon beacon, IssueComment issueComment) {
         BeaconIssue beaconIssue = new BeaconIssue();
         beaconIssue.setId(issue.getId());
@@ -47,6 +52,11 @@ public class BeaconIssue {
             }
         }
         beaconIssue.setTicketId(issue.getTicketId());
+        beaconIssue.setLastModified(issue.getUpdatedAt());
+        if (issue.getLastCommentDate() != null && issue.getLastCommentDate().after(beaconIssue.getLastModified()))
+            beaconIssue.setLastModified(issue.getLastCommentDate());
+        if (issueComment != null && issueComment.getUpdatedAt().after(beaconIssue.getLastModified()))
+            beaconIssue.setLastModified(issue.getLastCommentDate());
 
         return beaconIssue;
     }
@@ -145,5 +155,13 @@ public class BeaconIssue {
 
     public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 }
