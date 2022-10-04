@@ -27,4 +27,6 @@ public interface IIssueCommentService {
     BaseMessage delete(Issue issue, long commentId);
 
     List<String> findAllUserEmailsByIssue(Issue issue);
+
+    void deleteAllByIssue(Issue issue);
 }

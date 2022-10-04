@@ -87,6 +87,37 @@ public class IssueService implements IIssueService {
     }
 
     @Override
+    public BeaconIssue update(long id, IssueUpdate issueUpdate) {
+        Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
+
+        issue.setProblem(issueUpdate.getProblem());
+        issue.setProblemDescription(issueUpdate.getProblemDescription());
+
+        issue = repository.save(issue);
+
+        Beacon beacon = beaconService.find(issue.getBeaconData().getId());
+        IssueComment issueComment = null;
+
+        if (issue.isResolved())
+            issueComment = issueCommentService.findLastCommentByIssue(issue);
+
+        return BeaconIssue.fromIssue(issue, beacon, issueComment);
+    }
+
+    @Override
+    @Transactional
+    public BaseMessage delete(long issueId) {
+        return repository.findById(issueId).map(
+                issue -> {
+                    issueCommentService.deleteAllByIssue(issue);
+                    repository.delete(issue);
+
+                    return new BaseMessage("Issue deleted");
+                }
+        ).orElseThrow(IssueNotFoundException::new);
+    }
+
+    @Override
     @Transactional
     public BeaconIssue resolve(long id, IssueSolution issueSolution) {
         Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
