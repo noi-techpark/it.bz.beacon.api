@@ -70,7 +70,7 @@ public class IssueController {
 
     @ApiOperation(value = "Create an issue comment", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.POST, value = "/{issueId}/comments", produces = "application/json")
-    public IssueComment createComment(@PathVariable long issueId, @Valid @RequestBody IssueCommentCreation issueCommentCreation) {
+    public List<IssueComment> createComment(@PathVariable long issueId, @Valid @RequestBody IssueCommentCreation issueCommentCreation) {
         return service.createComment(issueId, issueCommentCreation);
     }
 

@@ -14,16 +14,11 @@ public interface IIssueService {
     BeaconIssue create(IssueCreation issueCreation);
     BeaconIssue resolve(long id, IssueSolution issueSolution);
     BeaconIssue updateStatus(long id, IssueStatusChange issueStatusChange);
-
     List<IssueComment> findAllComments(long issueId);
 
-    IssueComment createComment(long issueId, IssueCommentCreation issueCommentCreation);
-
+    List<IssueComment> createComment(long issueId, IssueCommentCreation issueCommentCreation);
     IssueComment updateComment(long issueId, long commentId, IssueCommentUpdate issueCommentUpdate);
-
     BaseMessage deleteComment(long issueId, long commentId);
-
     BeaconIssue update(long id, IssueUpdate issueUpdate);
-
     BaseMessage delete(long id);
 }

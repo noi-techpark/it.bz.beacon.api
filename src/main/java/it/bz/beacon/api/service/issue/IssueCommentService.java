@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,7 +39,7 @@ public class IssueCommentService implements IIssueCommentService {
     @Transactional
     public Map<Long, IssueComment> findLastCommentByIssuesMap(List<Issue> issues) {
         return issues.stream()
-                .map(issue -> repository.findFirstByIssueOrderByCreatedAtDesc(issue))
+                .map(issue -> repository.findFirstByIssueOrderByCreatedAtDescIdAsc(issue))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toMap(IssueComment::getIssueId, Function.identity()));
     }
@@ -45,7 +47,7 @@ public class IssueCommentService implements IIssueCommentService {
     @Override
     @Transactional
     public IssueComment findLastCommentByIssue(Issue issue) {
-        return repository.findFirstByIssueOrderByCreatedAtDesc(issue);
+        return repository.findFirstByIssueOrderByCreatedAtDescIdAsc(issue);
     }
 
     @Override
@@ -79,10 +81,21 @@ public class IssueCommentService implements IIssueCommentService {
     }
 
     @Override
+    public IssueComment createStatusChangeComment(Issue issue, String statusChangeText) {
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        IssueComment issueComment = IssueComment.create(issue, authorizedUser);
+        issueComment.setComment(String.format("%s %s on %s", authorizedUser.getUsername(), statusChangeText, LocalDate.now().format(DateTimeFormatter.ISO_DATE)));
+        issueComment.setStatusChange(true);
+        return repository.save(issueComment);
+    }
+
+    @Override
     public IssueComment update(Issue issue, long commentId, IssueCommentUpdate issueCommentUpdate) {
         IssueComment issueComment = repository.findByIdAndIssue(commentId, issue).orElseThrow(IssueCommentNotFoundException::new);
         User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (issueComment.getUser() == null || !issueComment.getUser().getId().equals(authorizedUser.getId()))
+            throw new InsufficientRightsException();
+        if (issueComment.isStatusChange())
             throw new InsufficientRightsException();
         issueComment.setComment(issueCommentUpdate.getComment());
         return repository.save(issueComment);
@@ -94,6 +107,8 @@ public class IssueCommentService implements IIssueCommentService {
         return repository.findByIdAndIssue(commentId, issue).map(
                 issueComment -> {
                     if (issueComment.getUser() == null || !issueComment.getUser().getId().equals(authorizedUser.getId()))
+                        throw new InsufficientRightsException();
+                    if (issueComment.isStatusChange())
                         throw new InsufficientRightsException();
                     repository.delete(issueComment);
 
