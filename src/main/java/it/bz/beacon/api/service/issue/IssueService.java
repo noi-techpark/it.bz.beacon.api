@@ -3,6 +3,7 @@ package it.bz.beacon.api.service.issue;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.db.repository.IssueRepository;
+import it.bz.beacon.api.exception.auth.InsufficientRightsException;
 import it.bz.beacon.api.exception.db.IssueNotFoundException;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.service.beacon.IBeaconDataService;
@@ -108,6 +109,9 @@ public class IssueService implements IIssueService {
     @Override
     @Transactional
     public BaseMessage delete(long issueId) {
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!authorizedUser.isAdmin())
+            throw new InsufficientRightsException();
         return repository.findById(issueId).map(
                 issue -> {
                     issueCommentService.deleteAllByIssue(issue);
@@ -261,11 +265,9 @@ public class IssueService implements IIssueService {
             System.out.println(Arrays.toString(tos));
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setSubject(String.format("[BeaconBZ][%s][%s] %s (#%s)",
-                    issue.getBeaconData().getGroup().getName(),
-                    issue.getBeaconData().getId(),
-                    subject,
-                    issue.getId()));
+            helper.setSubject(String.format("[issues.opendatahub.bz.it #%s] %s",
+                    issue.getTicketId() != null ? issue.getTicketId() : "",
+                    subject));
             helper.setFrom(beaconSuedtirolConfiguration.getIssueEmailFrom());
             helper.setTo(tos);
             helper.setText(String.format(
