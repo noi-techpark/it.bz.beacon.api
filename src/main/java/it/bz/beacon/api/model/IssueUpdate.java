@@ -9,7 +9,7 @@ public class IssueUpdate {
     @NotNull
     private String problem;
     private String problemDescription;
-    private String ticketId;
+    private Long ticketId;
 
     public String getProblem() {
         return problem;
@@ -28,11 +28,11 @@ public class IssueUpdate {
     }
 
 
-    public String getTicketId() {
+    public Long getTicketId() {
         return ticketId;
     }
 
-    public void setTicketId(String ticketId) {
+    public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;
     }
 }
