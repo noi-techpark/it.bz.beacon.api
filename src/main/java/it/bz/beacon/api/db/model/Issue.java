@@ -2,6 +2,7 @@ package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.bz.beacon.api.model.IssueCreation;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -35,6 +36,10 @@ public class Issue extends AuditModel {
 
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     private IssueSolution solution;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Formula("(select updated_at from issue_comment where issue_comment.issue_id = id order by updated_at desc limit 1)")
+    private Date lastCommentDate;
 
     public static Issue create(BeaconData beaconData, IssueCreation issueCreation) {
         Issue issue = new Issue();
@@ -128,5 +133,13 @@ public class Issue extends AuditModel {
 
     public void setResolveDate(Date resolveDate) {
         this.resolveDate = resolveDate;
+    }
+
+    public Date getLastCommentDate() {
+        return lastCommentDate;
+    }
+
+    public void setLastCommentDate(Date lastCommentDate) {
+        this.lastCommentDate = lastCommentDate;
     }
 }
