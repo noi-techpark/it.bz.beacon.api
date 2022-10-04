@@ -5,6 +5,7 @@ import it.bz.beacon.api.db.model.IssueComment;
 import it.bz.beacon.api.db.model.IssueSolution;
 import it.bz.beacon.api.db.model.User;
 import it.bz.beacon.api.db.repository.IssueCommentRepository;
+import it.bz.beacon.api.exception.auth.InsufficientRightsException;
 import it.bz.beacon.api.exception.db.IssueCommentNotFoundException;
 import it.bz.beacon.api.model.BaseMessage;
 import it.bz.beacon.api.model.IssueCommentCreation;
@@ -80,14 +81,20 @@ public class IssueCommentService implements IIssueCommentService {
     @Override
     public IssueComment update(Issue issue, long commentId, IssueCommentUpdate issueCommentUpdate) {
         IssueComment issueComment = repository.findByIdAndIssue(commentId, issue).orElseThrow(IssueCommentNotFoundException::new);
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (issueComment.getUser() == null || !issueComment.getUser().getId().equals(authorizedUser.getId()))
+            throw new InsufficientRightsException();
         issueComment.setComment(issueCommentUpdate.getComment());
         return repository.save(issueComment);
     }
 
     @Override
     public BaseMessage delete(Issue issue, long commentId) {
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return repository.findByIdAndIssue(commentId, issue).map(
                 issueComment -> {
+                    if (issueComment.getUser() == null || !issueComment.getUser().getId().equals(authorizedUser.getId()))
+                        throw new InsufficientRightsException();
                     repository.delete(issueComment);
 
                     return new BaseMessage("Issue comment deleted");
