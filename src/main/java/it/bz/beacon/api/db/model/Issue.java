@@ -28,6 +28,8 @@ public class Issue extends AuditModel {
     private boolean resolved;
     private String resolver;
 
+    private String ticketId;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date resolveDate;
 
@@ -94,6 +96,14 @@ public class Issue extends AuditModel {
 
     public void setSolution(IssueSolution solution) {
         this.solution = solution;
+    }
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
     }
 
     public boolean isResolved() {

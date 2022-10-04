@@ -8,8 +8,8 @@ public class IssueUpdate {
     @NotEmpty
     @NotNull
     private String problem;
-
     private String problemDescription;
+    private String ticketId;
 
     public String getProblem() {
         return problem;
@@ -27,4 +27,12 @@ public class IssueUpdate {
         this.problemDescription = problemDescription;
     }
 
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
+    }
 }

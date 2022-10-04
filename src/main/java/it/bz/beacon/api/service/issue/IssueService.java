@@ -92,6 +92,7 @@ public class IssueService implements IIssueService {
 
         issue.setProblem(issueUpdate.getProblem());
         issue.setProblemDescription(issueUpdate.getProblemDescription());
+        issue.setTicketId(issueUpdate.getTicketId());
 
         issue = repository.save(issue);
 
