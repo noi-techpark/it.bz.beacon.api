@@ -37,13 +37,22 @@ public class IssueComment extends AuditModel {
     @NotNull
     private String comment;
 
+    @NotNull
+    private boolean statusChange;
+
     public static IssueComment create(IssueCommentCreation issueCommentCreation, Issue issue, User authorizedUser) {
+        IssueComment issueComment = create(issue, authorizedUser);
+        issueComment.comment = issueCommentCreation.getComment();
+        return issueComment;
+    }
+
+    public static IssueComment create(Issue issue, User authorizedUser) {
         IssueComment issueComment = new IssueComment();
         issueComment.issue = issue;
         issueComment.userUsername = authorizedUser.getUsername();
         issueComment.userName = authorizedUser.getName() + " " + authorizedUser.getSurname();
         issueComment.setUser(authorizedUser);
-        issueComment.comment = issueCommentCreation.getComment();
+        issueComment.statusChange = false;
 
         return issueComment;
     }
@@ -107,5 +116,13 @@ public class IssueComment extends AuditModel {
 
     public Date getUpdateDate() {
         return !getCreatedAt().equals(getUpdatedAt()) ? getUpdatedAt() : null;
+    }
+
+    public boolean isStatusChange() {
+        return statusChange;
+    }
+
+    public void setStatusChange(boolean statusChange) {
+        this.statusChange = statusChange;
     }
 }

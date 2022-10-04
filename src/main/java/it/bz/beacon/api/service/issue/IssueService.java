@@ -1,5 +1,6 @@
 package it.bz.beacon.api.service.issue;
 
+import com.google.common.collect.Lists;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.db.repository.IssueRepository;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.internet.MimeMessage;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +82,9 @@ public class IssueService implements IIssueService {
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
 
         BeaconIssue beaconIssue = BeaconIssue.fromIssue(issue, beacon, null);
-        notifyNewBeaconIssue(issue);
+
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        notifyNewBeaconIssue(issue, authorizedUser);
 
         return beaconIssue;
     }
@@ -155,14 +157,21 @@ public class IssueService implements IIssueService {
         issue.setResolved(issueStatusChange.isResolved());
         issue = repository.save(issue);
 
+        IssueComment issueComment = null;
+
+        if (notify) {
+            issueComment = issueCommentService.createStatusChangeComment(issue, issue.isResolved() ? "closed" : "reopened");
+        }
+
         Beacon beacon = beaconService.find(issue.getBeaconData().getId());
 
-        IssueComment issueComment = issueCommentService.findLastCommentByIssue(issue);
+        if (issueComment == null)
+            issueComment = issueCommentService.findLastCommentByIssue(issue);
 
         BeaconIssue beaconIssue = BeaconIssue.fromIssue(issue, beacon, issueComment);
 
         if (notify) {
-            notifyBeaconIssueStatusChange(issue, authorizedUser.getUsername());
+            notifyBeaconIssueStatusChange(issue, authorizedUser);
         }
 
         return beaconIssue;
@@ -177,13 +186,13 @@ public class IssueService implements IIssueService {
 
     @Override
     @Transactional
-    public IssueComment createComment(long issueId, IssueCommentCreation issueCommentCreation) {
+    public List<IssueComment> createComment(long issueId, IssueCommentCreation issueCommentCreation) {
         Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
 
         boolean notifyClose = false;
 
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (issueCommentCreation.isCloseOnComment() && !issue.isResolved()) {
-            User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             issue.setResolveDate(new Date());
             issue.setResolved(true);
             issue.setResolver(authorizedUser.getUsername());
@@ -192,13 +201,16 @@ public class IssueService implements IIssueService {
         }
 
         IssueComment issueComment = issueCommentService.create(issue, issueCommentCreation);
+        List<IssueComment> issueComments = Lists.newArrayList(issueComment);
 
-        notifyNewBeaconIssueComment(issue, issueComment);
+        notifyNewBeaconIssueComment(issue, issueComment, authorizedUser);
 
-        if (notifyClose)
-            notifyBeaconIssueStatusChange(issue, issueComment.getUserUsername());
+        if (notifyClose) {
+            issueComments.add(issueCommentService.createStatusChangeComment(issue, "closed"));
+            notifyBeaconIssueStatusChange(issue, authorizedUser);
+        }
 
-        return issueComment;
+        return issueComments;
     }
 
     @Override
@@ -216,17 +228,17 @@ public class IssueService implements IIssueService {
     }
 
     @Transactional
-    public String[] findAllIssueEmails(Issue issue) {
+    public List<String> findAllIssueEmails(Issue issue) {
         String reporterEmail = repository.findReporterMailAddress(issue);
         List<String> commentEmails = issueCommentService.findAllUserEmailsByIssue(issue);
         if (reporterEmail != null)
             commentEmails.add(reporterEmail);
-        return commentEmails.stream().distinct().toArray(String[]::new);
+        return commentEmails;
     }
 
-    private void notifyNewBeaconIssue(Issue issue) {
+    private void notifyNewBeaconIssue(Issue issue, User user) {
         notifyBeaconIssueMessage(issue,
-                new String[]{beaconSuedtirolConfiguration.getIssueEmailFrom()},
+                new String[]{beaconSuedtirolConfiguration.getIssueEmailTo(), user.getEmail()},
                 String.format("New issue for beacon %s",
                         issue.getBeaconData().getName()),
                 String.format(
@@ -238,9 +250,12 @@ public class IssueService implements IIssueService {
         );
     }
 
-    private void notifyNewBeaconIssueComment(Issue issue, IssueComment issueComment) {
+    private void notifyNewBeaconIssueComment(Issue issue, IssueComment issueComment, User user) {
+        List<String> emails = findAllIssueEmails(issue);
+        emails.add(0, beaconSuedtirolConfiguration.getIssueEmailTo());
+
         notifyBeaconIssueMessage(issue,
-                findAllIssueEmails(issue),
+                emails.stream().distinct().filter(s -> !s.equals(user.getEmail())).toArray(String[]::new),
                 issue.getProblem(),
                 String.format(
                         "<b>%s</b> commented:<p style=\"white-space: pre-wrap\">%s<p>",
@@ -249,20 +264,22 @@ public class IssueService implements IIssueService {
         );
     }
 
-    private void notifyBeaconIssueStatusChange(Issue issue, String reported) {
+    private void notifyBeaconIssueStatusChange(Issue issue, User user) {
+        List<String> emails = findAllIssueEmails(issue);
+        emails.add(0, beaconSuedtirolConfiguration.getIssueEmailTo());
+
         notifyBeaconIssueMessage(issue,
-                findAllIssueEmails(issue),
+                emails.stream().distinct().filter(s -> !s.equals(user.getEmail())).toArray(String[]::new),
                 issue.getProblem(),
                 String.format(
                         "<p>Issue was %s by %s<p>",
                         issue.isResolved() ? "closed" : "reopened",
-                        reported)
+                        user.getUsername())
         );
     }
 
     private void notifyBeaconIssueMessage(Issue issue, String[] tos, String subject, String messageHtml) {
         try {
-            System.out.println(Arrays.toString(tos));
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setSubject(String.format("[issues.opendatahub.bz.it #%s] %s",

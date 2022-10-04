@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface IssueCommentRepository extends JpaRepository<IssueComment, Long> {
 
-    IssueComment findFirstByIssueOrderByCreatedAtDesc(Issue issue);
+    IssueComment findFirstByIssueOrderByCreatedAtDescIdAsc(Issue issue);
 
     List<IssueComment> findAllByIssueOrderByCreatedAt(Issue issue);
 

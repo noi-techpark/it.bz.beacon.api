@@ -18,15 +18,11 @@ public interface IIssueCommentService {
     IssueComment find(long id);
     IssueComment create(Issue issue, IssueSolution issueSolution);
 
+    IssueComment createStatusChangeComment(Issue issue, String statusChangeText);
     List<IssueComment> findAllComments(Issue issue);
-
     IssueComment create(Issue issue, IssueCommentCreation issueCommentCreation);
-
     IssueComment update(Issue issue, long commentId, IssueCommentUpdate issueCommentUpdate);
-
     BaseMessage delete(Issue issue, long commentId);
-
     List<String> findAllUserEmailsByIssue(Issue issue);
-
     void deleteAllByIssue(Issue issue);
 }
