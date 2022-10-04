@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import it.bz.beacon.api.config.BeaconSuedtirolConfiguration;
 import it.bz.beacon.api.db.model.*;
 import it.bz.beacon.api.db.repository.IssueRepository;
+import it.bz.beacon.api.exception.NotImplementedException;
 import it.bz.beacon.api.exception.auth.InsufficientRightsException;
 import it.bz.beacon.api.exception.db.IssueNotFoundException;
 import it.bz.beacon.api.model.*;
@@ -127,17 +128,7 @@ public class IssueService implements IIssueService {
     @Override
     @Transactional
     public BeaconIssue resolve(long id, IssueSolution issueSolution) {
-        Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
-        issue.setSolution(issueSolution);
-        issue.setResolved(true);
-        issue.setResolveDate(new Date());
-        issue = repository.save(issue);
-
-        IssueComment issueComment = issueCommentService.create(issue, issueSolution);
-
-        Beacon beacon = beaconService.find(issue.getBeaconData().getId());
-
-        return BeaconIssue.fromIssue(issue, beacon, issueComment);
+        throw new NotImplementedException();
     }
 
     @Override
