@@ -27,7 +27,7 @@ public class BeaconIssue {
     private Date resolveDate;
     private String resolver;
 
-    private String ticketId;
+    private Long ticketId;
 
     public static BeaconIssue fromIssue(Issue issue, Beacon beacon, IssueComment issueComment) {
         BeaconIssue beaconIssue = new BeaconIssue();
@@ -139,11 +139,11 @@ public class BeaconIssue {
         this.resolver = resolver;
     }
 
-    public String getTicketId() {
+    public Long getTicketId() {
         return ticketId;
     }
 
-    public void setTicketId(String ticketId) {
+    public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;
     }
 }
