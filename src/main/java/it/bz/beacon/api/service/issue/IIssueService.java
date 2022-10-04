@@ -22,4 +22,8 @@ public interface IIssueService {
     IssueComment updateComment(long issueId, long commentId, IssueCommentUpdate issueCommentUpdate);
 
     BaseMessage deleteComment(long issueId, long commentId);
+
+    BeaconIssue update(long id, IssueUpdate issueUpdate);
+
+    BaseMessage delete(long id);
 }

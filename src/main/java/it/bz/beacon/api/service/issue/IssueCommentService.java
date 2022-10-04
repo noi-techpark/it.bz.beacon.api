@@ -100,5 +100,10 @@ public class IssueCommentService implements IIssueCommentService {
         return repository.findAllUserEmailsByIssue(issue);
     }
 
+    @Override
+    public void deleteAllByIssue(Issue issue) {
+        repository.deleteAllByIssue(issue);
+    }
+
 
 }

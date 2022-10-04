@@ -18,4 +18,6 @@ public interface IssueCommentRepository extends JpaRepository<IssueComment, Long
 
     @Query(value = "SELECT distinct u.email FROM IssueComment ic join User u on ic.user = u WHERE ic.issue = :issue")
     List<String> findAllUserEmailsByIssue(Issue issue);
+
+    void deleteAllByIssue(Issue issue);
 }

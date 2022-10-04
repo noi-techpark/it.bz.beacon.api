@@ -25,19 +25,31 @@ public class IssueController {
         return service.findAll(onlyUnresolved);
     }
 
-    @ApiOperation(value = "Search a issue with an ID", authorizations = {@Authorization(value = "JWT")})
+    @ApiOperation(value = "Search an issue with an ID", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", produces = "application/json")
     public BeaconIssue get(@PathVariable long id) {
         return service.find(id);
     }
 
-    @ApiOperation(value = "Create a issue", authorizations = {@Authorization(value = "JWT")})
+    @ApiOperation(value = "Create an issue", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
     public BeaconIssue create(@Valid @RequestBody IssueCreation issueCreation) {
         return service.create(issueCreation);
     }
 
-    @ApiOperation(value = "Update a issue", authorizations = {@Authorization(value = "JWT")})
+    @ApiOperation(value = "Update an issue", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.PATCH, value = "/{id}", produces = "application/json")
+    public BeaconIssue updateIssue(@PathVariable long id, @Valid @RequestBody IssueUpdate issueUpdate) {
+        return service.update(id, issueUpdate);
+    }
+
+    @ApiOperation(value = "Delete an issue", authorizations = {@Authorization(value = "JWT")})
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}", produces = "application/json")
+    public BaseMessage delete(@PathVariable long id) {
+        return service.delete(id);
+    }
+
+    @ApiOperation(value = "Update an issue", authorizations = {@Authorization(value = "JWT")})
     @RequestMapping(method = RequestMethod.POST, value = "/{id}/resolve", produces = "application/json")
     @Deprecated
     public BeaconIssue update(@PathVariable long id, @Valid @RequestBody IssueSolution issueSolution) {
