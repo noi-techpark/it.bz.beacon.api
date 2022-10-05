@@ -39,7 +39,7 @@ jobs:
 
           X_DB_URL: "jdbc:postgresql://postgres-prod.co90ybcr8iim.eu-west-1.rds.amazonaws.com:5432/beacon"
           X_DB_USERNAME: ${{ secrets.DB_USERNAME_TEST }}
-          X_DB_PASSWORD: ${{ secrets.DB_USERNAME_TEST }}
+          X_DB_PASSWORD: ${{ secrets.DB_PASSWORD_TEST }}
           X_JWT_SECRET: ${{ secrets.JWT_SECRET_TEST }}
           X_JWT_EXPIRE_LENGTH: "3600000"
           X_UPLOAD_DIR: "/data/beacon-api"
