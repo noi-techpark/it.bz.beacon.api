@@ -61,8 +61,8 @@ jobs:
 
           X_MAIL_HOST: "email-smtp.eu-west-1.amazonaws.com"
           X_MAIL_PORT: "587"
-          X_MAIL_USERNAME: ${{ secrets.X_MAIL_USERNAME_TEST }}
-          X_MAIL_PASSWORD: ${{ secrets.X_MAIL_PASSWORD_TEST }}
+          X_MAIL_USERNAME: ${{ secrets.MAIL_USERNAME_TEST }}
+          X_MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD_TEST }}
           X_MAIL_SMTP_AUTH: "true"
           X_MAIL_SMTP_STARTTLS: "true"
 
@@ -135,8 +135,8 @@ jobs:
 
           X_MAIL_HOST: "email-smtp.eu-west-1.amazonaws.com"
           X_MAIL_PORT: "587"
-          X_MAIL_USERNAME: ${{ secrets.X_MAIL_USERNAME_PROD }}
-          X_MAIL_PASSWORD: ${{ secrets.X_MAIL_PASSWORD_PROD }}
+          X_MAIL_USERNAME: ${{ secrets.MAIL_USERNAME_PROD }}
+          X_MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD_PROD }}
           X_MAIL_SMTP_AUTH: "true"
           X_MAIL_SMTP_STARTTLS: "true"
 
