@@ -2,6 +2,7 @@ package it.bz.beacon.api.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.bz.beacon.api.model.IssueCreation;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -25,8 +26,20 @@ public class Issue extends AuditModel {
     private String problemDescription;
     private String reporter;
 
+    private boolean resolved;
+    private String resolver;
+
+    private Long ticketId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date resolveDate;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     private IssueSolution solution;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Formula("(select updated_at from issue_comment where issue_comment.issue_id = id order by updated_at desc limit 1)")
+    private Date lastCommentDate;
 
     public static Issue create(BeaconData beaconData, IssueCreation issueCreation) {
         Issue issue = new Issue();
@@ -88,5 +101,45 @@ public class Issue extends AuditModel {
 
     public void setSolution(IssueSolution solution) {
         this.solution = solution;
+    }
+
+    public Long getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(Long ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public boolean isResolved() {
+        return resolved;
+    }
+
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
+    }
+
+    public String getResolver() {
+        return resolver;
+    }
+
+    public void setResolver(String resolver) {
+        this.resolver = resolver;
+    }
+
+    public Date getResolveDate() {
+        return resolveDate;
+    }
+
+    public void setResolveDate(Date resolveDate) {
+        this.resolveDate = resolveDate;
+    }
+
+    public Date getLastCommentDate() {
+        return lastCommentDate;
+    }
+
+    public void setLastCommentDate(Date lastCommentDate) {
+        this.lastCommentDate = lastCommentDate;
     }
 }

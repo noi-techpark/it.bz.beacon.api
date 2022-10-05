@@ -3,7 +3,10 @@ package it.bz.beacon.api.model;
 import io.swagger.annotations.ApiModelProperty;
 import it.bz.beacon.api.db.model.Beacon;
 import it.bz.beacon.api.db.model.Issue;
+import it.bz.beacon.api.db.model.IssueComment;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 
 public class BeaconIssue {
@@ -18,16 +21,20 @@ public class BeaconIssue {
     @ApiModelProperty(dataType = "java.lang.Long")
     private Date reportDate;
 
-    private boolean resolved = false;
+    private boolean resolved;
     private String solution;
     private String solutionDescription;
 
     @ApiModelProperty(dataType = "java.lang.Long")
     private Date resolveDate;
-
     private String resolver;
 
-    public static BeaconIssue fromIssue(Issue issue, Beacon beacon) {
+    private Long ticketId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModified;
+
+    public static BeaconIssue fromIssue(Issue issue, Beacon beacon, IssueComment issueComment) {
         BeaconIssue beaconIssue = new BeaconIssue();
         beaconIssue.setId(issue.getId());
         beaconIssue.setBeacon(beacon);
@@ -35,13 +42,21 @@ public class BeaconIssue {
         beaconIssue.setProblemDescription(issue.getProblemDescription());
         beaconIssue.setReportDate(issue.getReportDate());
         beaconIssue.setReporter(issue.getReporter());
-        if (issue.getSolution() != null) {
-            beaconIssue.setResolved(true);
-            beaconIssue.setSolution(issue.getSolution().getSolution());
-            beaconIssue.setSolutionDescription(issue.getSolution().getSolutionDescription());
-            beaconIssue.setResolveDate(issue.getSolution().getCreatedAt());
-            beaconIssue.setResolver(issue.getSolution().getResolver());
+        beaconIssue.setResolved(issue.isResolved());
+        if (issue.isResolved()) {
+            beaconIssue.setResolveDate(issue.getResolveDate());
+            beaconIssue.setResolver(issue.getResolver());
+            if (issueComment != null) {
+                beaconIssue.setSolution(issueComment.getComment());
+                beaconIssue.setSolutionDescription(null);
+            }
         }
+        beaconIssue.setTicketId(issue.getTicketId());
+        beaconIssue.setLastModified(issue.getUpdatedAt());
+        if (issue.getLastCommentDate() != null && issue.getLastCommentDate().after(beaconIssue.getLastModified()))
+            beaconIssue.setLastModified(issue.getLastCommentDate());
+        if (issueComment != null && issueComment.getUpdatedAt().after(beaconIssue.getLastModified()))
+            beaconIssue.setLastModified(issue.getLastCommentDate());
 
         return beaconIssue;
     }
@@ -132,5 +147,21 @@ public class BeaconIssue {
 
     public void setResolver(String resolver) {
         this.resolver = resolver;
+    }
+
+    public Long getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(Long ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 }

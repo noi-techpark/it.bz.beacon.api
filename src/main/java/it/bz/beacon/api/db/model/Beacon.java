@@ -87,6 +87,8 @@ public class Beacon {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    private String namePoi;
+
     public String getId() {
         return id;
     }
@@ -365,5 +367,13 @@ public class Beacon {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getNamePoi() {
+        return namePoi;
+    }
+
+    public void setNamePoi(String namePoi) {
+        this.namePoi = namePoi;
     }
 }
