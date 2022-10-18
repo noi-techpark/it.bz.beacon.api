@@ -230,25 +230,18 @@ public class IssueService implements IIssueService {
     @Transactional
     public IssueComment updateComment(long issueId, long commentId, IssueCommentUpdate issueCommentUpdate) {
         Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
-<<<<<<< HEAD
-        return issueCommentService.update(issue, commentId, issueCommentUpdate);
-=======
         IssueComment issueComment = issueCommentService.update(issue, commentId, issueCommentUpdate);
 
         User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         notifyNewBeaconIssueCommentUpdate(issue, issueComment, authorizedUser, "updated");
         return issueComment;
->>>>>>> main
     }
 
     @Override
     @Transactional
     public BaseMessage deleteComment(long issueId, long commentId) {
         Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
-<<<<<<< HEAD
-        return issueCommentService.delete(issue, commentId);
-=======
         IssueComment issueComment = issueCommentService.find(commentId);
         BaseMessage baseMessage = issueCommentService.delete(issue, commentId);
 
@@ -256,7 +249,6 @@ public class IssueService implements IIssueService {
 
         notifyNewBeaconIssueCommentUpdate(issue, issueComment, authorizedUser, "deleted");
         return baseMessage;
->>>>>>> main
     }
 
     @Transactional
@@ -282,8 +274,6 @@ public class IssueService implements IIssueService {
         );
     }
 
-<<<<<<< HEAD
-=======
     private void notifyBeaconIssueUpdate(Issue issue, User user) {
         notifyBeaconIssueMessage(issue,
                 new String[]{beaconSuedtirolConfiguration.getIssueEmailTo()},
@@ -324,7 +314,6 @@ public class IssueService implements IIssueService {
         );
     }
 
->>>>>>> main
     private void notifyNewBeaconIssueComment(Issue issue, IssueComment issueComment, User user) {
         List<String> emails = findAllIssueEmails(issue);
         emails.add(0, beaconSuedtirolConfiguration.getIssueEmailTo());
@@ -339,8 +328,6 @@ public class IssueService implements IIssueService {
         );
     }
 
-<<<<<<< HEAD
-=======
     private void notifyNewBeaconIssueCommentUpdate(Issue issue, IssueComment issueComment, User user, String updateText) {
         List<String> emails = findAllIssueEmails(issue);
         emails.add(0, beaconSuedtirolConfiguration.getIssueEmailTo());
@@ -356,7 +343,6 @@ public class IssueService implements IIssueService {
         );
     }
 
->>>>>>> main
     private void notifyBeaconIssueStatusChange(Issue issue, User user) {
         List<String> emails = findAllIssueEmails(issue);
         emails.add(0, beaconSuedtirolConfiguration.getIssueEmailTo());
