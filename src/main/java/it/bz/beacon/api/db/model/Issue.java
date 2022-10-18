@@ -38,7 +38,11 @@ public class Issue extends AuditModel {
     private IssueSolution solution;
 
     @Temporal(TemporalType.TIMESTAMP)
+<<<<<<< HEAD
     @Formula("(select updated_at from issue_comment where issue_comment.issue_id = id order by updated_at desc limit 1)")
+=======
+    @Formula("(select issue_comment.updated_at from issue_comment where issue_comment.issue_id = id order by updated_at desc limit 1)")
+>>>>>>> main
     private Date lastCommentDate;
 
     public static Issue create(BeaconData beaconData, IssueCreation issueCreation) {

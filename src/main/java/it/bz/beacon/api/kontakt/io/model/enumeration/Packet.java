@@ -3,6 +3,7 @@ package it.bz.beacon.api.kontakt.io.model.enumeration;
 public enum Packet {
     KONTAKT,
     KONTAKT_TLM,
+    KONTAKT_LOCATION,
     IBEACON,
     EDDYSTONE_UID,
     EDDYSTONE_URL,

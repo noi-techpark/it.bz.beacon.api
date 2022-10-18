@@ -94,9 +94,23 @@ public class IssueService implements IIssueService {
     public BeaconIssue update(long id, IssueUpdate issueUpdate) {
         Issue issue = repository.findById(id).orElseThrow(IssueNotFoundException::new);
 
-        issue.setProblem(issueUpdate.getProblem());
-        issue.setProblemDescription(issueUpdate.getProblemDescription());
-        issue.setTicketId(issueUpdate.getTicketId());
+        boolean issueUpdated = false;
+        boolean ticketIdUpdated = false;
+        Long oldTicketId = issue.getTicketId();
+
+        if (!issue.getProblem().equals(issueUpdate.getProblem())
+                || !issue.getProblemDescription().equals(issueUpdate.getProblemDescription())) {
+            issueUpdated = true;
+
+            issue.setProblem(issueUpdate.getProblem());
+            issue.setProblemDescription(issueUpdate.getProblemDescription());
+        }
+
+        if ((oldTicketId == null && issueUpdate.getTicketId() != null) || !oldTicketId.equals(issueUpdate.getTicketId())) {
+            ticketIdUpdated = true;
+
+            issue.setTicketId(issueUpdate.getTicketId());
+        }
 
         issue = repository.save(issue);
 
@@ -105,6 +119,14 @@ public class IssueService implements IIssueService {
 
         if (issue.isResolved())
             issueComment = issueCommentService.findLastCommentByIssue(issue);
+
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (ticketIdUpdated)
+            notifyIssueTicketIdUpdate(issue, oldTicketId, authorizedUser);
+
+        if (issueUpdated)
+            notifyBeaconIssueUpdate(issue, authorizedUser);
 
         return BeaconIssue.fromIssue(issue, beacon, issueComment);
     }
@@ -208,14 +230,33 @@ public class IssueService implements IIssueService {
     @Transactional
     public IssueComment updateComment(long issueId, long commentId, IssueCommentUpdate issueCommentUpdate) {
         Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
+<<<<<<< HEAD
         return issueCommentService.update(issue, commentId, issueCommentUpdate);
+=======
+        IssueComment issueComment = issueCommentService.update(issue, commentId, issueCommentUpdate);
+
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        notifyNewBeaconIssueCommentUpdate(issue, issueComment, authorizedUser, "updated");
+        return issueComment;
+>>>>>>> main
     }
 
     @Override
     @Transactional
     public BaseMessage deleteComment(long issueId, long commentId) {
         Issue issue = repository.findById(issueId).orElseThrow(IssueNotFoundException::new);
+<<<<<<< HEAD
         return issueCommentService.delete(issue, commentId);
+=======
+        IssueComment issueComment = issueCommentService.find(commentId);
+        BaseMessage baseMessage = issueCommentService.delete(issue, commentId);
+
+        User authorizedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        notifyNewBeaconIssueCommentUpdate(issue, issueComment, authorizedUser, "deleted");
+        return baseMessage;
+>>>>>>> main
     }
 
     @Transactional
@@ -241,6 +282,49 @@ public class IssueService implements IIssueService {
         );
     }
 
+<<<<<<< HEAD
+=======
+    private void notifyBeaconIssueUpdate(Issue issue, User user) {
+        notifyBeaconIssueMessage(issue,
+                new String[]{beaconSuedtirolConfiguration.getIssueEmailTo()},
+                String.format("Issue update for beacon %s",
+                        issue.getBeaconData().getName()),
+                String.format(
+                        "An issue has been updated by <b>%s</b> for beacon <b>%s</b>:<br/><h2>%s</h2><p style=\"white-space: pre-wrap\">%s<p>",
+                        user.getUsername(),
+                        issue.getBeaconData().getName(),
+                        issue.getProblem(),
+                        issue.getProblemDescription())
+        );
+    }
+
+    private void notifyIssueTicketIdUpdate(Issue issue, Long oldTicketId, User user) {
+        String ticketIdNotice;
+        if (oldTicketId != null)
+            ticketIdNotice = String.format(
+                    "The Ticket-Id of an issue has been updated from #%s to #%s by <b>%s</b>",
+                    oldTicketId,
+                    issue.getTicketId(),
+                    user.getUsername());
+        else
+            ticketIdNotice = String.format(
+                    "The Ticket-Id of an issue has been updated to #%s by <b>%s</b>",
+                    issue.getTicketId(),
+                    user.getUsername());
+        notifyBeaconIssueMessage(issue,
+                new String[]{beaconSuedtirolConfiguration.getIssueEmailTo()},
+                String.format("New Ticket-Id for issue",
+                        issue.getBeaconData().getName()),
+                String.format(
+                        "%s for beacon <b>%s</b>:<br/><h2>%s</h2><p style=\"white-space: pre-wrap\">%s<p>",
+                        ticketIdNotice,
+                        issue.getBeaconData().getName(),
+                        issue.getProblem(),
+                        issue.getProblemDescription())
+        );
+    }
+
+>>>>>>> main
     private void notifyNewBeaconIssueComment(Issue issue, IssueComment issueComment, User user) {
         List<String> emails = findAllIssueEmails(issue);
         emails.add(0, beaconSuedtirolConfiguration.getIssueEmailTo());
@@ -255,6 +339,24 @@ public class IssueService implements IIssueService {
         );
     }
 
+<<<<<<< HEAD
+=======
+    private void notifyNewBeaconIssueCommentUpdate(Issue issue, IssueComment issueComment, User user, String updateText) {
+        List<String> emails = findAllIssueEmails(issue);
+        emails.add(0, beaconSuedtirolConfiguration.getIssueEmailTo());
+
+        notifyBeaconIssueMessage(issue,
+                new String[]{beaconSuedtirolConfiguration.getIssueEmailTo()},
+                issue.getProblem(),
+                String.format(
+                        "<b>%s</b> has %s a comment:<p style=\"white-space: pre-wrap\">%s<p>",
+                        user.getUsername(),
+                        updateText,
+                        issueComment.getComment())
+        );
+    }
+
+>>>>>>> main
     private void notifyBeaconIssueStatusChange(Issue issue, User user) {
         List<String> emails = findAllIssueEmails(issue);
         emails.add(0, beaconSuedtirolConfiguration.getIssueEmailTo());
