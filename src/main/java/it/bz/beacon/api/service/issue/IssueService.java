@@ -10,6 +10,8 @@ import it.bz.beacon.api.exception.db.IssueNotFoundException;
 import it.bz.beacon.api.model.*;
 import it.bz.beacon.api.service.beacon.IBeaconDataService;
 import it.bz.beacon.api.service.beacon.IBeaconService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -44,6 +46,8 @@ public class IssueService implements IIssueService {
 
     @Autowired
     private IIssueCommentService issueCommentService;
+
+    final static Logger log = LoggerFactory.getLogger(IssueService.class);
 
     @Override
     @Transactional
@@ -375,6 +379,9 @@ public class IssueService implements IIssueService {
                     "/issue/",
                     issue.getId()
             ), true);
+            log.info("BeaconIssueNotificationMail to: {}", tos);
+            log.info("BeaconIssueNotificationMail subject: {}", helper.getMimeMessage().getSubject());
+            log.info("BeaconIssueNotificationMail content {}", messageHtml);
             emailSender.send(message);
         } catch (Exception e) {
         }
