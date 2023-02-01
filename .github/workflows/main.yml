@@ -148,7 +148,7 @@ jobs:
           X_BEACON_PASSWORD_RESET_URL: "https://admin.beacon.bz.it/"
           X_BEACON_PASSWORD_RESET_MAIL: "info@beacon.bz.it"
 
-          X_SERVER_PORT: 1090
+          X_SERVER_PORT: 1091
 
       - name: Build project
         uses: noi-techpark/github-actions/maven-build@v2
