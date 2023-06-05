@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: NOI Techpark <digital@noi.bz.it>
+
+SPDX-License-Identifier: CC0-1.0
+-->
+
 # it.bz.beacon.api: Beacon Südtirol API
 The API for the Beacon Südtirol project for configuring beacons and accessing beacon data.
 
