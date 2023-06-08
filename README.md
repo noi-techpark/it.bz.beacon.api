@@ -7,6 +7,7 @@ SPDX-License-Identifier: CC0-1.0
 # it.bz.beacon.api: Beacon Südtirol API
 The API for the Beacon Südtirol project for configuring beacons and accessing beacon data.
 
+![REUSE Compliance](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/reuse.yml/badge.svg)
 [![CI](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/ci.yml/badge.svg)](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/ci.yml)
 
 ## Table of contents
