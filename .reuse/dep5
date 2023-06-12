@@ -3,7 +3,7 @@ Upstream-Name: it.bz.beacon.api
 Upstream-Contact: NOI Techpark <digital@noi.bz.it>
 Source: https://github.com/noi-techpark/it.bz.beacon.api
 
-Files: .github/* infrastructure/* .gitignore LICENSE .env.example *.properties
+Files: .github/* infrastructure/* .gitignore LICENSE .pre-commit-config.yaml .env.example *.properties
 Copyright: (c) NOI Techpark <digital@noi.bz.it>
 License: CC0-1.0
 
