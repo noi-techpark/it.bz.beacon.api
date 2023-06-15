@@ -369,7 +369,7 @@ public class IssueService implements IIssueService {
         try {
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setSubject(String.format("[issues.opendatahub.bz.it #%s] %s",
+            helper.setSubject(String.format("[issues.opendatahub.com #%s] %s",
                     issue.getTicketId() != null ? issue.getTicketId() : "",
                     subject));
             helper.setFrom(beaconSuedtirolConfiguration.getIssueEmailFrom());
