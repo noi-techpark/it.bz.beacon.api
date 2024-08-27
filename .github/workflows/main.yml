@@ -70,8 +70,8 @@ jobs:
           X_MAIL_SMTP_AUTH: "true"
           X_MAIL_SMTP_STARTTLS: "true"
 
-          X_BEACON_TRUSTED_USERNAME: '${{ secrets.BEACON_TRUSTED_USERNAME_TEST }}'
-          X_BEACON_TRUSTED_PASSWORD: '${{ secrets.BEACON_TRUSTED_PASSWORD_TEST }}'
+          X_BEACON_TRUSTED_USERNAME: \'${{ secrets.BEACON_TRUSTED_USERNAME_TEST }}\'
+          X_BEACON_TRUSTED_PASSWORD: \'${{ secrets.BEACON_TRUSTED_PASSWORD_TEST }}\'
 
           X_BEACON_PASSWORD_RESET_URL: "https://admin.beacon.testingmachine.eu/"
           X_BEACON_PASSWORD_RESET_MAIL: "info@beacon.bz.it"
