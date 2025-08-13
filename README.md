@@ -7,7 +7,7 @@ SPDX-License-Identifier: CC0-1.0
 # it.bz.beacon.api: Beacon Südtirol API
 The API for the Beacon Südtirol project for configuring beacons and accessing beacon data.
 
-[![REUSE Compliance](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/reuse.yml/badge.svg)](https://github.com/noi-techpark/odh-docs/wiki/REUSE#badges)
+[![REUSE Compliance](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/reuse.yml/badge.svg)](https://github.com/noi-techpark/opendatahub-docs/wiki/REUSE)
 [![CI](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/ci.yml/badge.svg)](https://github.com/noi-techpark/it.bz.beacon.api/actions/workflows/ci.yml)
 
 ## Table of contents
@@ -51,7 +51,7 @@ on your local machine for development and testing purposes.
 
 To build the project, the following prerequisites must be met:
 
-- Java JDK 1.8 or higher (e.g. [OpenJDK](https://openjdk.java.net/))
+- Java JDK 1.8 or higher (e.g. [OpenJDK](https://openjdk.org/))
 - [Maven](https://maven.apache.org/) 3.x
 - Database (ideally, [PostgreSQL](https://www.postgresql.org))
 - Filesystem
@@ -61,7 +61,7 @@ To build the project, the following prerequisites must be met:
 Get a copy of the repository:
 
 ```bash
-git clone https://github.com/idm-suedtirol/it.bz.beacon.api.git
+git clone https://github.com/idm-suedtirol/it.bz.beacon.api
 ```
 
 Change directory:
@@ -120,7 +120,7 @@ These Docker containers are the same as used by the continuous integration serve
 
 ### Installation
 
-Install [Docker](https://docs.docker.com/install/) (with Docker Compose) locally on your machine.
+Install [Docker](https://docs.docker.com/get-started/get-docker/) (with Docker Compose) locally on your machine.
 
 ### Start and stop the containers
 
@@ -207,7 +207,7 @@ use the Google Sheet API and move the resulting client-secret.json file to
 /src/main/resources/google-api-service-account.json. For more information on
 generating this json file, have a look at the Google documentation for [Using
 OAuth 2.0 for Server to Server
-Applications](https://developers.google.com/identity/protocols/OAuth2ServiceAccount)</strike>
+Applications](https://developers.google.com/identity/protocols/oauth2/service-account)</strike>
 
 
 ### Support
@@ -237,7 +237,7 @@ See the LICENSE.md file for more information.
 
 ### REUSE
 
-This project is [REUSE](https://reuse.software) compliant, more information about the usage of REUSE in NOI Techpark repositories can be found [here](https://github.com/noi-techpark/odh-docs/wiki/Guidelines-for-developers-and-licenses#guidelines-for-contributors-and-new-developers).
+This project is [REUSE](https://reuse.software) compliant, more information about the usage of REUSE in NOI Techpark repositories can be found [here](https://github.com/noi-techpark/opendatahub-docs/wiki/Guidelines-for-developers-and-licenses).
 
 Since the CI for this project checks for REUSE compliance you might find it useful to use a pre-commit hook checking for REUSE compliance locally. The [pre-commit-config](.pre-commit-config.yaml) file in the repository root is already configured to check for REUSE compliance with help of the [pre-commit](https://pre-commit.com) tool.
 
